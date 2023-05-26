@@ -1,9 +1,11 @@
+import os
 from typing import Annotated
 
 import fastapi
 from fastapi import Header
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import UUID4, BaseModel, EmailStr
+import httpx
 
 from prisma import Prisma, enums, errors, models, register, types
 
@@ -30,6 +32,9 @@ async def start():
     """
     Cold start
     """
+    client = httpx.AsyncClient(base_url="https://challenges.cloudflare.com/turnstile/v0/siteverify", timeout=5)
+    app.turnstile_secret = os.environ.get("TURNSTILE_SECRET", "secret")
+    app.client = client
     db = Prisma()
     register(db)
     await db.connect()
@@ -43,6 +48,7 @@ async def shutdown():
 
 class TurnstileOutcome(BaseModel):
     success: bool
+    data: dict | None = None
     
 
 async def validate_turnstile(token: str | None) -> TurnstileOutcome:
@@ -50,8 +56,16 @@ async def validate_turnstile(token: str | None) -> TurnstileOutcome:
     Validate the turnstile token
     As documented in https://developers.cloudflare.com/turnstile/get-started/server-side-validation/
     """
-    # TODO: This is a stub, implement the real thing
-    return TurnstileOutcome(success=True)
+    with app.client as client:
+        response = await client.get("/", data={
+            "secret": app.turnstile_secret,
+            "response": token,
+        })
+        response.raise_for_status()
+        data = response.json()
+        return TurnstileOutcome(success=data["success"], data=data)
+        
+    
 
 
 class PrticipantRegisterRequest(BaseModel):
