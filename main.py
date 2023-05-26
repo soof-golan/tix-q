@@ -1,14 +1,11 @@
-import atexit
 from typing import Annotated
+
 import fastapi
-from fastapi import Request, Header
+from fastapi import Header
 from fastapi.middleware.cors import CORSMiddleware
-import pydantic
-import requests
 from pydantic import UUID4, BaseModel, EmailStr
 
-from prisma import Prisma, enums, models, register, types
-
+from prisma import Prisma, enums, errors, models, register, types
 
 app = fastapi.FastAPI()
 
@@ -83,17 +80,27 @@ async def create_participant(data: PrticipantRegisterRequest, x_turnstile_token:
     if not outcome.success:
         raise fastapi.HTTPException(status_code=400, detail="Invalid turnstile token")
 
-    result = await models.Registrant.prisma().create(
-        data={
-            "legalName": data.legalName,
-            "email": data.email,
-            "phoneNumber": data.phoneNumber,
-            "idNumber": data.idNumber,
-            "idType": data.idType,
-            "waitingRoomId": data.waitingRoomId,
-        }
-    )
-    return result.dict()
+    try:
+        result = await models.Registrant.prisma().create(
+            data={
+                "legalName": data.legalName,
+                "email": data.email,
+                "phoneNumber": data.phoneNumber,
+                "idNumber": data.idNumber,
+                "idType": data.idType,
+                "waitingRoomId": data.waitingRoomId,
+            }
+        )
+        return result.dict()
+    except errors.ForeignKeyViolationError:
+        raise fastapi.HTTPException(status_code=400, detail="Invalid waiting room ID")
+    except errors.RecordNotFoundError:
+        raise fastapi.HTTPException(status_code=500, detail="Internal server error (table not found)")
+    except errors.DataError as e:
+        raise fastapi.HTTPException(status_code=500, detail=repr(e.data) or "Invalid data")
+    except errors.ClientNotConnectedError:
+        raise fastapi.HTTPException(status_code=500, detail="Internal server error (db not connected)")
+    
     
 
 if __name__ == "__main__":
