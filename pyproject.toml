@@ -1,0 +1,16 @@
+[tool.poetry]
+name = "tix-q"
+version = "0.1.0"
+description = ""
+authors = ["Soof Golan <soofgolan@gmail.com>"]
+license = "MIT"
+readme = "README.md"
+packages = [{include = "tix_q"}]
+
+[tool.poetry.dependencies]
+python = "^3.10"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
