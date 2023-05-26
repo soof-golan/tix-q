@@ -1,3 +1,5 @@
+# This Compose file is just for development. It's NOT intended for production use
+
 services:
   cockroachdb:
     image: cockroachdb/cockroach:v23.1.1
