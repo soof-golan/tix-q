@@ -3,11 +3,28 @@ services:
     image: cockroachdb/cockroach:v23.1.1
     volumes:
       - cockroach-data:/cockroach/cockroach-data
+    networks:
+      - cockroachdb
     command: start-single-node --insecure
     ports:
       - "26257:26257"
       # - "8080:8080"
+  server:
+    build:
+      dockerfile: Dockerfile
+      context: .
+    networks:
+      - cockroachdb
+    depends_on:
+      - cockroachdb
+    environment:
+      - DATABASE_URL=postgresql://root@cockroachdb:26257/defaultdb?schema=public&sslmode=disable
+    ports:
+      - "8000:8000"
 
 volumes:
   cockroach-data:
     name: cockroach-data
+networks:
+  cockroachdb:
+    name: cockroachdb
