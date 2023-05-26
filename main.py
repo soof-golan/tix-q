@@ -6,7 +6,7 @@ import requests
 from flask import Request
 from pydantic import UUID4, BaseModel, EmailStr
 
-from generated.client import Prisma, enums, models, register, types
+from prisma import Prisma, enums, models, register, types
 
 # Cold boot
 db = Prisma() 
