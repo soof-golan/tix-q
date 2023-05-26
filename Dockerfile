@@ -1,5 +1,7 @@
 FROM python:3.10-slim
 
+ENV PYTHONUNBUFFERED True
+
 # Copy dependencies
 COPY requirements.txt /tmp/requirements.txt
 
@@ -24,4 +26,4 @@ RUN gunicorn --check-config
 
 # Run the production server
 EXPOSE 8000
-CMD ["gunicorn"]
+CMD exec gunicorn --bind :$PORT --workers 1 --threads 8 --timeout 0 --preload main:app
