@@ -4,8 +4,7 @@ FROM python:3.10-slim
 COPY requirements.txt /tmp/requirements.txt
 
 # Install dependencies (pacakges are cached)
-RUN --mount=type=cache,target=/root/.cache/pip \
-    pip install -r /tmp/requirements.txt
+RUN pip install -r /tmp/requirements.txt
 
 WORKDIR /app
 
