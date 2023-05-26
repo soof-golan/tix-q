@@ -1,28 +1,60 @@
 import atexit
-import flask
-import functions_framework
+from typing import Annotated
+import fastapi
+from fastapi import Request, Header
+from fastapi.middleware.cors import CORSMiddleware
 import pydantic
 import requests
-from flask import Request
 from pydantic import UUID4, BaseModel, EmailStr
 
 from prisma import Prisma, enums, models, register, types
 
-# Cold boot
-db = Prisma() 
-register(db)
-db.connect()
-atexit.register(db.disconnect)
 
-def validate_turnstile(request: Request) -> bool:
-    return True
-    token = request.headers.get('X-Turnstile-Token')
-    if not token:
-        flask.abort(400, 'Missing captcha token')
+app = fastapi.FastAPI()
 
-    # TODO: Validate token
-    # requests.get(url="https://api.turnstile.workers.dev/validate", params={"token": token})
-    pass
+# TODO: Are these the right origins?
+origins = [
+    "http://localhost:8080",
+    "http://localhost:3000",
+    "https://waitingroom.soofgolan.com",
+]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["POST", "OPTIONS"],
+    allow_headers=["X-Turnstile-Token"],
+)
+
+
+@app.on_event("startup")
+async def start():
+    """
+    Cold start
+    """
+    db = Prisma()
+    register(db)
+    await db.connect()
+    app.db = db
+    
+
+@app.on_event("shutdown")
+async def shutdown():
+    await app.db.disconnect()
+
+
+class TurnstileOutcome(BaseModel):
+    success: bool
+    
+
+async def validate_turnstile(token: str | None) -> TurnstileOutcome:
+    """
+    Validate the turnstile token
+    As documented in https://developers.cloudflare.com/turnstile/get-started/server-side-validation/
+    """
+    # TODO: This is a stub, implement the real thing
+    return TurnstileOutcome(success=True)
 
 
 class PrticipantRegisterRequest(BaseModel):
@@ -34,43 +66,37 @@ class PrticipantRegisterRequest(BaseModel):
     idType: enums.IdType
     waitingRoomId: str
 
+class ParticipantRegisterResponse(BaseModel):
+    # DB Record
+    id: UUID4
+    legalName: str
+    email: EmailStr
+    phoneNumber: str
+    idNumber: str
+    idType: enums.IdType
+    waitingRoomId: str
 
-def create_participant(request: Request):
-    # Validate request
-    try:
-        validated = PrticipantRegisterRequest.parse_raw(request.data)
-    except pydantic.ValidationError as e:
-        flask.abort(400, f'Failed to validate request: {e}')
-    
-    # TODO: turnstile
+@app.post('/')
+async def create_participant(data: PrticipantRegisterRequest, x_turnstile_token: Annotated[str | None, Header()] = None) -> ParticipantRegisterResponse:
+    outcome = await validate_turnstile(x_turnstile_token)
 
-    result = models.Registrant.prisma().create(
+    if not outcome.success:
+        raise fastapi.HTTPException(status_code=400, detail="Invalid turnstile token")
+
+    result = await models.Registrant.prisma().create(
         data={
-            "legalName": validated.legalName,
-            "email": validated.email,
-            "phoneNumber": validated.phoneNumber,
-            "idNumber": validated.idNumber,
-            "idType": validated.idType,
-            "waitingRoomId": validated.waitingRoomId,
+            "legalName": data.legalName,
+            "email": data.email,
+            "phoneNumber": data.phoneNumber,
+            "idNumber": data.idNumber,
+            "idType": data.idType,
+            "waitingRoomId": data.waitingRoomId,
         }
     )
-    return result.json()
+    return result.dict()
     
 
+if __name__ == "__main__":
+    import uvicorn
+    uvicorn.run(app, host="0.0.0.0", port=8080)
 
-@functions_framework.http
-def register(request: Request):
-    if request.method == 'POST':
-        return create_participant(request)
-    if request.method == 'OPTIONS':
-        # CORS is allowed for all origins
-        return flask.Response(
-            status=204,
-            headers={
-                'Access-Control-Allow-Origin': '*',
-                'Access-Control-Allow-Methods': 'POST, OPTIONS',
-                'Access-Control-Allow-Headers': 'Content-Type, X-Turnstile-Token',
-            }
-        )
-    else:
-        flask.abort(405, 'Method not allowed')

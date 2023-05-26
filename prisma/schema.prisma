@@ -4,7 +4,7 @@
 generator client {
   provider             = "prisma-client-py"
   recursive_type_depth = 3
-  interface            = "sync"
+  interface            = "asyncio"
   binaryTargets        = ["native", "linux-musl"]
 }
 
