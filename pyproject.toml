@@ -9,6 +9,8 @@ packages = [{include = "tix_q"}]
 
 [tool.poetry.dependencies]
 python = "^3.10"
+functions-framework = "^3.4.0"
+prisma = "^0.8.2"
 
 
 [build-system]
