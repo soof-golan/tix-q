@@ -11,6 +11,8 @@ packages = [{include = "tix_q"}]
 python = "^3.10"
 functions-framework = "^3.4.0"
 prisma = "^0.8.2"
+pydantic = {extras = ["email"], version = "^1.10.8"}
+requests = "^2.31.0"
 
 
 [build-system]
