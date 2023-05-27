@@ -1,4 +1,5 @@
 ---
+import Countdown from "react-countdown";
 import {PrismaClient} from '@prisma/client';
 import {InferGetStaticParamsType, InferGetStaticPropsType, GetStaticPaths} from 'astro';
 
@@ -33,6 +34,9 @@ const {
 <p>{content}</p>
 <p>Opens at: {opensAt}</p>
 <p>Closes at: {closesAt}</p>
+<Countdown date={opensAt} client:load >
+  <p>Waiting room is open!</p>
+</Countdown>
 </body>
 </html>
 
