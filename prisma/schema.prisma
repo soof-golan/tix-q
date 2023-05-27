@@ -53,6 +53,11 @@ model Registrant {
   idType      IdType
   phoneNumber String
 
+  // Bot mitigation
+  turnstileSuccess   Boolean  @default(false)
+  turnstileTimestamp DateTime
+  turnstileOutcome   Json
+
   // TODO: this might be a performance issue - maybe denormalize?
   // Denormalization == Store the foreign key without a constraint
   waitingRoom   WaitingRoom @relation(fields: [waitingRoomId], references: [id])
