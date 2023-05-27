@@ -3,7 +3,7 @@ FROM python:3.10-slim
 ENV PYTHONUNBUFFERED True
 
 # Copy dependencies
-COPY requirements.txt /tmp/requirements.txt
+COPY server/requirements.txt /tmp/requirements.txt
 
 # Install dependencies (pacakges are cached)
 RUN pip install -r /tmp/requirements.txt
@@ -24,8 +24,9 @@ COPY . /app
 WORKDIR /app
 
 # Validate gunicorn config
-RUN gunicorn --check-config
+RUN gunicorn --check-config --config server/gunicorn.conf.py
 
 # Run the production server
 EXPOSE 8000
-CMD exec gunicorn --workers 1 --threads 8 --timeout 0 --preload main:app
+# CMD exec gunicorn --workers 1 --threads 8 --timeout 0 --preload main:app
+CMD ["gunicorn", "--config", "server/gunicorn.conf.py", "server.main:app", "--workers", "1", "--threads", "8", "--timeout", "0", "--preload"]
