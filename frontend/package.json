@@ -11,5 +11,9 @@
   },
   "dependencies": {
     "astro": "^2.4.1"
+  },
+  "devDependencies": {
+    "@prisma/client": "4.11.0",
+    "prisma": "4.11.0"
   }
 }
