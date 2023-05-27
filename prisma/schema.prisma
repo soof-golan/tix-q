@@ -7,6 +7,10 @@ generator client {
   interface            = "asyncio"
 }
 
+generator jsclient {
+  provider = "prisma-client-js"
+}
+
 datasource db {
   provider = "cockroachdb"
   url      = env("DATABASE_URL")
