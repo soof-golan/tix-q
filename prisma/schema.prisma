@@ -21,24 +21,24 @@ datasource db {
 }
 
 model WaitingRoom {
-  id        String   @id @default(dbgenerated("gen_random_uuid()"))
-  createdAt DateTime @default(now())
+  id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  createdAt DateTime @default(dbgenerated("now()"))
   updatedAt DateTime @updatedAt
 
   opensAt  DateTime
   closesAt DateTime
 
-  content String // Markdown
-  title   String
+  markdown String
+  title    String
 
   registrants Registrant[]
   owner       User         @relation(fields: [ownerId], references: [id])
-  ownerId     String
+  ownerId     String       @db.Uuid
 }
 
 model User {
-  id        String   @id @default(dbgenerated("gen_random_uuid()"))
-  createdAt DateTime @default(now())
+  id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  createdAt DateTime @default(dbgenerated("now()"))
   updatedAt DateTime @updatedAt
 
   firebaseUid  String        @unique
@@ -46,28 +46,25 @@ model User {
 }
 
 enum IdType {
-  ID_CARD // Local ID card
-  PASSPORT // International passport
+  ID_CARD /// Local ID card
+  PASSPORT /// International passport
 }
 
 model Registrant {
-  id        String   @id @default(dbgenerated("gen_random_uuid()"))
-  createdAt DateTime @default(now())
+  id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  createdAt DateTime @default(dbgenerated("now()"))
   updatedAt DateTime @updatedAt
 
   legalName   String
-  email       String // This will be verified by the backend
+  email       String
   idNumber    String
   idType      IdType
   phoneNumber String
 
   // Bot mitigation
-  turnstileSuccess   Boolean  @default(false)
-  turnstileTimestamp DateTime
-  turnstileOutcome   Json
+  turnstileSuccess   Boolean   @default(false)
+  turnstileTimestamp DateTime?
 
-  // TODO: this might be a performance issue - maybe denormalize?
-  // Denormalization == Store the foreign key without a constraint
-  waitingRoom   WaitingRoom @relation(fields: [waitingRoomId], references: [id])
-  waitingRoomId String
+  WaitingRoom   WaitingRoom @relation(fields: [waitingRoomId], references: [id])
+  waitingRoomId String      @db.Uuid
 }
