@@ -1,5 +1,4 @@
 import Turnstile from "react-turnstile";
-import {useRef} from "react";
 
 export function TurnstileWrapper(props: {
   onLoad: () => void,
