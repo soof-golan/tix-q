@@ -1,10 +1,15 @@
-import {publicProcedure, router} from './trpc';
-import {RegisterOutput, registerInputSchema} from "../types/RegisterProcedure";
+import { publicProcedure, router } from "./trpc";
+import {
+  RegisterOutput,
+  registerInputSchema,
+} from "../types/RegisterProcedure";
 
 const appRouter = router({
-  register: publicProcedure.input(registerInputSchema).mutation(async (): Promise<RegisterOutput> => {
-    return {} as RegisterOutput;
-  })
+  register: publicProcedure
+    .input(registerInputSchema)
+    .mutation(async (): Promise<RegisterOutput> => {
+      return {} as RegisterOutput;
+    }),
 });
 
 // Export only the "type" of a router!
