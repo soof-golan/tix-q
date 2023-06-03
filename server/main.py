@@ -13,6 +13,7 @@ from pydantic import UUID4, BaseModel, EmailStr, Field
 import httpx
 
 from prisma import Prisma, enums, errors, models, register
+from pydantic.generics import GenericModel
 
 TTL_FIVE_MINUTES = 60 * 5
 
@@ -127,6 +128,17 @@ class ParticipantRegisterResponse(BaseModel):
     waitingRoomId: str
 
 
+DataT = typing.TypeVar("DataT")
+
+
+class TrpcData(GenericModel, typing.Generic[DataT]):
+    data: DataT
+
+
+class TrpcResponse(GenericModel, typing.Generic[DataT]):
+    result: TrpcData[DataT]
+
+
 def handle_turnstile_errors(outcome: TurnstileOutcome, name: str) -> None:
     if outcome.success:
         return
@@ -151,7 +163,7 @@ async def create_participant(
         request: fastapi.Request,
         data: ParticipantRegisterRequest,
         turnstile_token: Annotated[str | None, Cookie()] = None,
-) -> ParticipantRegisterResponse:
+) -> TrpcResponse[ParticipantRegisterResponse]:
     outcome = await validate_turnstile(request, turnstile_token)
 
     # This user might be a bot. We don't allow bots to register.
@@ -203,7 +215,11 @@ async def create_participant(
                 detail=f"Too early to register." + PLAY_NICE_RESPONSE.format(name=data.legalName) + "\nbtw this request was recorded."
             )
 
-        return result.dict()
+        return {
+            "result": {
+                "data": result.dict()
+            }
+        }
 
 
 if __name__ == "__main__":
