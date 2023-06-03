@@ -3,7 +3,11 @@ import {trpc} from "../utils/trpc";
 import Turnstile from "react-turnstile";
 import {useCookie, useSessionStorage} from "react-use";
 
-function RegisterButton_() {
+type ResisterButtonProps = {
+  waitingRoomId: string;
+}
+
+function RegisterButton_({waitingRoomId}: ResisterButtonProps) {
   const [token, setToken] = useCookie("turnstile_token");
   const siteKey = import.meta.env.PUBLIC_TURNSTILE_SITEKEY;
   const register = trpc.register.useMutation({});
@@ -16,7 +20,7 @@ function RegisterButton_() {
         idNumber: "1234567890",
         legalName: "Test User",
         phoneNumber: "+1234567890",
-        waitingRoomId: "aa7604ed-6d0d-4785-9689-4a0d09682565",
+        waitingRoomId: waitingRoomId,
       })} disabled={register.isLoading || !token}>Register
     </button>
 
@@ -52,9 +56,9 @@ function RegisterButton_() {
   </>
 }
 
-export default function RegisterButton() {
+export default function RegisterButton(props: ResisterButtonProps) {
   return <TrpcContext>
-    <RegisterButton_/>
+    <RegisterButton_{...props}/>
   </TrpcContext>;
 
 }

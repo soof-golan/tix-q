@@ -39,7 +39,7 @@ const {
 <Countdown date={opensAt} client:load >
   <p>Waiting room is open!</p>
   <p>Imagine there's a form here + Turnstile component</p>
-  <RegisterButton client:load/>
+  <RegisterButton client:load waitingRoomId={id} />
 </Countdown>
 </main>
 </body>
