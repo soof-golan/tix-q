@@ -20,7 +20,7 @@ const {
   opensAt,
   closesAt,
   title,
-  content,
+  markdown,
 } = Astro.props as Props;
 const {
   id
@@ -32,7 +32,7 @@ const {
 </head>
 <body>
 <h1>Waiting Room</h1>
-<p>{content}</p>
+<p>{markdown}</p>
 <p>Opens at: {opensAt}</p>
 <p>Closes at: {closesAt}</p>
 <Countdown date={opensAt} client:load >
