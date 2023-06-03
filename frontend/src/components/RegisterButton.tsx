@@ -1,7 +1,7 @@
 import TrpcContext from "./TrpcContext";
 import {trpc} from "../utils/trpc";
 import Turnstile from "react-turnstile";
-import {useCookie, useSessionStorage} from "react-use";
+import {useCookie} from "react-use";
 
 type ResisterButtonProps = {
   waitingRoomId: string;
