@@ -1,6 +1,6 @@
 ---
 import Countdown from "react-countdown";
-import Test from "../../components/InteractiveTest"
+import RegisterButton from "../../components/RegisterButton"
 import {PrismaClient} from '@prisma/client';
 import {InferGetStaticParamsType, InferGetStaticPropsType, GetStaticPaths} from 'astro';
 
@@ -31,6 +31,7 @@ const {
     <title>{title}</title>
 </head>
 <body>
+<main>
 <h1>Waiting Room</h1>
 <p>{markdown}</p>
 <p>Opens at: {opensAt}</p>
@@ -38,8 +39,9 @@ const {
 <Countdown date={opensAt} client:load >
   <p>Waiting room is open!</p>
   <p>Imagine there's a form here + Turnstile component</p>
+  <RegisterButton client:load/>
 </Countdown>
-<Test client:load/>
+</main>
 </body>
 </html>
 
