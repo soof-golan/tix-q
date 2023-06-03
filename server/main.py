@@ -209,6 +209,7 @@ async def create_participant(
         )
     else:
         # Someone is trying to register too early
+        # We'll still record the request, but we won't return a success response
         if outcome.challenge_ts < room.opensAt:
             raise fastapi.HTTPException(
                 status_code=400,
