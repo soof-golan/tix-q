@@ -10,6 +10,17 @@ export default function TrpcContext({children}: PropsWithChildren) {
       links: [
         httpLink({
           url: import.meta.env.PUBLIC_SERVER_URL,
+          headers: async () => {
+            return {
+              "X-CSRF-Token": "csrf-token",
+            };
+          },
+          fetch(url, options){
+            return fetch(url, {
+              ...options,
+              credentials: "include"
+            })
+          }
         }),
       ],
     }),
