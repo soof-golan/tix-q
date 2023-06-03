@@ -79,7 +79,7 @@ function WaitingRoom_({ waitingRoomId, opensAt, closesAt }: WaitingRoomProps) {
         <select {...register("idType")} required>
           <option disabled value="SelectIdType">Select ID Type</option>
           <option value="ID_CARD">ID Card</option>
-          <option value="PASSPORt">Passport</option>
+          <option value="PASSPORT">Passport</option>
         </select>
       </p>
       <p>
