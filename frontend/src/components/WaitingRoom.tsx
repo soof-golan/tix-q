@@ -122,7 +122,7 @@ function WaitingRoom_({ waitingRoomId, opensAt, closesAt }: WaitingRoomProps) {
 /*
 This is a small workaround to enable usage of trpc without having a root level context provider
 */
-export function WaitingRoom(props: WaitingRoomProps) {
+export default function WaitingRoom(props: WaitingRoomProps) {
   return <TrpcContext>
     <WaitingRoom_{...props} />
   </TrpcContext>;

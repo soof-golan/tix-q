@@ -1,5 +1,5 @@
 ---
-import {WaitingRoom} from "../../components/WaitingRoom"
+import WaitingRoom from "../../components/WaitingRoom"
 import {PrismaClient} from '@prisma/client';
 import {InferGetStaticParamsType, InferGetStaticPropsType, GetStaticPaths} from 'astro';
 
@@ -7,9 +7,9 @@ import {InferGetStaticParamsType, InferGetStaticPropsType, GetStaticPaths} from 
 export const getStaticPaths = (async () => {
   const prisma = new PrismaClient();
   const rooms = await prisma.waitingRoom.findMany();
-    return rooms.map(room => ({
-      props: room,
-      params: {id: room.id}
+  return rooms.map(room => ({
+    props: room,
+    params: {id: room.id}
   }));
 }) satisfies GetStaticPaths;
 type Params = InferGetStaticParamsType<typeof getStaticPaths>;
@@ -31,11 +31,11 @@ const {
 </head>
 <body>
 <main>
-<h1>Waiting Room</h1>
-{markdown}
-<p>Opens at: {opensAt}</p>
-<p>Closes at: {closesAt}</p>
-<WaitingRoom waitingRoomId={id} opensAt={opensAt} closesAt={closesAt} client:load />
+    <h1>Waiting Room</h1>
+    {markdown}
+    <p>Opens at: {opensAt}</p>
+    <p>Closes at: {closesAt}</p>
+    <WaitingRoom waitingRoomId={id} opensAt={opensAt} closesAt={closesAt} client:load/>
 </main>
 </body>
 </html>
