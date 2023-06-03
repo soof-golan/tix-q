@@ -31,7 +31,6 @@ async def create_participant(
 
     # Someone is trying to register too late
     if outcome.challenge_ts > room.closesAt:
-        # TODO: handle this case in the client
         raise fastapi.HTTPException(status_code=400, detail="Too late to register" + PLAY_NICE_RESPONSE.format(name=data.legalName))
 
     try:
