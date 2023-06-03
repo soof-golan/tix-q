@@ -18,6 +18,26 @@ async def create_participant(
         data: ParticipantRegisterRequest,
         turnstile_token: Annotated[str | None, Cookie()] = None,
 ) -> TrpcResponse[ParticipantRegisterResponse]:
+    """
+    Register a participant for a waiting room
+
+    Things that happen here:
+    - Validate the turnstile token (make sure this is a real person)
+        - If the token is invalid, return an error to the client (this will not be recorded in the database)
+        - If the token is valid, continue
+    - Verify the waiting room is open at the time of registration
+        - Given a form was submitted too early (by someone opening the client source code and sending a request)
+          We'll still record the registration, but we'll return an error to the client
+          This will allow event organizers to see who tried to register too early and disqualify them (if they want to)
+        - Given a form was submitted too late, we'll return an error to the client
+          This will not be recorded in the database (as the event owner already closed the waiting room)
+    - Create a new participant
+        - This step only validates the foreign key constraints (waiting room ID)
+        - If the waiting room ID is invalid, return an error to the client (i.e they tried to register for
+          a waiting room that doesn't exist, again, someone is trying to "hack" us)
+    - Return the new participant ID
+        - this will be displayed on the client as "Your number registration number is: X"
+    """
     outcome = await validate_turnstile(request, turnstile_token)
 
     # This user might be a bot. We don't allow bots to register.

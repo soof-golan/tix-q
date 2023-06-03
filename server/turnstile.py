@@ -7,6 +7,11 @@ from .constants import PLAY_NICE_RESPONSE
 
 
 class TurnstileOutcome(BaseModel):
+    """
+    Models most of the response from the turnstile API
+    More details: https://developers.cloudflare.com/turnstile/get-started/server-side-validation/
+
+    """
     success: bool
     challenge_ts: datetime.datetime | None = None  # Verify people don't submit too early
     error_codes: list[str]
@@ -19,6 +24,12 @@ async def validate_turnstile(request: fastapi.Request, token: str | None) -> Tur
     """
     Validate the turnstile token
     As documented in https://developers.cloudflare.com/turnstile/get-started/server-side-validation/
+
+    This operation is *not* idempotent. successive calls with 'valid' tokens
+    will fail with 'timeout-or-duplicate' errors. this means clients should only call this once.
+    It is very important that we don't add caching to this function as it will help
+    attackers bypass the turnstile with one valid token and then use it multiple times.
+
     """
     client = request.state.http_client
     turnstile_secret = request.state.turnstile_secret
@@ -47,6 +58,10 @@ async def validate_turnstile(request: fastapi.Request, token: str | None) -> Tur
 
 
 def handle_turnstile_errors(outcome: TurnstileOutcome, name: str) -> None:
+    """
+    This user might be a bot.
+    So better wear protection :)
+    """
     if outcome.success:
         return
     if not outcome.error_codes:

@@ -1,3 +1,11 @@
+"""
+Constants used throughout the application.
+"""
+
+
+# A 'nice' response to send to users who are trying to hack the system.
+# This is mainly used to deter humans that know how to open the dev console from
+# trying to register multiple times / multiple people.
 PLAY_NICE_RESPONSE = """
 Hey {name}!,
 I know going to this event is important to you, but please don't hack me.
@@ -9,6 +17,7 @@ Soof
 """
 
 TTL_FIVE_MINUTES = 60 * 5
+
 CORS_ORIGINS = [
     "http://localhost:8080",
     "http://localhost:3000",
