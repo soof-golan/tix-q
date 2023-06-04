@@ -1,5 +1,5 @@
 ---
-import WaitingRoom from "../../components/WaitingRoom";
+import WaitingRoomForm from "../../components/WaitingRoomForm";
 import { prisma } from "../../db";
 import {
   InferGetStaticParamsType,
@@ -27,17 +27,19 @@ const { id } = Astro.params as Params;
     <title>{title}</title>
   </head>
   <body>
-    <main>
-      <h1>Waiting Room</h1>
-      {markdown}
-      <p>Opens at: {opensAt}</p>
-      <p>Closes at: {closesAt}</p>
-      <WaitingRoom
-        waitingRoomId={id}
-        opensAt={opensAt}
-        closesAt={closesAt}
-        client:load
-      />
+    <main
+      class="min-h-screen w-full bg-gradient-to-l from-purple-600 to-indigo-600"
+    >
+      <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <div class="mx-auto max-w-3xl">
+          <WaitingRoomForm
+            waitingRoomId={id}
+            opensAt={opensAt}
+            closesAt={closesAt}
+            client:load
+          />
+        </div>
+      </div>
     </main>
   </body>
 </html>
