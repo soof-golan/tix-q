@@ -1,15 +1,27 @@
-import { publicProcedure, router } from "./trpc";
+import { protectedProcedure, publicProcedure, router } from "./trpc";
 import {
-  RegisterOutput,
   registerInputSchema,
+  type RegisterOutput,
 } from "../types/RegisterProcedure";
+import {
+  markdownEditInputSchema,
+  type MarkdownEditOutput,
+} from "../types/ContentEditProcedure";
 
-const appRouter = router({
+export const appRouter = router({
   register: publicProcedure
     .input(registerInputSchema)
     .mutation(async (): Promise<RegisterOutput> => {
       return {} as RegisterOutput;
     }),
+
+  markdown: router({
+    edit: protectedProcedure
+      .input(markdownEditInputSchema)
+      .mutation(async (): Promise<MarkdownEditOutput> => {
+        return {} as MarkdownEditOutput;
+      }),
+  }),
 });
 
 // Export only the "type" of a router!
