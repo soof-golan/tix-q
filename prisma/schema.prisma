@@ -25,8 +25,9 @@ model WaitingRoom {
   createdAt DateTime @default(dbgenerated("now()"))
   updatedAt DateTime @updatedAt
 
-  opensAt  DateTime
-  closesAt DateTime
+  opensAt   DateTime
+  closesAt  DateTime
+  published Boolean  @default(false)
 
   markdown String
   title    String
