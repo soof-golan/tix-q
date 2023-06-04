@@ -1,6 +1,6 @@
 ---
 import WaitingRoom from "../../components/WaitingRoom";
-import { PrismaClient } from "@prisma/client";
+import { prisma } from "../../db";
 import {
   InferGetStaticParamsType,
   InferGetStaticPropsType,
@@ -9,7 +9,6 @@ import {
 
 // Runs at build time
 export const getStaticPaths = (async () => {
-  const prisma = new PrismaClient();
   const rooms = await prisma.waitingRoom.findMany();
   return rooms.map((room) => ({
     props: room,
