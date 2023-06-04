@@ -1,20 +1,26 @@
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import rehypeSanitize from "rehype-sanitize";
+import { trpc } from "../utils/trpc";
+import TrpcContext from "./TrpcContext";
+import { useForm } from "react-hook-form";
+import type { MarkdownEditInput } from "../types/MarkdownEditProcedure";
 
 type WaitingRoomContentProps = {
-  content: string;
+  id: string;
+  markdown: string;
   title: string;
 };
 
-export default function WaitingRoomContent({
-  content,
-  title,
-}: WaitingRoomContentProps) {
+function WaitingRoomContent_({ id, markdown, title }: WaitingRoomContentProps) {
+  const contentEditApi = trpc.markdown.edit.useMutation({});
+  const { register, handleSubmit, watch } = useForm<MarkdownEditInput>();
+  const liveMarkdown = watch("markdown");
+  const liveTitle = watch("title");
   return (
     <div className="backdrop-blur-10 rounded-xl bg-white bg-opacity-25 p-4">
       <h2 className="text-center text-3xl font-extrabold text-white sm:text-4xl">
-        {title}
+        {liveTitle}
       </h2>
       <ReactMarkdown
         allowedElements={[
@@ -30,7 +36,7 @@ export default function WaitingRoomContent({
           "ol",
           "li",
         ]}
-        children={content}
+        children={liveMarkdown}
         remarkPlugins={[remarkGfm]}
         rehypePlugins={[rehypeSanitize]}
         components={{
@@ -69,6 +75,44 @@ export default function WaitingRoomContent({
           ),
         }}
       />
+
+      <form
+        className="flex flex-col"
+        onSubmit={handleSubmit((data) =>
+          contentEditApi.mutate({
+            id,
+            markdown: data.markdown,
+            title: data.title,
+          })
+        )}
+      >
+        <label className="text-white">Title</label>
+        <input
+          {...register("title")}
+          className="rounded-md bg-white bg-opacity-25 p-2"
+          defaultValue={title}
+        />
+        <label className="text-white">Content (Markdown)</label>
+        <textarea
+          {...register("markdown")}
+          className="h-64 w-full"
+          defaultValue={markdown}
+        />
+        <button
+          className="rounded-md bg-indigo-500 p-2 text-white"
+          type="submit"
+        >
+          Save
+        </button>
+      </form>
     </div>
+  );
+}
+
+export default function WaitingRoomContent(props: WaitingRoomContentProps) {
+  return (
+    <TrpcContext>
+      <WaitingRoomContent_ {...props} />
+    </TrpcContext>
   );
 }
