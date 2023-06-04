@@ -1,4 +1,17 @@
 ---
+import { prisma } from "../db";
+import moment from "moment";
+import { WaitingRoomCard } from "../components/WaitingRoomCard";
+const rooms = await prisma.waitingRoom.findMany({
+  where: {
+    published: true,
+    AND: {
+      closesAt: {
+        gt: moment().subtract(1, "day").toDate(),
+      },
+    },
+  },
+});
 ---
 
 <html lang="en">
@@ -10,6 +23,15 @@
     <title>Astro</title>
   </head>
   <body>
-    <h1>Astro</h1>
+    <main
+      class="min-h-screen w-full bg-gradient-to-l from-purple-600 to-indigo-600"
+    >
+      <h1 class="p-4 text-center text-4xl font-bold text-white">
+        Waiting Rooms
+      </h1>
+      <ul class="flex flex-col gap-4 p-4" client:load>
+        {rooms.map((room) => <WaitingRoomCard room={room} client:idle />)}
+      </ul>
+    </main>
   </body>
 </html>
