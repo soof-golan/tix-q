@@ -9,6 +9,7 @@ import httpx
 from prisma import Prisma, register
 from .types import State
 from .routes import register as register_routes
+from .routes import markdown as markdown_routes
 
 
 @contextlib.asynccontextmanager
@@ -59,6 +60,7 @@ app.add_middleware(
 )
 
 app.mount("/register", register_routes.app)
+app.mount("/markdown.edit", markdown_routes.app)
 
 if __name__ == "__main__":
     import uvicorn
