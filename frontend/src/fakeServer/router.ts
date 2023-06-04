@@ -6,7 +6,7 @@ import {
 import {
   markdownEditInputSchema,
   type MarkdownEditOutput,
-} from "../types/ContentEditProcedure";
+} from "../types/MarkdownEditProcedure";
 
 export const appRouter = router({
   register: publicProcedure
