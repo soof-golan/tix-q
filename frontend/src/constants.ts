@@ -1,4 +1,10 @@
 export const markdownTips = `
+# Welcome to the waiting room editor!
+
+This code editor uses Markdown, a simple markup language that allows you to write text with some formatting.
+
+here's a quick guide:
+
 # This is an h1
 ## This is an h2
 ### This is an h3
