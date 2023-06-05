@@ -11,7 +11,8 @@ from starlette.middleware.gzip import GZipMiddleware
 from server.config import CONFIG
 from server.middleware.firebase import FirebaseAuthBackend
 from server.middleware.user import UserMiddleware
-from .routes import markdown as markdown_routes
+from .routes import markdown_edit
+from .routes import markdown_read
 from .routes import register as register_routes
 from .types import State
 
@@ -32,7 +33,7 @@ async def lifespan(_app: fastapi.FastAPI) -> typing.AsyncIterator[State]:
      - disconnect from the database
 
     """
-    async with httpx.AsyncClient() as client, Prisma(auto_register=True, use_dotenv=True, log_queries=True) as db:
+    async with httpx.AsyncClient() as client, Prisma(auto_register=True, use_dotenv=True) as db:
         yield {
             "http_client": client,
             "db": db,
@@ -45,7 +46,7 @@ app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
     allow_credentials=True,
-    allow_methods=["POST", "OPTIONS"],
+    allow_methods=["POST", "OPTIONS", "GET"],
     allow_headers=["X-CSRF-Token", "Authorization", "Content-Type"],
 )
 app.add_middleware(UserMiddleware)
@@ -54,7 +55,8 @@ app.add_middleware(AuthenticationMiddleware, backend=FirebaseAuthBackend(
 ))
 
 app.mount("/register", register_routes.app)
-app.mount("/markdown.edit", markdown_routes.app)
+app.mount("/markdown.edit", markdown_edit.app)
+app.mount("/markdown.read", markdown_read.app)
 
 if __name__ == "__main__":
     import uvicorn
