@@ -1,5 +1,6 @@
 ---
 import Auth from "../components/Auth";
+import Header from "../components/Header.astro";
 ---
 
 <html lang="en">
@@ -14,6 +15,7 @@ import Auth from "../components/Auth";
     <main
       class="min-h-screen w-full bg-gradient-to-l from-purple-600 to-indigo-600"
     >
+      <Header title="Login to use the dashboard" />
       <Auth client:idle />
     </main>
   </body>
