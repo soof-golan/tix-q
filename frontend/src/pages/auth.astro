@@ -1,0 +1,20 @@
+---
+import Auth from "../components/Auth";
+---
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="viewport" content="width=device-width" />
+    <meta name="generator" content={Astro.generator} />
+    <title>Astro</title>
+  </head>
+  <body>
+    <main
+      class="min-h-screen w-full bg-gradient-to-l from-purple-600 to-indigo-600"
+    >
+      <Auth client:idle />
+    </main>
+  </body>
+</html>
