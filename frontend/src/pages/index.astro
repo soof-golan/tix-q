@@ -1,8 +1,8 @@
 ---
 import { prisma } from "../db";
 import moment from "moment";
-import AuthButton from "../components/AuthButton";
 import WaitingRoomCard from "../components/WaitingRoomCard";
+import Header from "../components/Header.astro";
 const rooms = await prisma.waitingRoom.findMany({
   where: {
     published: true,
@@ -27,10 +27,10 @@ const rooms = await prisma.waitingRoom.findMany({
     <main
       class="min-h-screen w-full bg-gradient-to-l from-purple-600 to-indigo-600"
     >
+      <Header title="Welcome to the Waiting Room" />
       <h1 class="p-4 text-center text-4xl font-bold text-white">
-        Waiting Rooms
+        Public Rooms
       </h1>
-      <AuthButton client:load />
       <ul class="flex flex-col gap-4 p-4" client:load>
         {rooms.map((room) => <WaitingRoomCard room={room} client:idle />)}
       </ul>
