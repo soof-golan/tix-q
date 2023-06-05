@@ -3,6 +3,7 @@ import datetime
 import fastapi
 from pydantic import BaseModel
 
+from .config import CONFIG
 from .constants import PLAY_NICE_RESPONSE
 
 
@@ -32,12 +33,11 @@ async def validate_turnstile(request: fastapi.Request, token: str | None) -> Tur
 
     """
     client = request.state.http_client
-    turnstile_secret = request.state.turnstile_secret
     response = await client.post(
         "https://challenges.cloudflare.com/turnstile/v0/siteverify/",
         timeout=5,
         data={
-            "secret": turnstile_secret,  # Our secret
+            "secret": CONFIG.turnstile_secret,  # Our secret
             "response": token,  # Came from the client
         },
     )
