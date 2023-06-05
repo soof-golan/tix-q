@@ -7,6 +7,9 @@ from fastapi.middleware.cors import CORSMiddleware
 import httpx
 
 from prisma import Prisma, register
+from starlette.middleware.authentication import AuthenticationMiddleware
+
+from server.firebase import FirebaseAuthBackend
 from .types import State
 from .routes import register as register_routes
 from .routes import markdown as markdown_routes
@@ -58,6 +61,7 @@ app.add_middleware(
     allow_methods=["POST", "OPTIONS"],
     allow_headers=["X-CSRF-Token"],
 )
+app.add_middleware(AuthenticationMiddleware, backend=FirebaseAuthBackend())
 
 app.mount("/register", register_routes.app)
 app.mount("/markdown.edit", markdown_routes.app)

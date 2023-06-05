@@ -3,12 +3,11 @@ import datetime
 import fastapi
 from prisma import errors, models
 from pydantic import BaseModel
+from starlette.authentication import requires
 
-from server.firebase import FirebaseMiddleware
-from server.types import TrpcData, TrpcResponse, State
+from server.types import TrpcData, TrpcResponse
 
 app = fastapi.FastAPI()
-app.add_middleware(FirebaseMiddleware)
 
 
 class WaitingRoomEditRequest(BaseModel):
@@ -25,6 +24,7 @@ class WaitingRoomEditResponse(BaseModel):
 
 
 @app.post("/")
+@requires("authenticated", status_code=401)
 async def edit_waiting_room_content(request: fastapi.Request, edit_request: WaitingRoomEditRequest) -> TrpcResponse[WaitingRoomEditResponse]:
     """
     Edit the markdown contents of a waiting room

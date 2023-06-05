@@ -1,53 +1,56 @@
 import logging
+import typing
 
-import fastapi
 import firebase_admin
-from asyncer import asyncify
+import starlette.middleware.authentication
 from firebase_admin import auth
-from starlette.middleware.base import BaseHTTPMiddleware
+from starlette.authentication import AuthCredentials, AuthenticationError
+from starlette.requests import HTTPConnection
+
+from server.types import FirebaseUser
 
 logger = logging.getLogger(__name__)
 
 
-class FirebaseMiddleware(BaseHTTPMiddleware):
-    def __init__(self, app: fastapi.FastAPI, credential: str | None = None, name: str = "FirebaseMiddleware", options: dict | None = None):
-        super().__init__(app)
-        self.name = name
+class FirebaseAuthBackend(starlette.middleware.authentication.AuthenticationBackend):
+    def __init__(self, name: str = "FirebaseAuthBackend", credential: str = None):
+        """
+        Initialize the Firebase App for the authentication backend
+        The rest of the logic is handled by starlette (see https://www.starlette.io/authentication/)
+        """
         try:
-            self.fb_app = firebase_admin.get_app(name=name)
+            self.fb_app = firebase_admin.get_app(name)
         except ValueError:
-            self.fb_app = firebase_admin.initialize_app(credential=credential, name=name, options=options)
+            self.fb_app = firebase_admin.initialize_app(
+                name=name, credential=credential
+            )
 
-    async def dispatch(self, request: fastapi.Request, call_next) -> fastapi.Response:
+    async def authenticate(self, conn: HTTPConnection) -> typing.Optional[typing.Tuple[AuthCredentials, FirebaseUser]]:
         """
-        Middleware to add the firebase user to the request state
+        Authenticate the user using the Authorization header
+        We only support OAuth2 bearer tokens created by Firebase
+
+        Parameters:
+            conn (HTTPConnection): The HTTP connection to authenticate
+
+        Returns:
+
         """
-        # Allow OPTIONS requests, TODO: can be removed?
-        if request.method == "OPTIONS":
-            logger.debug("Allowing OPTIONS request")
-            return await call_next(request)
+        if "Authorization" not in conn.headers:
+            return
 
-        bearer = request.headers.get("Authorization", "")
+        bearer = conn.headers["Authorization"]
 
-        if not bearer:
-            logger.error("Missing authorization header")
-            return fastapi.Response(status_code=401, content="Missing authorization header")
-
-        if not bearer.startswith("Bearer "):
-            logger.error("Invalid authorization header (does not start with 'Bearer ')")
-            return fastapi.Response(status_code=401, content="Invalid authorization header")
-
-        # Remove the "Bearer " prefix
         try:
-            token = bearer[7:]
-        except IndexError:
-            logger.error("Invalid authorization header (does not start with 'Bearer ')")
-            return fastapi.Response(status_code=401, content="Invalid authorization header")
+            scheme, credentials = bearer.split(" ", 1)
+            if scheme.lower() != "bearer":
+                logger.debug("Authorization scheme is not bearer")
+        except ValueError:
+            raise AuthenticationError("Authorization scheme is not bearer")
 
-        # Verify the token
         try:
-            decoded = await asyncify(auth.verify_id_token)(token, app=self.fb_app, check_revoked=False)
-            logger.debug(f"Decoded token: uid={decoded['uid']}")
+            decoded = auth.verify_id_token(credentials, app=self.fb_app)
+            return AuthCredentials(["authenticated"]), FirebaseUser(decoded)
         except (
                 ValueError,
                 auth.InvalidIdTokenError,
@@ -57,11 +60,5 @@ class FirebaseMiddleware(BaseHTTPMiddleware):
                 auth.UnexpectedResponseError,
                 auth.UserDisabledError,
         ):
-            logger.exception("Failed to verify token (invalid/expired/revoked)")
-            return fastapi.Response(status_code=401, content="Invalid authorization header")
-
-        # Add the user to the request state
-        logger.debug("injecting user into request state")
-        request.state.user = decoded
-
-        return await call_next(request)
+            logger.exception("Invalid authorization header")
+            raise AuthenticationError("Invalid authorization header")
