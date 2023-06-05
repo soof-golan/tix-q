@@ -7,7 +7,7 @@ from starlette.authentication import requires
 
 from server.types import TrpcData, TrpcResponse
 
-app = fastapi.FastAPI()
+router = fastapi.APIRouter()
 
 
 class WaitingRoomEditRequest(BaseModel):
@@ -23,7 +23,7 @@ class WaitingRoomEditResponse(BaseModel):
     updatedAt: datetime.datetime
 
 
-@app.post("/")
+@router.post("/markdown.edit")
 @requires("authenticated", status_code=401)
 async def edit_waiting_room_content(request: fastapi.Request, edit_request: WaitingRoomEditRequest) -> TrpcResponse[WaitingRoomEditResponse]:
     """

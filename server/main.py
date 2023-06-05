@@ -54,9 +54,9 @@ app.add_middleware(AuthenticationMiddleware, backend=FirebaseAuthBackend(
     credential=CONFIG.firebase_credentials
 ))
 
-app.mount("/register", register_routes.app)
-app.mount("/markdown.edit", markdown_edit.app)
-app.mount("/markdown.read", markdown_read.app)
+app.include_router(register_routes.router)
+app.include_router(markdown_edit.router)
+app.include_router(markdown_read.router)
 
 if __name__ == "__main__":
     import uvicorn

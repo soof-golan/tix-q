@@ -9,10 +9,10 @@ from server.db.waiting_room import fetch_waiting_room
 from server.turnstile import handle_turnstile_errors, validate_turnstile
 from server.types import ParticipantRegisterRequest, ParticipantRegisterResponse, TrpcResponse
 
-app = fastapi.FastAPI()
+router = fastapi.APIRouter()
 
 
-@app.post("/")
+@router.post("/register")
 async def create_participant(
         request: fastapi.Request,
         data: ParticipantRegisterRequest,

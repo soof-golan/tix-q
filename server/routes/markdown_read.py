@@ -11,7 +11,7 @@ from starlette.authentication import requires
 
 from server.types import TrpcData, TrpcResponse
 
-app = fastapi.FastAPI()
+router = fastapi.APIRouter()
 
 
 def decode_trpc_input(escaped_input: str) -> dict:
@@ -31,7 +31,7 @@ class WaitingRoomReadResponse(BaseModel):
     createdAt: datetime.datetime
 
 
-@app.get("/")
+@router.get("/markdown.read")
 @requires("authenticated", status_code=401)
 async def read_waiting_room_content(request: fastapi.Request, input: Annotated[str, Query()]) -> TrpcResponse[WaitingRoomReadResponse]:
     """
