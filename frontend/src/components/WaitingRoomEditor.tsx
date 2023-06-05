@@ -19,7 +19,6 @@ function WaitingRoomEditor_({ id, markdown, title }: WaitingRoomContentProps) {
       id,
     },
     {
-      networkMode: "offlineFirst",
       initialData: { markdown, title, id },
     }
   );
