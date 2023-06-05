@@ -7,6 +7,10 @@ import {
   markdownEditInputSchema,
   type MarkdownEditOutput,
 } from "../types/MarkdownEditProcedure";
+import {
+  markdownReadInputSchema,
+  MarkdownReadOutput,
+} from "../types/MarkdownReadProcedure";
 
 export const appRouter = router({
   register: publicProcedure
@@ -20,6 +24,11 @@ export const appRouter = router({
       .input(markdownEditInputSchema)
       .mutation(async (): Promise<MarkdownEditOutput> => {
         return {} as MarkdownEditOutput;
+      }),
+    read: protectedProcedure
+      .input(markdownReadInputSchema)
+      .query(async (): Promise<MarkdownReadOutput> => {
+        return {} as MarkdownReadOutput;
       }),
   }),
 });
