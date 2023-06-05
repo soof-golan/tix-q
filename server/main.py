@@ -5,7 +5,7 @@ import typing
 import fastapi
 import httpx
 from fastapi.middleware.cors import CORSMiddleware
-from prisma import Prisma, register
+from prisma import Prisma
 from starlette.middleware.authentication import AuthenticationMiddleware
 from starlette.middleware.gzip import GZipMiddleware
 
@@ -13,20 +13,6 @@ from server.firebase import FirebaseAuthBackend
 from .routes import markdown as markdown_routes
 from .routes import register as register_routes
 from .types import State
-
-
-@contextlib.asynccontextmanager
-async def db_lifespan():
-    """
-    Handle database lifespan events
-    """
-    db = Prisma()
-    register(db)
-    await db.connect()
-    try:
-        yield db
-    finally:
-        await db.disconnect()
 
 
 @contextlib.asynccontextmanager
@@ -45,10 +31,10 @@ async def lifespan(_app: fastapi.FastAPI) -> typing.AsyncIterator[State]:
      - disconnect from the database
 
     """
-    async with httpx.AsyncClient() as client, db_lifespan() as db:
+    async with httpx.AsyncClient() as client, Prisma(auto_register=True, use_dotenv=True, log_queries=True) as db:
         yield {
             "http_client": client,
-            "turnstile_secret": os.environ.get("TURNSTILE_SECRET", "secret"),
+            "turnstile_secret": os.environ.get("TURNSTILE_SECRET", "change_me"),
             "db": db,
         }
 
