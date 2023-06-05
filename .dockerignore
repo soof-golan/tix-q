@@ -9,3 +9,6 @@ LICENSE
 Dockerfile
 docker-compose.yml
 frontend
+server/*.secret.json
+server/firebase.secret.json
+

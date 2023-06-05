@@ -509,3 +509,4 @@ sketch
 # and uncomment the following lines
 # .pnp.*
 
+/server/firebase.secret.json
