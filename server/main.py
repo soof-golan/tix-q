@@ -48,6 +48,7 @@ app.add_middleware(
     allow_methods=["POST", "OPTIONS"],
     allow_headers=["X-CSRF-Token", "Authorization", "Content-Type"],
 )
+app.add_middleware(UserMiddleware)
 app.add_middleware(AuthenticationMiddleware, backend=FirebaseAuthBackend(
     credential=CONFIG.firebase_credentials
 ))
