@@ -5,7 +5,7 @@ import { trpc } from "../utils/trpc";
 import { useAuth, useSigninCheck, useUser } from "reactfire";
 
 export default function TrpcContext({ children }: PropsWithChildren) {
-  const signInCheck = useSigninCheck({ forceRefresh: true });
+  const signInCheck = useSigninCheck();
   const auth = useAuth();
   const [queryClient] = useState(() => new QueryClient());
   const [trpcClient] = useState(() =>
