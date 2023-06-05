@@ -1,0 +1,24 @@
+---
+import AuthButton from "./AuthButton";
+---
+
+<header
+  class="flex w-full items-center justify-between bg-black bg-opacity-50 p-4 shadow-sm backdrop-blur-lg"
+>
+  <h1 class="text-2xl font-bold text-white">{Astro.props.title}</h1>
+  <div>
+    <AuthButton client:load />
+    <a
+      href="/"
+      class="rounded bg-purple-600 px-4 py-2 text-sm font-bold text-white hover:bg-purple-700"
+    >
+      Home
+    </a>
+    <a
+      href="/dashboard"
+      class="rounded bg-purple-600 px-4 py-2 text-sm font-bold text-white hover:bg-purple-700"
+    >
+      Get Started
+    </a>
+  </div>
+</header>
