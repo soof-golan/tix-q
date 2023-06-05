@@ -26,6 +26,10 @@ export default function MarkdownCard({ content, title }: MarkdownProps) {
           "ul",
           "ol",
           "li",
+          "b",
+          "i",
+          "strong",
+          "em",
         ]}
         children={content}
         remarkPlugins={[remarkGfm]}
@@ -47,7 +51,9 @@ export default function MarkdownCard({ content, title }: MarkdownProps) {
             <h5 {...props} className="text-sm font-bold" dir="auto" />
           ),
           img: ({ node, ...props }) => (
-            <img {...props} className="max-w-full" />
+            <div className="flex justify-center">
+              <img {...props} className="max-w-full" />
+            </div>
           ),
           p: ({ node, ...props }) => (
             <p {...props} className="text-base" dir="auto" />
@@ -63,6 +69,18 @@ export default function MarkdownCard({ content, title }: MarkdownProps) {
           ),
           li: ({ node, ...props }) => (
             <li {...props} className="text-base" dir="auto" />
+          ),
+          b: ({ node, ...props }) => (
+            <b {...props} className="font-bold" dir="auto" />
+          ),
+          i: ({ node, ...props }) => (
+            <i {...props} className="italic" dir="auto" />
+          ),
+          strong: ({ node, ...props }) => (
+            <strong {...props} className="font-bold" dir="auto" />
+          ),
+          em: ({ node, ...props }) => (
+            <em {...props} className="italic" dir="auto" />
           ),
         }}
       />
