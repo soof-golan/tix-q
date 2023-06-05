@@ -44,7 +44,7 @@ function WaitingRoomEditor_({ id, markdown, title }: WaitingRoomContentProps) {
   const liveTitle = watch("title");
   return (
     <>
-      <div className="backdrop-blur-10 rounded-xl bg-white bg-opacity-25 p-4 py-2">
+      <div className="my-2 w-full overflow-hidden rounded-lg bg-white bg-opacity-80 shadow backdrop-blur-sm">
         <form
           className="flex flex-col"
           onSubmit={handleSubmit((data) =>
@@ -55,21 +55,73 @@ function WaitingRoomEditor_({ id, markdown, title }: WaitingRoomContentProps) {
             })
           )}
         >
-          <label className="text-white">Title</label>
-          <input
-            {...register("title")}
-            className="rounded-md bg-white bg-opacity-25 p-2"
-          />
-          <label className="text-white">Content (Markdown)</label>
-          <textarea {...register("markdown")} className="h-64 w-full" />
-          <button
-            className="rounded-md bg-indigo-500 p-2 text-white"
-            type="submit"
-          >
-            Save
-          </button>
+          <div className="flex items-center justify-between px-4 py-5 max-sm:flex-col sm:px-6">
+            <h1 className="text-3xl font-medium leading-6 text-gray-900">
+              Waiting Room Editor
+            </h1>
+          </div>
+          <div className="items-center px-4 py-5 max-sm:flex-col sm:px-6">
+            <p className="font-medium leading-6 text-gray-900">
+              Edit the content of the waiting room here, once you are done click
+              the save button below.
+            </p>
+            <p className="font-medium leading-6 text-gray-900">
+              There's a live preview of the content in the card below, edit the
+              content and see the changes in real time.
+            </p>
+            <p className="text-sm leading-6 text-gray-900">
+              Psst... This editor is a bit janky, so you may want to use another
+              editor and paste the content here after you are done. you can use{" "}
+              <a
+                className="text-blue-500 underline"
+                href="https://stackedit.io/app#"
+                target="_blank"
+              >
+                StackEdit
+              </a>{" "}
+              or{" "}
+              <a
+                className="text-blue-500 underline"
+                href="https://dillinger.io/"
+                target="_blank"
+              >
+                Dillinger
+              </a>{" "}
+              to edit the content.
+            </p>
+          </div>
+          <div className="flex items-center justify-between px-4 py-5 max-sm:flex-col sm:px-6">
+            <div className="flex flex-col justify-between py-5">
+              <label className="py-5 text-2xl font-medium leading-6 text-gray-900">
+                Title
+              </label>
+              <input
+                className="rounded-md bg-gray-50 bg-opacity-50 px-4 py-5 text-lg font-medium leading-6 text-gray-900"
+                {...register("title")}
+              />
+            </div>
+            <button
+              type="submit"
+              className="mr-2 mt-2 rounded bg-indigo-500 px-4 py-2 text-white hover:bg-indigo-700"
+            >
+              Save
+            </button>
+          </div>
+          <div className="flex items-center justify-between px-4 py-5 max-sm:flex-col sm:px-6">
+            <label className="text-2xl font-medium leading-6 text-gray-900">
+              Content editor
+            </label>
+          </div>
+          <div className="flex items-center justify-between px-4 py-5 max-sm:flex-col sm:px-6">
+            <textarea {...register("markdown")} className="h-72 w-full" />
+          </div>
+          <div className="px-4 py-5 max-sm:flex-col sm:px-6">
+            <p>Preview in the card below:</p>
+            <p>This is how the content will look like after publishing.</p>
+          </div>
         </form>
       </div>
+
       <MarkdownCard title={liveTitle} content={liveMarkdown} />
     </>
   );
