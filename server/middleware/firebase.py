@@ -45,8 +45,10 @@ class FirebaseAuthBackend(starlette.middleware.authentication.AuthenticationBack
             scheme, credentials = bearer.split(" ", 1)
             if scheme.lower() != "bearer":
                 logger.debug("Authorization scheme is not bearer")
+                raise AuthenticationError("Authorization scheme is not bearer")
         except ValueError:
-            raise AuthenticationError("Authorization scheme is not bearer")
+            logger.exception("Invalid authorization scheme")
+            raise AuthenticationError("Invalid authorization scheme")
 
         try:
             decoded = auth.verify_id_token(credentials, app=self.fb_app)
