@@ -22,6 +22,7 @@
     "@types/react": "^18.0.21",
     "@types/react-dom": "^18.0.6",
     "astro": "^2.5.0",
+    "firebase": "^9.22.1",
     "moment": "^2.29.4",
     "react": "^18.0.0",
     "react-countdown": "^2.3.5",
@@ -30,6 +31,7 @@
     "react-markdown": "^8.0.7",
     "react-turnstile": "^1.1.0",
     "react-use": "^17.4.0",
+    "reactfire": "^4.2.2",
     "rehype-sanitize": "^5.0.1",
     "tailwindcss": "^3.0.24",
     "zod": "^3.21.4"
