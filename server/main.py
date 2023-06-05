@@ -1,5 +1,4 @@
 import contextlib
-import os
 import typing
 
 import fastapi
@@ -9,7 +8,9 @@ from prisma import Prisma
 from starlette.middleware.authentication import AuthenticationMiddleware
 from starlette.middleware.gzip import GZipMiddleware
 
-from server.firebase import FirebaseAuthBackend
+from server.config import CONFIG
+from server.middleware.firebase import FirebaseAuthBackend
+from server.middleware.user import UserMiddleware
 from .routes import markdown as markdown_routes
 from .routes import register as register_routes
 from .types import State
@@ -34,7 +35,6 @@ async def lifespan(_app: fastapi.FastAPI) -> typing.AsyncIterator[State]:
     async with httpx.AsyncClient() as client, Prisma(auto_register=True, use_dotenv=True, log_queries=True) as db:
         yield {
             "http_client": client,
-            "turnstile_secret": os.environ.get("TURNSTILE_SECRET", "change_me"),
             "db": db,
         }
 
@@ -48,7 +48,9 @@ app.add_middleware(
     allow_methods=["POST", "OPTIONS"],
     allow_headers=["X-CSRF-Token", "Authorization", "Content-Type"],
 )
-app.add_middleware(AuthenticationMiddleware, backend=FirebaseAuthBackend())
+app.add_middleware(AuthenticationMiddleware, backend=FirebaseAuthBackend(
+    credential=CONFIG.firebase_credentials
+))
 
 app.mount("/register", register_routes.app)
 app.mount("/markdown.edit", markdown_routes.app)
