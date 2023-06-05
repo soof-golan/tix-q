@@ -9,7 +9,7 @@ type WaitingRoomCardProps = {
     closesAt: string;
   };
 };
-export function WaitingRoomCard({ room }: WaitingRoomCardProps) {
+export default function WaitingRoomCard({ room }: WaitingRoomCardProps) {
   const status = moment().isBefore(room.opensAt)
     ? "before"
     : moment().isBefore(room.closesAt)

@@ -2,7 +2,7 @@
 import { prisma } from "../db";
 import moment from "moment";
 import AuthButton from "../components/AuthButton";
-import { WaitingRoomCard } from "../components/WaitingRoomCard";
+import WaitingRoomCard from "../components/WaitingRoomCard";
 const rooms = await prisma.waitingRoom.findMany({
   where: {
     published: true,
