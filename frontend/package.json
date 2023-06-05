@@ -27,6 +27,7 @@
     "react": "^18.0.0",
     "react-countdown": "^2.3.5",
     "react-dom": "^18.0.0",
+    "react-firebaseui": "^6.0.0",
     "react-hook-form": "^7.44.3",
     "react-markdown": "^8.0.7",
     "react-turnstile": "^1.1.0",
