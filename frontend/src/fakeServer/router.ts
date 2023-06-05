@@ -11,6 +11,14 @@ import {
   markdownReadInputSchema,
   MarkdownReadOutput,
 } from "../types/MarkdownReadProcedure";
+import {
+  RoomCreateOutput,
+  roomCreateSchema,
+  roomReadManyInputSchema,
+  RoomReadManyOutput,
+  roomReadUniqueInputSchema,
+  RoomReadUniqueOutput,
+} from "../types/roomsProcedures";
 
 export const appRouter = router({
   register: publicProcedure
@@ -29,6 +37,23 @@ export const appRouter = router({
       .input(markdownReadInputSchema)
       .query(async (): Promise<MarkdownReadOutput> => {
         return {} as MarkdownReadOutput;
+      }),
+  }),
+  room: router({
+    readUnique: protectedProcedure
+      .input(roomReadUniqueInputSchema)
+      .query(async (): Promise<RoomReadUniqueOutput> => {
+        return {} as RoomReadUniqueOutput;
+      }),
+    readMany: protectedProcedure
+      .input(roomReadManyInputSchema)
+      .query(async (): Promise<RoomReadManyOutput> => {
+        return {} as RoomReadManyOutput;
+      }),
+    create: protectedProcedure
+      .input(roomCreateSchema)
+      .mutation(async (): Promise<RoomCreateOutput> => {
+        return {} as RoomCreateOutput;
       }),
   }),
 });
