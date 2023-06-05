@@ -14,6 +14,7 @@ from server.middleware.user import UserMiddleware
 from .routes import markdown_edit
 from .routes import markdown_read
 from .routes import register as register_routes
+from .routes import room
 from .types import State
 
 
@@ -57,6 +58,7 @@ app.add_middleware(AuthenticationMiddleware, backend=FirebaseAuthBackend(
 app.include_router(register_routes.router)
 app.include_router(markdown_edit.router)
 app.include_router(markdown_read.router)
+app.include_router(room.router)
 
 if __name__ == "__main__":
     import uvicorn
