@@ -7,6 +7,7 @@ from fastapi.middleware.cors import CORSMiddleware
 import httpx
 
 from prisma import Prisma, register
+from starlette.middleware.gzip import GZipMiddleware
 from starlette.middleware.authentication import AuthenticationMiddleware
 
 from server.firebase import FirebaseAuthBackend
@@ -54,6 +55,7 @@ async def lifespan(_app: fastapi.FastAPI) -> typing.AsyncIterator[State]:
 
 
 app = fastapi.FastAPI(lifespan=lifespan)
+app.add_middleware(GZipMiddleware, minimum_size=1000)
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
