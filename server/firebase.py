@@ -22,7 +22,7 @@ class FirebaseAuthBackend(starlette.middleware.authentication.AuthenticationBack
             self.fb_app = firebase_admin.get_app(name)
         except ValueError:
             self.fb_app = firebase_admin.initialize_app(
-                name=name, credential=credential
+                name=name, credential=firebase_admin.credentials.Certificate(credential)
             )
 
     async def authenticate(self, conn: HTTPConnection) -> typing.Optional[typing.Tuple[AuthCredentials, FirebaseUser]]:
