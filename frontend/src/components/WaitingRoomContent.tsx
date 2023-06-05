@@ -2,9 +2,9 @@ import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import rehypeSanitize from "rehype-sanitize";
 import { trpc } from "../utils/trpc";
-import TrpcContext from "./TrpcContext";
 import { useForm } from "react-hook-form";
 import type { MarkdownEditInput } from "../types/MarkdownEditProcedure";
+import AppContext from "./AppContext";
 
 type WaitingRoomContentProps = {
   id: string;
@@ -111,8 +111,8 @@ function WaitingRoomContent_({ id, markdown, title }: WaitingRoomContentProps) {
 
 export default function WaitingRoomContent(props: WaitingRoomContentProps) {
   return (
-    <TrpcContext>
+    <AppContext>
       <WaitingRoomContent_ {...props} />
-    </TrpcContext>
+    </AppContext>
   );
 }

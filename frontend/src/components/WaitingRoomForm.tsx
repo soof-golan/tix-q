@@ -1,4 +1,3 @@
-import TrpcContext from "./TrpcContext";
 import { trpc } from "../utils/trpc";
 import { useCookie } from "react-use";
 import { useForm } from "react-hook-form";
@@ -7,6 +6,7 @@ import { RegisterInput, registerInputSchema } from "../types/RegisterProcedure";
 import Countdown from "react-countdown";
 import { TurnstileWrapper } from "./TurnstileWrapper";
 import * as Form from "@radix-ui/react-form";
+import AppContext from "./AppContext";
 
 type WaitingRoomProps = {
   waitingRoomId: string;
@@ -257,8 +257,8 @@ This is a small workaround to enable usage of trpc without having a root level c
 */
 export default function WaitingRoomForm(props: WaitingRoomProps) {
   return (
-    <TrpcContext>
+    <AppContext>
       <WaitingRoom_ {...props} />
-    </TrpcContext>
+    </AppContext>
   );
 }
