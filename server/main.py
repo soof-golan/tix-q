@@ -3,17 +3,16 @@ import os
 import typing
 
 import fastapi
-from fastapi.middleware.cors import CORSMiddleware
 import httpx
-
+from fastapi.middleware.cors import CORSMiddleware
 from prisma import Prisma, register
-from starlette.middleware.gzip import GZipMiddleware
 from starlette.middleware.authentication import AuthenticationMiddleware
+from starlette.middleware.gzip import GZipMiddleware
 
 from server.firebase import FirebaseAuthBackend
-from .types import State
-from .routes import register as register_routes
 from .routes import markdown as markdown_routes
+from .routes import register as register_routes
+from .types import State
 
 
 @contextlib.asynccontextmanager
