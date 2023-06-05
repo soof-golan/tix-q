@@ -26,7 +26,7 @@ function DashboardRoomsList_() {
 
   return (
     <>
-      <div className="flex max-w-xl flex-col rounded-xl bg-white bg-opacity-25 p-4 py-2">
+      <div className="flex flex-col rounded-xl bg-white bg-opacity-25 p-4 py-2">
         <h1 className="text-2xl text-white">Rooms</h1>
         <div className="flex flex-col">
           <CreateRoomCard />
