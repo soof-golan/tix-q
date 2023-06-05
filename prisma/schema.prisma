@@ -30,7 +30,6 @@ model WaitingRoom {
   published Boolean  @default(false)
 
   markdown String
-  content  Bytes  @db.Bytes
   title    String
 
   registrants Registrant[]
