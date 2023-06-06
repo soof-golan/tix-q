@@ -23,7 +23,7 @@ function WaitingRoomEditor_({ room }: WaitingRoomContentProps) {
       initialData: room,
     }
   );
-  const { register, handleSubmit, watch, setValue, control } = useForm<
+  const { register, handleSubmit, watch, setValue } = useForm<
     Omit<RoomUpdateInput, "id">
   >({
     defaultValues: {
@@ -59,6 +59,13 @@ function WaitingRoomEditor_({ room }: WaitingRoomContentProps) {
 
   const liveMarkdown = watch("markdown");
   const liveTitle = watch("title");
+  const dirty =
+    liveMarkdown !== roomQuery.data?.markdown ||
+    liveTitle !== roomQuery.data?.title ||
+    watch("opensAt") !==
+      moment(roomQuery.data?.opensAt).format("YYYY-MM-DDTHH:mm") ||
+    watch("closesAt") !==
+      moment(roomQuery.data?.closesAt).format("YYYY-MM-DDTHH:mm");
   return (
     <>
       <div className="my-2 w-full overflow-hidden rounded-lg bg-white bg-opacity-80 shadow backdrop-blur-sm">
@@ -88,6 +95,47 @@ function WaitingRoomEditor_({ room }: WaitingRoomContentProps) {
               There's a live preview of the content in the card below, edit the
               content and see the changes in real time.
             </p>
+          </div>
+          <div className="flex items-center justify-between px-4 py-5 max-sm:flex-col sm:px-6">
+            <button
+              disabled={updateApi.isLoading || publishApi.isLoading || !dirty}
+              type="submit"
+              className="mr-2 mt-2 rounded bg-indigo-500 px-4 py-2 text-white hover:bg-indigo-700 disabled:cursor-not-allowed disabled:opacity-50"
+            >
+              {dirty ? <>Save</> : <>Saved</>}
+            </button>
+            <button
+              disabled={roomQuery.data.published || dirty}
+              onClick={() => publishApi.mutate({ id })}
+              className="mr-2 mt-2 rounded bg-indigo-500 px-4 py-2 text-white hover:bg-indigo-700 disabled:cursor-not-allowed disabled:opacity-50"
+            >
+              {roomQuery.data.published ? (
+                <>Room Public 🚀</>
+              ) : dirty ? (
+                <>Save before publishing</>
+              ) : (
+                <>Publish (cannot be undone)</>
+              )}
+            </button>
+          </div>
+          <div className="border-t border-gray-200">
+            <dl>
+              <div className="items-center bg-gray-50 bg-opacity-50 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6 ">
+                <dt className="text-sm font-medium text-gray-500">Title</dt>
+                <dd className="mt-1 text-2xl text-gray-900 sm:col-span-2 sm:mt-0">
+                  <input
+                    className="w-full rounded bg-indigo-500 bg-opacity-20 px-4 py-2 "
+                    {...register("title")}
+                    type="text"
+                  />
+                </dd>
+              </div>
+            </dl>
+          </div>
+          <div className="items-center  px-4 py-5 max-sm:flex-col sm:px-6">
+            <label className="text-2xl font-medium leading-6 text-gray-900">
+              Content editor
+            </label>
             <p className="text-sm leading-6 text-gray-900">
               Psst... This editor is a bit janky, so you may want to use another
               editor and paste the content here after you are done. you can use{" "}
@@ -109,39 +157,7 @@ function WaitingRoomEditor_({ room }: WaitingRoomContentProps) {
               to edit the content.
             </p>
           </div>
-          <div className="flex items-center justify-between px-4 py-5 max-sm:flex-col sm:px-6">
-            <button
-              type="submit"
-              className="mr-2 mt-2 rounded bg-indigo-500 px-4 py-2 text-white hover:bg-indigo-700"
-            >
-              Save
-            </button>
-            <button
-              onClick={() => publishApi.mutate({ id })}
-              className="mr-2 mt-2 rounded bg-indigo-500 px-4 py-2 text-white hover:bg-indigo-700"
-            >
-              Publish (cannot be undone)
-            </button>
-          </div>
-          <div className="border-t border-gray-200">
-            <dl>
-              <div className="items-center bg-gray-50 bg-opacity-50 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6 ">
-                <dt className="text-sm font-medium text-gray-500">Title</dt>
-                <dd className="mt-1 text-2xl text-gray-900 sm:col-span-2 sm:mt-0">
-                  <input
-                    className="w-full rounded bg-indigo-500 bg-opacity-20 px-4 py-2 "
-                    {...register("title")}
-                    type="text"
-                  />
-                </dd>
-              </div>
-            </dl>
-          </div>
-          <div className="flex items-center justify-between px-4 py-5 max-sm:flex-col sm:px-6">
-            <label className="text-2xl font-medium leading-6 text-gray-900">
-              Content editor
-            </label>
-          </div>
+
           <div className="flex items-center justify-between px-4 py-5 max-sm:flex-col sm:px-6">
             <textarea
               {...register("markdown")}
