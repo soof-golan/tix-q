@@ -10,9 +10,7 @@ function DashboardRoomsList_() {
   const rooms = trpc.room.readMany.useQuery(
     {},
     {
-      initialData: {
-        rooms: [],
-      },
+      initialData: [],
     }
   );
 
@@ -30,7 +28,7 @@ function DashboardRoomsList_() {
         <h1 className="text-2xl text-white">Rooms</h1>
         <div className="flex flex-col">
           <CreateRoomCard />
-          {rooms.data.rooms.map((room) => (
+          {rooms.data.map((room) => (
             <div key={room.id} className="flex flex-row">
               <WaitingRoomDashboardCard room={room} />
             </div>
