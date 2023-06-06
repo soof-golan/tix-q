@@ -10,7 +10,7 @@ type MarkdownProps = {
 export default function MarkdownCard({ content, title }: MarkdownProps) {
   return (
     <div className="backdrop-blur-10 rounded-xl bg-white bg-opacity-25 p-4">
-      <h2 className="text-center text-3xl font-extrabold text-white sm:text-4xl">
+      <h2 className="my-4 text-center text-3xl font-extrabold sm:text-4xl">
         {title}
       </h2>
       <ReactMarkdown
@@ -36,19 +36,19 @@ export default function MarkdownCard({ content, title }: MarkdownProps) {
         rehypePlugins={[rehypeSanitize]}
         components={{
           h1: ({ node, ...props }) => (
-            <h1 {...props} className="text-2xl font-bold" dir="auto" />
+            <h1 {...props} className="my-1 text-2xl font-bold" dir="auto" />
           ),
           h2: ({ node, ...props }) => (
-            <h2 {...props} className="text-xl font-bold" dir="auto" />
+            <h2 {...props} className="my-1 text-xl font-bold" dir="auto" />
           ),
           h3: ({ node, ...props }) => (
-            <h3 {...props} className="text-lg font-bold" dir="auto" />
+            <h3 {...props} className="my-1 text-lg font-bold" dir="auto" />
           ),
           h4: ({ node, ...props }) => (
-            <h4 {...props} className="text-base font-bold" dir="auto" />
+            <h4 {...props} className="my-1 text-base font-bold" dir="auto" />
           ),
           h5: ({ node, ...props }) => (
-            <h5 {...props} className="text-sm font-bold" dir="auto" />
+            <h5 {...props} className="my-1 text-sm font-bold" dir="auto" />
           ),
           img: ({ node, ...props }) => (
             <div className="flex justify-center">
