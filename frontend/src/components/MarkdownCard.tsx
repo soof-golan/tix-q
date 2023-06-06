@@ -55,8 +55,11 @@ export default function MarkdownCard({ content, title }: MarkdownProps) {
               <img {...props} className="max-w-full" />
             </div>
           ),
-          p: ({ node, ...props }) => (
-            <p {...props} className="text-base" dir="auto" />
+          p: ({ node, children, ...props }) => (
+            <>
+              <p {...props} className="text-base" dir="auto" />
+              <div {...props} children={children} dir="auto" />
+            </>
           ),
           a: ({ node, ...props }) => (
             <a {...props} className="text-blue-500 underline" dir="auto" />
