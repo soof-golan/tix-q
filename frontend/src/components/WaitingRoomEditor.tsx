@@ -1,44 +1,58 @@
 import { trpc } from "../utils/trpc";
 import { useForm } from "react-hook-form";
-import type { MarkdownEditInput } from "../types/MarkdownEditProcedure";
 import AppContext from "./AppContext";
 import MarkdownCard from "./MarkdownCard";
 import { useEffect } from "react";
 import { markdownTips, markdownTipsTitle } from "../constants";
+import type {
+  RoomReadUniqueOutput,
+  RoomUpdateInput,
+} from "../types/roomsProcedures";
 
 type WaitingRoomContentProps = {
-  id: string;
-  markdown: string;
-  title: string;
+  room: RoomReadUniqueOutput;
 };
 
-function WaitingRoomEditor_({ id, markdown, title }: WaitingRoomContentProps) {
+function WaitingRoomEditor_({ room }: WaitingRoomContentProps) {
   const utils = trpc.useContext();
-  const room = trpc.markdown.read.useQuery(
-    {
-      id,
+  const id = room.id;
+  const query = { id: room.id };
+  const roomQuery = trpc.room.readUnique.useQuery(query, {
+    initialData: room,
+  });
+  const { register, handleSubmit, watch, setValue, control } = useForm<
+    Omit<RoomUpdateInput, "id">
+  >({
+    defaultValues: {
+      markdown: roomQuery.data?.markdown || markdownTips,
+      title: roomQuery.data?.title || markdownTipsTitle,
+      closesAt: roomQuery.data?.closesAt,
+      opensAt: roomQuery.data?.opensAt,
     },
-    {
-      initialData: { markdown, title, id },
-    }
-  );
-  const { register, handleSubmit, watch, setValue, control } =
-    useForm<MarkdownEditInput>({
-      defaultValues: {
-        markdown: room.data?.markdown || markdownTips,
-        title: room.data?.title || markdownTipsTitle,
-      },
-    });
-  const contentEditApi = trpc.markdown.edit.useMutation({
+  });
+
+  const updateApi = trpc.room.update.useMutation({
     onSuccess: async () => {
-      await utils.markdown.read.invalidate({ id });
+      await Promise.all([
+        utils.room.readUnique.invalidate({ id: room.id }),
+        await utils.room.readMany.invalidate(),
+      ]);
+    },
+  });
+
+  const publishApi = trpc.room.publish.useMutation({
+    onSuccess: async () => {
+      await Promise.all([
+        utils.room.readUnique.invalidate({ id: room.id }),
+        await utils.room.readMany.invalidate(),
+      ]);
     },
   });
 
   useEffect(() => {
-    setValue("markdown", room.data?.markdown || markdownTips);
-    setValue("title", room.data?.title || markdownTipsTitle);
-  }, [room.data?.markdown, room.data?.title, setValue]);
+    setValue("markdown", roomQuery.data?.markdown || markdownTips);
+    setValue("title", roomQuery.data?.title || markdownTipsTitle);
+  }, [roomQuery.data?.markdown, roomQuery.data?.title, setValue]);
 
   const liveMarkdown = watch("markdown");
   const liveTitle = watch("title");
@@ -48,10 +62,12 @@ function WaitingRoomEditor_({ id, markdown, title }: WaitingRoomContentProps) {
         <form
           className="flex flex-col"
           onSubmit={handleSubmit((data) =>
-            contentEditApi.mutate({
-              id,
+            updateApi.mutate({
+              id: room.id,
               markdown: data.markdown,
               title: data.title,
+              opensAt: data.opensAt,
+              closesAt: data.closesAt,
             })
           )}
         >
