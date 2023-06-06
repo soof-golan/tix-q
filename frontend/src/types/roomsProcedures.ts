@@ -33,7 +33,9 @@ export const roomReadManyOutputSchema = z.array(roomReadUniqueOutputSchema);
 export type RoomReadManyInput = z.infer<typeof roomReadManyInputSchema>;
 export type RoomReadManyOutput = z.infer<typeof roomReadManyOutputSchema>;
 
-export const roomCreateSchema = roomMutationInputSchema;
+export const roomCreateSchema = roomMutationInputSchema.omit({
+  id: true,
+});
 export const roomCreateOutputSchema = roomQueryOutputSchema;
 
 export type RoomCreateInput = z.infer<typeof roomCreateSchema>;
