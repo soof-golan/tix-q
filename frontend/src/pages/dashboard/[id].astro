@@ -19,7 +19,7 @@ export const getStaticPaths = (async () => {
 type Params = InferGetStaticParamsType<typeof getStaticPaths>;
 type Props = InferGetStaticPropsType<typeof getStaticPaths>;
 
-const { opensAt, closesAt, title, markdown } = Astro.props as Props;
+const { opensAt, closesAt, title, markdown, published } = Astro.props as Props;
 const { id } = Astro.params as Params;
 ---
 
@@ -36,9 +36,7 @@ const { id } = Astro.params as Params;
       <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div class="mx-auto max-w-3xl">
           <WaitingRoomEditor
-            title={title}
-            markdown={markdown}
-            id={id}
+            room={{ id, opensAt, closesAt, title, markdown, published }}
             client:load
           />
         </div>
