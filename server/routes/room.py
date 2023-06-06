@@ -32,7 +32,6 @@ class RoomMutation(BaseModel):
     markdown: str
     opensAt: datetime.datetime
     closesAt: datetime.datetime
-    published: bool
 
 
 class RoomId(BaseModel, TrpcMixin):
