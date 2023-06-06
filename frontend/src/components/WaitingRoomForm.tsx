@@ -64,7 +64,7 @@ function WaitingRoom_({ waitingRoomId, opensAt, closesAt }: WaitingRoomProps) {
 
   return (
     <>
-      <div className="my-2 w-full overflow-hidden rounded-lg bg-white bg-opacity-80 shadow backdrop-blur-sm">
+      <div className="mt-2 w-full overflow-hidden rounded-lg bg-white bg-opacity-80 shadow backdrop-blur-sm">
         <form
           onSubmit={handleSubmit((data) => {
             registerApi.mutate({
@@ -280,7 +280,20 @@ function WaitingRoom_({ waitingRoomId, opensAt, closesAt }: WaitingRoomProps) {
                       : "Register"}
                   </button>
                 </dt>
-                <dd className="col-span-3 items-center"></dd>
+                <dd className="col-span-3 items-center">
+                  {registerApi.isSuccess && registerApi.data.id && (
+                    <>
+                      <p>Registered Successfully!</p>
+                      <p>Your registration ID is: {registerApi.data.id}</p>
+                      <a
+                        className="text-blue-500 underline"
+                        href={window.location.href}
+                      >
+                        Register another person
+                      </a>
+                    </>
+                  )}
+                </dd>
               </div>
             </dl>
           </div>
@@ -335,15 +348,6 @@ function WaitingRoom_({ waitingRoomId, opensAt, closesAt }: WaitingRoomProps) {
             </dl>
           </div>
         </form>
-      </div>
-      <div className="my-auto mt-2 flex h-full w-full rounded-xl bg-white bg-opacity-25 p-4">
-        {registerApi.isSuccess && registerApi.data.id && (
-          <>
-            <p>Registered Successfully!</p>
-            <p>Your registration ID is: {registerApi.data.id}</p>
-            <a href={window.location.href}>Register another person</a>
-          </>
-        )}
       </div>
     </>
   );
