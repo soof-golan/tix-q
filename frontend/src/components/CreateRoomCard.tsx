@@ -19,7 +19,6 @@ export default function CreateRoomCard() {
       markdown: markdownTips,
       opensAt: moment().add(1, "day").format("YYYY-MM-DDTHH:mm"),
       closesAt: moment().add(2, "day").format("YYYY-MM-DDTHH:mm"),
-      published: false,
     },
   });
 
@@ -32,7 +31,6 @@ export default function CreateRoomCard() {
             markdown: data.markdown,
             opensAt: moment(data.opensAt).toISOString(),
             closesAt: moment(data.closesAt).toISOString(),
-            published: data.published,
           });
         })}
       >
