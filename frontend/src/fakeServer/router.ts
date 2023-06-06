@@ -14,11 +14,11 @@ import {
 import {
   RoomCreateOutput,
   roomCreateSchema,
-  roomPublishInputSchema,
-  RoomPublishOutput,
+  roomUpdateInputSchema,
+  RoomUpdateOutput,
   roomReadManyInputSchema,
   RoomReadManyOutput,
-  roomReadUniqueInputSchema,
+  roomQueryInputSchema,
   RoomReadUniqueOutput,
 } from "../types/roomsProcedures";
 
@@ -43,7 +43,7 @@ export const appRouter = router({
   }),
   room: router({
     readUnique: protectedProcedure
-      .input(roomReadUniqueInputSchema)
+      .input(roomQueryInputSchema)
       .query(async (): Promise<RoomReadUniqueOutput> => {
         return {} as RoomReadUniqueOutput;
       }),
@@ -57,10 +57,15 @@ export const appRouter = router({
       .mutation(async (): Promise<RoomCreateOutput> => {
         return {} as RoomCreateOutput;
       }),
+    update: protectedProcedure
+      .input(roomUpdateInputSchema)
+      .mutation(async (): Promise<RoomUpdateOutput> => {
+        return {} as RoomUpdateOutput;
+      }),
     publish: protectedProcedure
-      .input(roomPublishInputSchema)
-      .mutation(async (): Promise<RoomPublishOutput> => {
-        return {} as RoomPublishOutput;
+      .input(roomQueryInputSchema)
+      .mutation(async (): Promise<RoomUpdateOutput> => {
+        return {} as RoomUpdateOutput;
       }),
   }),
 });

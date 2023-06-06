@@ -1,56 +1,47 @@
 import { z } from "zod";
-import moment from "moment";
 
-export const roomReadUniqueInputSchema = z.object({
+export const roomQueryOutputSchema = z.object({
   id: z.string().uuid(),
-});
-export const roomReadUniqueOutputSchema = z.object({
-  id: z.string().uuid(),
+  createdAt: z.string(),
+  updatedAt: z.string(),
   title: z.string(),
   markdown: z.string(),
   opensAt: z.string(),
   closesAt: z.string(),
   published: z.boolean(),
-  createdAt: z.string(),
-  updatedAt: z.string(),
 });
 
-export type RoomReadUniqueInput = z.infer<typeof roomReadUniqueInputSchema>;
+export const roomMutationInputSchema = z.object({
+  id: z.string().uuid(),
+  title: z.string(),
+  markdown: z.string(),
+  opensAt: z.string(),
+  closesAt: z.string(),
+});
+
+export const roomQueryInputSchema = z.object({
+  id: z.string().uuid(),
+});
+export const roomReadUniqueOutputSchema = roomQueryOutputSchema;
+
+export type RoomReadUniqueInput = z.infer<typeof roomQueryInputSchema>;
 export type RoomReadUniqueOutput = z.infer<typeof roomReadUniqueOutputSchema>;
 
 export const roomReadManyInputSchema = z.object({});
-export const roomReadManyOutputSchema = z.object({
-  rooms: z.array(roomReadUniqueOutputSchema),
-});
+export const roomReadManyOutputSchema = z.array(roomReadUniqueOutputSchema);
 
 export type RoomReadManyInput = z.infer<typeof roomReadManyInputSchema>;
 export type RoomReadManyOutput = z.infer<typeof roomReadManyOutputSchema>;
 
-export const roomCreateSchema = z.object({
-  title: z.string(),
-  markdown: z.string(),
-  opensAt: z.string(),
-  closesAt: z.string().default(moment().add(1, "years").toISOString()),
-  published: z.boolean().default(false),
-});
-
-export const roomCreateOutputSchema = z.object({
-  id: z.string().uuid(),
-  createdAt: z.string(),
-  updatedAt: z.string(),
-});
+export const roomCreateSchema = roomMutationInputSchema;
+export const roomCreateOutputSchema = roomQueryOutputSchema;
 
 export type RoomCreateInput = z.infer<typeof roomCreateSchema>;
 export type RoomCreateOutput = z.infer<typeof roomCreateOutputSchema>;
 
-export const roomPublishInputSchema = z.object({
-  id: z.string().uuid(),
-});
+export const roomUpdateInputSchema = roomMutationInputSchema;
 
-export const roomPublishOutputSchema = z.object({
-  id: z.string().uuid(),
-  published: z.boolean(),
-});
+export const roomUpdateOutputSchema = roomQueryOutputSchema;
 
-export type RoomPublishInput = z.infer<typeof roomPublishInputSchema>;
-export type RoomPublishOutput = z.infer<typeof roomPublishOutputSchema>;
+export type RoomUpdateInput = z.infer<typeof roomUpdateInputSchema>;
+export type RoomUpdateOutput = z.infer<typeof roomUpdateOutputSchema>;
