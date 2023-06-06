@@ -8,6 +8,7 @@ import type {
   RoomReadUniqueOutput,
   RoomUpdateInput,
 } from "../types/roomsProcedures";
+import moment from "moment";
 
 type WaitingRoomContentProps = {
   room: RoomReadUniqueOutput;
@@ -16,18 +17,20 @@ type WaitingRoomContentProps = {
 function WaitingRoomEditor_({ room }: WaitingRoomContentProps) {
   const utils = trpc.useContext();
   const id = room.id;
-  const query = { id: room.id };
-  const roomQuery = trpc.room.readUnique.useQuery(query, {
-    initialData: room,
-  });
+  const roomQuery = trpc.room.readUnique.useQuery(
+    { id },
+    {
+      initialData: room,
+    }
+  );
   const { register, handleSubmit, watch, setValue, control } = useForm<
     Omit<RoomUpdateInput, "id">
   >({
     defaultValues: {
       markdown: roomQuery.data?.markdown || markdownTips,
       title: roomQuery.data?.title || markdownTipsTitle,
-      closesAt: roomQuery.data?.closesAt,
-      opensAt: roomQuery.data?.opensAt,
+      closesAt: moment(roomQuery.data?.closesAt).format("YYYY-MM-DDTHH:mm"),
+      opensAt: moment(roomQuery.data?.opensAt).format("YYYY-MM-DDTHH:mm"),
     },
   });
 
@@ -66,8 +69,8 @@ function WaitingRoomEditor_({ room }: WaitingRoomContentProps) {
               id: room.id,
               markdown: data.markdown,
               title: data.title,
-              opensAt: data.opensAt,
-              closesAt: data.closesAt,
+              opensAt: moment(data.opensAt).toISOString(),
+              closesAt: moment(data.closesAt).toISOString(),
             })
           )}
         >
@@ -107,15 +110,6 @@ function WaitingRoomEditor_({ room }: WaitingRoomContentProps) {
             </p>
           </div>
           <div className="flex items-center justify-between px-4 py-5 max-sm:flex-col sm:px-6">
-            <div className="flex flex-col justify-between py-5">
-              <label className="py-5 text-2xl font-medium leading-6 text-gray-900">
-                Title
-              </label>
-              <input
-                className="rounded-md bg-gray-50 bg-opacity-50 px-4 py-5 text-lg font-medium leading-6 text-gray-900"
-                {...register("title")}
-              />
-            </div>
             <button
               type="submit"
               className="mr-2 mt-2 rounded bg-indigo-500 px-4 py-2 text-white hover:bg-indigo-700"
@@ -129,13 +123,48 @@ function WaitingRoomEditor_({ room }: WaitingRoomContentProps) {
               Publish (cannot be undone)
             </button>
           </div>
+          <div className="border-t border-gray-200">
+            <dl>
+              <div className="items-center bg-gray-50 bg-opacity-50 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6 ">
+                <dt className="text-sm font-medium text-gray-500">Title</dt>
+                <dd className="mt-1 text-2xl text-gray-900 sm:col-span-2 sm:mt-0">
+                  <input
+                    className="w-full rounded bg-indigo-500 bg-opacity-20 px-4 py-2 "
+                    {...register("title")}
+                    type="text"
+                  />
+                </dd>
+              </div>
+            </dl>
+          </div>
           <div className="flex items-center justify-between px-4 py-5 max-sm:flex-col sm:px-6">
             <label className="text-2xl font-medium leading-6 text-gray-900">
               Content editor
             </label>
           </div>
           <div className="flex items-center justify-between px-4 py-5 max-sm:flex-col sm:px-6">
-            <textarea {...register("markdown")} className="h-72 w-full" />
+            <textarea
+              {...register("markdown")}
+              className="min-h-[500px] w-full"
+            />
+          </div>
+          <div className="border-t border-gray-200">
+            <dl>
+              <div className="bg-gray-50 bg-opacity-50 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+                <dt className="text-sm font-medium text-gray-500">Opens At</dt>
+                <dd className="mt-1 text-sm text-gray-900 sm:col-span-2 sm:mt-0">
+                  <input {...register("opensAt")} type="datetime-local" />
+                </dd>
+              </div>
+            </dl>
+            <dl>
+              <div className="bg-gray-50 bg-opacity-50 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+                <dt className="text-sm font-medium text-gray-500">Closes At</dt>
+                <dd className="mt-1 text-sm text-gray-900 sm:col-span-2 sm:mt-0">
+                  <input {...register("closesAt")} type="datetime-local" />
+                </dd>
+              </div>
+            </dl>
           </div>
           <div className="px-4 py-5 max-sm:flex-col sm:px-6">
             <p>Preview in the card below:</p>
