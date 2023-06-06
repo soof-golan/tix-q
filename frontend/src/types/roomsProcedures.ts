@@ -42,3 +42,15 @@ export const roomCreateOutputSchema = z.object({
 
 export type RoomCreateInput = z.infer<typeof roomCreateSchema>;
 export type RoomCreateOutput = z.infer<typeof roomCreateOutputSchema>;
+
+export const roomPublishInputSchema = z.object({
+  id: z.string().uuid(),
+});
+
+export const roomPublishOutputSchema = z.object({
+  id: z.string().uuid(),
+  published: z.boolean(),
+});
+
+export type RoomPublishInput = z.infer<typeof roomPublishInputSchema>;
+export type RoomPublishOutput = z.infer<typeof roomPublishOutputSchema>;

@@ -14,6 +14,8 @@ import {
 import {
   RoomCreateOutput,
   roomCreateSchema,
+  roomPublishInputSchema,
+  RoomPublishOutput,
   roomReadManyInputSchema,
   RoomReadManyOutput,
   roomReadUniqueInputSchema,
@@ -54,6 +56,11 @@ export const appRouter = router({
       .input(roomCreateSchema)
       .mutation(async (): Promise<RoomCreateOutput> => {
         return {} as RoomCreateOutput;
+      }),
+    publish: protectedProcedure
+      .input(roomPublishInputSchema)
+      .mutation(async (): Promise<RoomPublishOutput> => {
+        return {} as RoomPublishOutput;
       }),
   }),
 });
