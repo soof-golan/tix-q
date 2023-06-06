@@ -122,6 +122,12 @@ function WaitingRoomEditor_({ room }: WaitingRoomContentProps) {
             >
               Save
             </button>
+            <button
+              onClick={() => publishApi.mutate({ id })}
+              className="mr-2 mt-2 rounded bg-indigo-500 px-4 py-2 text-white hover:bg-indigo-700"
+            >
+              Publish (cannot be undone)
+            </button>
           </div>
           <div className="flex items-center justify-between px-4 py-5 max-sm:flex-col sm:px-6">
             <label className="text-2xl font-medium leading-6 text-gray-900">
