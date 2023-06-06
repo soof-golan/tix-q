@@ -1,7 +1,5 @@
 import datetime
-import json
 from typing import Annotated
-from urllib.parse import unquote
 
 import fastapi
 from fastapi import Query
@@ -9,14 +7,10 @@ from prisma import models
 from pydantic import BaseModel
 from starlette.authentication import requires
 
+from server.trpc import decode_trpc_input
 from server.types import TrpcData, TrpcResponse
 
 router = fastapi.APIRouter()
-
-
-def decode_trpc_input(escaped_input: str) -> dict:
-    json_str = unquote(unquote(escaped_input))
-    return json.loads(json_str)
 
 
 class WaitingRoomReadRequest(BaseModel):
