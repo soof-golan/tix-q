@@ -18,5 +18,7 @@ class Config(BaseModel):
     The secret used to validate turnstile requests
     """
 
+    deploy_hook_url: str = os.environ.get("DEPLOY_HOOK_URL", "")
+
 
 CONFIG = Config()
