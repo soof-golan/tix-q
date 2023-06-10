@@ -1,5 +1,5 @@
 import { StyledFirebaseAuth } from "react-firebaseui";
-import { EmailAuthProvider } from "firebase/auth";
+import { EmailAuthProvider, GoogleAuthProvider } from "firebase/auth";
 import { auth } from "../utils/firebase";
 import { useSigninCheck } from "reactfire";
 
@@ -47,6 +47,7 @@ function Page({ redirectUrl }: AuthProps) {
             provider: EmailAuthProvider.PROVIDER_ID,
             signInMethod: EmailAuthProvider.EMAIL_LINK_SIGN_IN_METHOD,
           },
+          GoogleAuthProvider.PROVIDER_ID,
         ],
       }}
       firebaseAuth={auth}
