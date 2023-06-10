@@ -12,7 +12,7 @@ generator jsclient {
 
   // This is a total hack, because prisma is not a mature ORM
   // that support multiple languages in a sane manner
-  output = "../frontend/node_modules/.prisma/client"
+  output = "../website/node_modules/.prisma/client"
 }
 
 datasource db {
