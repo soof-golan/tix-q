@@ -21,7 +21,7 @@ function PageShell({
       <PageContextProvider pageContext={pageContext}>
         <FirebaseContext>
           <Layout>
-            <Header title="Waiting Room" />
+            <Header />
             <Content>{children}</Content>
           </Layout>
         </FirebaseContext>

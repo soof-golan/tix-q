@@ -1,10 +1,14 @@
 import AuthButton from "./AuthButton";
 import { Link } from "../renderer/Link";
+import { usePageContext } from "../renderer/usePageContext";
 
-const Header = ({ title }: { title: string }) => {
+const Header = () => {
+  const { documentProps } = usePageContext().exports;
   return (
     <header className="mb-2 flex w-full items-center justify-between bg-black bg-opacity-50 p-4 shadow-sm backdrop-blur-lg max-md:flex-col">
-      <h1 className="text-2xl font-bold text-white">{title}</h1>
+      <h1 className="text-2xl font-bold text-white">
+        {documentProps?.title ?? "Waiting Room"}
+      </h1>
       <nav className="space-x-1">
         <AuthButton />
         <Link
