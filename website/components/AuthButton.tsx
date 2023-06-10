@@ -1,6 +1,7 @@
 import { useSigninCheck } from "reactfire";
 import { auth } from "../utils/firebase";
 import { FirebaseContext } from "./FirebaseContext";
+import { Link } from "../renderer/Link";
 
 function AuthButton_() {
   const signinCheck = useSigninCheck();
@@ -21,7 +22,7 @@ function AuthButton_() {
   if (signedIn)
     return (
       <>
-        <a
+        <Link
           href="/auth"
           onClick={(event) => {
             event.preventDefault();
@@ -31,7 +32,7 @@ function AuthButton_() {
           <button className="rounded bg-purple-600 px-4 py-2 text-sm font-bold text-white hover:bg-purple-700">
             {buttonText}
           </button>
-        </a>
+        </Link>
       </>
     );
   return (
