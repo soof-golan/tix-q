@@ -15,7 +15,14 @@ export async function onBeforeRender(pageContext: PageContext) {
   });
 
   const pageProps = {
-    rooms,
+    rooms: rooms.map((r) => ({
+      id: r.id,
+      title: r.title,
+      markdown: r.markdown,
+      published: r.published,
+      opensAt: r.opensAt,
+      closesAt: r.closesAt,
+    })),
   };
 
   return {
