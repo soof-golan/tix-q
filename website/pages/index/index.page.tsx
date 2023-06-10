@@ -1,5 +1,6 @@
 import { onBeforeRender } from "./index.page.server";
 import { inferProps } from "../../renderer/types";
+import WaitingRoomCard from "../../components/WaitingRoomCard";
 
 export { Page };
 
@@ -14,10 +15,9 @@ function Page({ rooms }: Props) {
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-3xl">
           <ul className="flex flex-col gap-4 p-4">
-            {rooms.map((room) =>
-              // <WaitingRoomCard room={room} />
-              JSON.stringify(room)
-            )}
+            {rooms.map((room) => (
+              <WaitingRoomCard key={room.id} room={room} />
+            ))}
           </ul>
         </div>
       </div>
