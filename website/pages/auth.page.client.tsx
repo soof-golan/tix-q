@@ -49,6 +49,9 @@ function Page({ redirectUrl }: AuthProps) {
           },
           GoogleAuthProvider.PROVIDER_ID,
         ],
+        callbacks: {
+          signInSuccessWithAuthResult: () => false,
+        },
       }}
       firebaseAuth={auth}
     />
