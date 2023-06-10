@@ -27,3 +27,9 @@ type PageContextServer = PageContextBuiltIn<Page> & PageContextCustom;
 type PageContextClient = PageContextBuiltInClient<Page> & PageContextCustom;
 
 type PageContext = PageContextClient | PageContextServer;
+
+export type inferProps<F> = F extends (...args: any[]) => Promise<infer T>
+  ? T extends { pageContext: { pageProps: infer U } }
+    ? U
+    : never
+  : never;
