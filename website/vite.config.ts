@@ -6,7 +6,9 @@ const config: UserConfig = {
   plugins: [
     react(),
     ssr({
-      prerender: true,
+      prerender: {
+        partial: true,
+      },
     }),
   ],
 };
