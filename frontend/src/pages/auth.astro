@@ -1,6 +1,6 @@
 ---
 import Auth from "../components/Auth";
-import Header from "../components/Header.astro";
+import Header from "../components/Header";
 ---
 
 <html lang="en">
@@ -16,7 +16,7 @@ import Header from "../components/Header.astro";
       class="min-h-screen w-full bg-gradient-to-l from-purple-600 to-indigo-600"
     >
       <Header title="Login to use the dashboard" />
-      <Auth client:idle />
+      <Auth client:only="react" />
     </main>
   </body>
 </html>

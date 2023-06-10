@@ -1,5 +1,5 @@
 import { trpc } from "../utils/trpc";
-import { useCookie } from "react-use";
+import * as reactUse from "react-use";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { RegisterInput, registerInputSchema } from "../types/RegisterProcedure";
@@ -14,6 +14,7 @@ type WaitingRoomProps = {
   closesAt: Date;
 };
 
+const { useCookie } = reactUse;
 type FormInput = Omit<RegisterInput, "waitingRoomId">;
 
 function WaitingRoom_({ waitingRoomId, opensAt, closesAt }: WaitingRoomProps) {

@@ -6,7 +6,7 @@ import {
   InferGetStaticPropsType,
   GetStaticPaths,
 } from "astro";
-import Header from "../../components/Header.astro";
+import Header from "../../components/Header";
 
 // Runs at build time
 export const getStaticPaths = (async () => {
@@ -32,12 +32,12 @@ const { id } = Astro.params as Params;
     <main
       class="min-h-screen w-full bg-gradient-to-l from-purple-600 to-indigo-600"
     >
-      <Header title="Waiting Room Editor" />
+      <Header title="Waiting Room Editor" client:only="react" />
       <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div class="mx-auto max-w-3xl">
           <WaitingRoomEditor
             room={{ id, opensAt, closesAt, title, markdown, published }}
-            client:load
+            client:only="react"
           />
         </div>
       </div>

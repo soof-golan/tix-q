@@ -7,7 +7,7 @@ import {
   InferGetStaticPropsType,
   GetStaticPaths,
 } from "astro";
-import Header from "../../components/Header.astro";
+import Header from "../../components/Header";
 
 // Runs at build time
 export const getStaticPaths = (async () => {
@@ -41,7 +41,7 @@ const { id } = Astro.params as Params;
             waitingRoomId={id}
             opensAt={opensAt}
             closesAt={closesAt}
-            client:load
+            client:only="react"
           />
         </div>
       </div>
