@@ -2,6 +2,8 @@ import json
 from typing import TypeVar
 from urllib.parse import unquote
 
+import fastapi
+import pydantic
 from pydantic import BaseModel
 
 from server.types import TrpcData, TrpcResponse
@@ -26,4 +28,10 @@ class TrpcMixin:
 
     @classmethod
     def from_trpc(cls: type[BaseModel], input: str) -> T:
-        return cls.parse_obj(decode_trpc_input(input))
+        try:
+            return cls.parse_obj(decode_trpc_input(input))
+        except pydantic.ValidationError as e:
+            raise fastapi.HTTPException(
+                status_code=400,
+                detail=e.errors(),
+            )
