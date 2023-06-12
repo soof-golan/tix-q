@@ -1,8 +1,7 @@
-import type { PageContext } from "../../renderer/types";
 import { prisma } from "../../server/db";
 import moment from "moment";
 
-export async function onBeforeRender(pageContext: PageContext) {
+export async function onBeforeRender() {
   const rooms = await prisma.waitingRoom.findMany({
     where: {
       published: true,

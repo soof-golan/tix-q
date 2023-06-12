@@ -35,8 +35,12 @@ function Page({ redirectUrl }: AuthProps) {
       setLoading(false);
       return;
     }
-    const oobCode = new URL(link).searchParams.get("oobCode")!;
-    checkActionCode(auth, oobCode!)
+    const oobCode = new URL(link).searchParams.get("oobCode");
+    if (!oobCode) {
+      setLoading(false);
+      return;
+    }
+    checkActionCode(auth, oobCode)
       .catch((error) => {
         const alreadyUsed =
           error?.code === AuthErrorCodes.INVALID_OOB_CODE ||
@@ -49,7 +53,7 @@ function Page({ redirectUrl }: AuthProps) {
       })
       .then(async () => {
         try {
-          const result = await signInWithEmailLink(auth, email, link);
+          await signInWithEmailLink(auth, email, link);
           window.localStorage.removeItem("emailForSignIn");
           window.location.replace(redirectUrl);
         } catch (error: unknown) {
@@ -99,13 +103,16 @@ function Page({ redirectUrl }: AuthProps) {
           onSubmit={async (e) => {
             setSubmitting(true);
             e.preventDefault();
-            await sendSignInLinkToEmail(auth, ref.current!.value, {
+            await sendSignInLinkToEmail(auth, ref.current?.value ?? "", {
               url: redirectUrl ?? window.location.href,
               handleCodeInApp: true,
             }).finally(() => {
               setSubmitting(false);
             });
-            window.localStorage.setItem("emailForSignIn", ref.current!.value);
+            window.localStorage.setItem(
+              "emailForSignIn",
+              ref.current?.value ?? ""
+            );
           }}
         >
           <input

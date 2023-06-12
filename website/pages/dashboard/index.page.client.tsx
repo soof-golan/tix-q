@@ -2,11 +2,7 @@ import DashboardRoomList from "../../components/DashboardRoomList";
 
 export { Page };
 
-type DashboardProps = {
-  children?: never;
-};
-
-function Page({}: DashboardProps) {
+function Page() {
   return (
     <>
       <h1 className="p-4 text-center text-4xl font-bold text-white">

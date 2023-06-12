@@ -43,7 +43,7 @@ type Ser<T> = {
     : T[K];
 };
 
-export type inferProps<F> = F extends (...args: any[]) => Promise<infer T>
+export type inferProps<F> = F extends (...args: unknown[]) => Promise<infer T>
   ? T extends { pageContext: { pageProps: infer U } }
     ? Ser<U>
     : never

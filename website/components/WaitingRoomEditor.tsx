@@ -3,10 +3,7 @@ import { useForm } from "react-hook-form";
 import MarkdownCard from "./MarkdownCard";
 import { useEffect } from "react";
 import { markdownTips, markdownTipsTitle } from "../constants";
-import type {
-  RoomReadUniqueOutput,
-  RoomUpdateInput,
-} from "../types/roomsProcedures";
+import type { RoomUpdateInput } from "../types/roomsProcedures";
 import moment from "moment";
 
 type WaitingRoomContentProps = {
@@ -18,9 +15,15 @@ export default function WaitingRoomEditor({ id }: WaitingRoomContentProps) {
   const roomQuery = trpc.room.readUnique.useQuery(
     { id },
     {
-      // @ts-ignore
       initialData: {
         id: id,
+        markdown: "",
+        title: "",
+        opensAt: "",
+        closesAt: "",
+        published: false,
+        updatedAt: "",
+        createdAt: "",
       },
     }
   );
@@ -93,7 +96,7 @@ export default function WaitingRoomEditor({ id }: WaitingRoomContentProps) {
               the save button below.
             </p>
             <p className="font-medium leading-6 text-gray-900">
-              There's a live preview of the content in the card below, edit the
+              There is a live preview of the content in the card below, edit the
               content and see the changes in real time.
             </p>
           </div>
@@ -144,6 +147,7 @@ export default function WaitingRoomEditor({ id }: WaitingRoomContentProps) {
                 className="text-blue-500 underline"
                 href="https://stackedit.io/app#"
                 target="_blank"
+                rel="noreferrer"
               >
                 StackEdit
               </a>{" "}
@@ -152,6 +156,7 @@ export default function WaitingRoomEditor({ id }: WaitingRoomContentProps) {
                 className="text-blue-500 underline"
                 href="https://dillinger.io/"
                 target="_blank"
+                rel="noreferrer"
               >
                 Dillinger
               </a>{" "}

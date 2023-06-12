@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-export let registerInputSchema = z.object({
+export const registerInputSchema = z.object({
   email: z.string().email(),
   legalName: z.string(),
   idNumber: z.string(),

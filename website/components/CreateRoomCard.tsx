@@ -8,7 +8,7 @@ export default function CreateRoomCard() {
   const utils = trpc.useContext();
   const room = trpc.room.create.useMutation({
     networkMode: "offlineFirst",
-    onSuccess: async (data) => {
+    onSuccess: async () => {
       await utils.room.readMany.invalidate({});
     },
   });

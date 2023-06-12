@@ -2,7 +2,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { httpLink } from "@trpc/client";
 import { PropsWithChildren, useState } from "react";
 import { trpc } from "../utils/trpc";
-import { useAuth, useSigninCheck, useUser } from "reactfire";
+import { useAuth, useSigninCheck } from "reactfire";
 
 export default function TrpcContext({ children }: PropsWithChildren) {
   const signInCheck = useSigninCheck();

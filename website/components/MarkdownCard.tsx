@@ -31,10 +31,10 @@ export default function MarkdownCard({ content, title }: MarkdownProps) {
           "strong",
           "em",
         ]}
-        children={content}
         remarkPlugins={[remarkGfm]}
         rehypePlugins={[rehypeSanitize]}
         components={{
+          /* eslint-disable @typescript-eslint/no-unused-vars */
           h1: ({ node, ...props }) => (
             <h1 {...props} className="my-1 text-2xl font-bold" dir="auto" />
           ),
@@ -58,7 +58,9 @@ export default function MarkdownCard({ content, title }: MarkdownProps) {
           p: ({ node, children, ...props }) => (
             <>
               <p {...props} className="text-base" dir="auto" />
-              <div {...props} children={children} dir="auto" />
+              <div {...props} dir="auto">
+                {children}
+              </div>
             </>
           ),
           a: ({ node, ...props }) => (
@@ -85,8 +87,11 @@ export default function MarkdownCard({ content, title }: MarkdownProps) {
           em: ({ node, ...props }) => (
             <em {...props} className="italic" dir="auto" />
           ),
+          /* eslint-enable @typescript-eslint/no-unused-vars */
         }}
-      />
+      >
+        {content}
+      </ReactMarkdown>
     </div>
   );
 }

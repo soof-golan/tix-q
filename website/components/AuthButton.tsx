@@ -1,6 +1,5 @@
 import { useSigninCheck } from "reactfire";
 import { auth } from "../utils/firebase";
-import { FirebaseContext } from "./FirebaseContext";
 import { Link } from "../renderer/Link";
 
 export default function AuthButton() {
