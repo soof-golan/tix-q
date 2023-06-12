@@ -1,6 +1,7 @@
 import logging
 import typing
 
+import asyncer
 import firebase_admin
 import starlette.middleware.authentication
 from firebase_admin import auth
@@ -51,7 +52,7 @@ class FirebaseAuthBackend(starlette.middleware.authentication.AuthenticationBack
             raise AuthenticationError("Invalid authorization scheme")
 
         try:
-            decoded = auth.verify_id_token(credentials, app=self.fb_app)
+            decoded = await asyncer.asyncify(lambda: auth.verify_id_token(credentials, app=self.fb_app))()
             return AuthCredentials(["authenticated"]), FirebaseUser(decoded)
         except (
                 ValueError,
