@@ -1,5 +1,6 @@
 import Countdown from "./Countdown";
 import moment from "moment";
+import { useState } from "react";
 
 type WaitingRoomCardProps = {
   room: {
@@ -10,7 +11,8 @@ type WaitingRoomCardProps = {
   };
 };
 export default function WaitingRoomCard({ room }: WaitingRoomCardProps) {
-  const status = moment().isBefore(room.opensAt)
+  const [now, setNow] = useState(moment());
+  const status = now.isBefore(room.opensAt)
     ? "before"
     : moment().isBefore(room.closesAt)
     ? "open"
@@ -51,11 +53,19 @@ export default function WaitingRoomCard({ room }: WaitingRoomCardProps) {
             >
               {status === "before" ? (
                 <>
-                  <Countdown date={room.opensAt} />
+                  <Countdown
+                    onTick={() => setNow(moment())}
+                    date={moment(room.opensAt).toDate()}
+                    autoStart
+                  />
                 </>
               ) : status === "open" ? (
                 <>
-                  <Countdown date={room.closesAt} />
+                  <Countdown
+                    onTick={() => setNow(moment())}
+                    date={moment(room.closesAt).toDate()}
+                    autoStart
+                  />
                 </>
               ) : (
                 <></>
