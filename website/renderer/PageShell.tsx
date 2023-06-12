@@ -1,4 +1,4 @@
-import React from "react";
+import React, { Suspense } from "react";
 import { PageContextProvider } from "./usePageContext";
 import type { PageContext } from "./types";
 import "./PageShell.css";
@@ -22,7 +22,9 @@ function PageShell({
           <TrpcContext>
             <Layout>
               <Header />
-              <Content>{children}</Content>
+              <Suspense fallback={<div>Loading...</div>}>
+                <Content>{children}</Content>
+              </Suspense>
             </Layout>
           </TrpcContext>
         </FirebaseContext>
