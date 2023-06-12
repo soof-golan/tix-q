@@ -9,8 +9,13 @@ LICENSE
 Dockerfile
 docker-compose.yml
 frontend
+website
+dist
+server/.env
+**/__pycache__
+**/*.py[cod]
+**/*.log
 server/*.secret.json
 firebase-credentials.json
 server/firebase-credentials.json
-
-
+**/node_modules
