@@ -3,7 +3,7 @@ import { auth } from "../utils/firebase";
 import { FirebaseContext } from "./FirebaseContext";
 import { Link } from "../renderer/Link";
 
-function AuthButton_() {
+export default function AuthButton() {
   const signinCheck = useSigninCheck();
   const loading = signinCheck.status === "loading";
   const signedIn = !!signinCheck.data?.signedIn;
@@ -43,13 +43,5 @@ function AuthButton_() {
         </button>
       </a>
     </>
-  );
-}
-
-export default function AuthButton() {
-  return (
-    <FirebaseContext>
-      <AuthButton_ />
-    </FirebaseContext>
   );
 }
