@@ -19,8 +19,8 @@ export async function onBeforeRender() {
       title: r.title,
       markdown: r.markdown,
       published: r.published,
-      opensAt: r.opensAt,
-      closesAt: r.closesAt,
+      opensAt: moment(r.opensAt).toISOString(),
+      closesAt: moment(r.closesAt).toISOString(),
     })),
   };
 
