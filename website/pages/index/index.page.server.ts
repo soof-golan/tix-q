@@ -1,17 +1,8 @@
-import { prisma } from "../../server/db";
 import moment from "moment";
+import { findPublishedRooms } from "../../utils/queries";
 
 export async function onBeforeRender() {
-  const rooms = await prisma.waitingRoom.findMany({
-    where: {
-      published: true,
-      AND: {
-        closesAt: {
-          gt: moment().subtract(1, "day").toDate(),
-        },
-      },
-    },
-  });
+  const rooms = await findPublishedRooms();
 
   const pageProps = {
     rooms: rooms.map((r) => ({
