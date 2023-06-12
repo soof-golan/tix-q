@@ -39,9 +39,6 @@ jobs:
         env:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
 
-      - name: Install Wrangler
-        run: yarn global add @cloudflare/wrangler
-
       - name: Install dependencies
         run: yarn install --frozen-lockfile
         working-directory: website
