@@ -64,6 +64,7 @@ export default function WaitingRoomForm({
     <>
       <div className="mt-2 w-full overflow-hidden rounded-lg bg-white bg-opacity-80 shadow backdrop-blur-sm">
         <form
+          autoComplete="false"
           onSubmit={handleSubmit((data) => {
             registerApi.mutate({
               waitingRoomId,
@@ -71,6 +72,12 @@ export default function WaitingRoomForm({
             });
           })}
         >
+          <input
+            autoComplete="false"
+            name="hidden"
+            type="text"
+            style={{ display: "none" }}
+          />
           <div className="flex items-center justify-between px-4 py-5 max-sm:flex-col sm:px-6">
             <h1 className="text-lg font-medium leading-6 text-gray-900">
               Register
@@ -93,7 +100,10 @@ export default function WaitingRoomForm({
                 </dd>
                 <dt className="col-span-3 mt-1 text-sm text-gray-900 sm:mt-0">
                   <input
+                    dir="auto"
                     className="selection:color-white bg-blackA5 shadow-blackA9 selection:bg-blackA9 box-border inline-flex h-[35px] w-full appearance-none items-center justify-center rounded-[4px] px-[10px] text-[15px] leading-none shadow-[0_0_0_1px] outline-none hover:shadow-[0_0_0_1px_black] focus:shadow-[0_0_0_2px_black]"
+                    placeholder="Enter your name | נא להזין שם"
+                    autoComplete="false"
                     {...register("legalName", {
                       required: true,
                       minLength: 2,
@@ -125,11 +135,13 @@ export default function WaitingRoomForm({
                 <dt className="col-span-3 mt-1 text-sm text-gray-900 sm:mt-0">
                   <input
                     className="selection:color-white bg-blackA5 shadow-blackA9 selection:bg-blackA9 box-border inline-flex h-[35px] w-full appearance-none items-center justify-center rounded-[4px] px-[10px] text-[15px] leading-none shadow-[0_0_0_1px] outline-none hover:shadow-[0_0_0_1px_black] focus:shadow-[0_0_0_2px_black]"
+                    type="email"
+                    placeholder="Enter your email | נא להזין אימייל"
+                    autoComplete="false"
                     {...register("email", {
                       required: true,
                       disabled: !acceptingInput,
                     })}
-                    type="email"
                   />
                 </dt>
                 <dd className="col-span-3">
@@ -167,7 +179,8 @@ export default function WaitingRoomForm({
                       minLength: 5,
                     })}
                     type="text"
-                    autoComplete="off"
+                    autoComplete="false"
+                    placeholder="Enter your ID number | נא להזין מספר זהות"
                   />
                 </dt>
                 <dd className="col-span-3">
@@ -198,8 +211,12 @@ export default function WaitingRoomForm({
                       disabled: !acceptingInput,
                     })}
                   >
-                    <option disabled value="SelectIdType">
-                      Select ID Type / סוג מסמך מזהה
+                    <option
+                      disabled
+                      value="SelectIdType"
+                      className="text-gray-500"
+                    >
+                      Select ID Type / נא לבחור מסמך מזהה
                     </option>
                     <option value="ID_CARD">ID Card / תעודה מזהה</option>
                     <option value="PASSPORT">Passport / דרכון</option>
@@ -232,8 +249,9 @@ export default function WaitingRoomForm({
                       required: true,
                       disabled: !acceptingInput,
                     })}
-                    autoComplete="off"
+                    autoComplete="false"
                     type="tel"
+                    placeholder="Enter your phone number | נא להזין מספר טלפון"
                   />
                 </dt>
                 <dd className="col-span-3">
@@ -275,6 +293,8 @@ export default function WaitingRoomForm({
                       ? "Registering..."
                       : isSubmitSuccessful
                       ? "Registered!"
+                      : !token
+                      ? "Waiting for captcha..."
                       : "Register"}
                   </button>
                 </dt>
