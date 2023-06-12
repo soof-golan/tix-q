@@ -3,6 +3,7 @@ import CreateRoomCard from "./CreateRoomCard";
 import WaitingRoomDashboardCard from "./WaitingRoomDashboardCard";
 import { useSigninCheck } from "reactfire";
 import AuthButton from "./AuthButton";
+import moment from "moment";
 
 export default function DashboardRoomsList() {
   const signInCheck = useSigninCheck();
@@ -30,11 +31,13 @@ export default function DashboardRoomsList() {
         <h1 className="text-2xl text-white">Rooms</h1>
         <div className="flex flex-col">
           <CreateRoomCard />
-          {rooms.data.map((room) => (
-            <div key={room.id} className="flex flex-row">
-              <WaitingRoomDashboardCard room={room} />
-            </div>
-          ))}
+          {rooms.data
+            .sort((a, b) => moment(b.updatedAt).diff(moment(a.updatedAt)))
+            .map((room) => (
+              <div key={room.id} className="flex flex-row">
+                <WaitingRoomDashboardCard room={room} />
+              </div>
+            ))}
         </div>
       </div>
     </>

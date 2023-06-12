@@ -11,6 +11,9 @@ export async function findPublishedRooms() {
         },
       },
     },
+    orderBy: {
+      closesAt: "asc",
+    },
   });
 }
 
