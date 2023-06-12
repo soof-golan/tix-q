@@ -25,6 +25,7 @@ jobs:
         with:
           node-version: '18.x'
           cache: 'yarn'
+          cache-dependency-path: website/yarn.lock
 
       - name: Install Poetry
         run: pip install --user poetry==1.5.1
