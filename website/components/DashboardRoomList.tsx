@@ -15,7 +15,10 @@ export default function DashboardRoomsList() {
   );
   if (!signInCheck.data?.signedIn) {
     return (
-      <div className="flex flex-col rounded-xl bg-white bg-opacity-25 p-4 py-2">
+      <div
+        className="flex flex-col rounded-xl bg-white bg-opacity-25 p-4 py-2"
+        suppressHydrationWarning
+      >
         <AuthButton />
       </div>
     );
