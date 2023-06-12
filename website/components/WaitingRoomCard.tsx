@@ -1,4 +1,4 @@
-import Countdown from "react-countdown";
+import Countdown from "./Countdown";
 import moment from "moment";
 
 type WaitingRoomCardProps = {
