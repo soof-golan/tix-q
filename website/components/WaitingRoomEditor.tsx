@@ -57,7 +57,21 @@ export default function WaitingRoomEditor({ id }: WaitingRoomContentProps) {
   useEffect(() => {
     setValue("markdown", roomQuery.data?.markdown || markdownTips);
     setValue("title", roomQuery.data?.title || markdownTipsTitle);
-  }, [roomQuery.data?.markdown, roomQuery.data?.title, setValue]);
+    setValue(
+      "opensAt",
+      moment(roomQuery.data?.opensAt).format("YYYY-MM-DDTHH:mm")
+    );
+    setValue(
+      "closesAt",
+      moment(roomQuery.data?.closesAt).format("YYYY-MM-DDTHH:mm")
+    );
+  }, [
+    roomQuery.data?.markdown,
+    roomQuery.data?.title,
+    setValue,
+    roomQuery.data?.opensAt,
+    roomQuery.data?.closesAt,
+  ]);
 
   const liveMarkdown = watch("markdown");
   const liveTitle = watch("title");
@@ -197,3 +211,17 @@ export default function WaitingRoomEditor({ id }: WaitingRoomContentProps) {
     </>
   );
 }
+
+const EditorWrapper = ({ id }: WaitingRoomContentProps) => {
+  const roomQuery = trpc.room.readUnique.useQuery(
+    { id },
+    {
+      // @ts-expect-error: we don't fully define initialData
+      initialData: {
+        id: id,
+        markdown: markdownTips,
+        title: markdownTipsTitle,
+      },
+    }
+  );
+};
