@@ -27,10 +27,7 @@ export default function WaitingRoomDashboardCard({
           {headline}
         </h3>
         <a href={`/dashboard/${room.id}`}>
-          <button
-            disabled={status === "closed"}
-            className="mr-2 mt-2 rounded bg-indigo-500 px-4 py-2 text-white hover:bg-indigo-700"
-          >
+          <button className="mr-2 mt-2 rounded bg-indigo-500 px-4 py-2 text-white hover:bg-indigo-700">
             Edit
           </button>
         </a>
