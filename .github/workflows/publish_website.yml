@@ -14,11 +14,29 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
 
+      - name: Setup Python (This is needed to run prisma)
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+
       - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
           node-version: '18.x'
           cache: 'yarn'
+
+      - name: Install Poetry
+        run: pip install --user poetry==1.5.1
+
+      - name: Install dependencies
+        run: poetry export -f requirements.txt --output requirements.txt --without-hashes && pip install -r requirements.txt
+        working-directory: server
+
+      - name: Migrate production database with prisma
+        run: prisma migrate deploy
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
 
       - name: Install Wrangler
         run: yarn global add @cloudflare/wrangler
@@ -27,9 +45,18 @@ jobs:
         run: yarn install --frozen-lockfile
         working-directory: website
 
+      - name: Generate Prisma Client
+        # Working directory is "./" on purpose!
+        run: prisma generate
+
       - name: Build
         run: yarn build
         working-directory: website
+        env:
+          NODE_ENV: production
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          PUBLIC_SERVER_URL: ${{ secrets.PUBLIC_SERVER_URL }}
+          PUBLIC_TURNSTILE_SITEKEY: ${{ secrets.PUBLIC_TURNSTILE_SITEKEY }}
 
       - name: Publish to Cloudflare Pages
         uses: cloudflare/pages-action@v1
