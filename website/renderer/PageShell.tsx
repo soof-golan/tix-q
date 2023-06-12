@@ -6,6 +6,7 @@ import "./PageShell.css";
 import { Link } from "./Link";
 import Header from "../components/Header";
 import { FirebaseContext } from "../components/FirebaseContext";
+import TrpcContext from "../components/TrpcContext";
 
 export { PageShell };
 
@@ -20,10 +21,12 @@ function PageShell({
     <React.StrictMode>
       <PageContextProvider pageContext={pageContext}>
         <FirebaseContext>
-          <Layout>
-            <Header />
-            <Content>{children}</Content>
-          </Layout>
+          <TrpcContext>
+            <Layout>
+              <Header />
+              <Content>{children}</Content>
+            </Layout>
+          </TrpcContext>
         </FirebaseContext>
       </PageContextProvider>
     </React.StrictMode>
