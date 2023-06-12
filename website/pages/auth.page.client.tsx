@@ -1,7 +1,14 @@
-import { StyledFirebaseAuth } from "react-firebaseui";
-import { EmailAuthProvider, GoogleAuthProvider } from "firebase/auth";
-import { auth } from "../utils/firebase";
+import {
+  sendSignInLinkToEmail,
+  signInWithEmailLink,
+  isSignInWithEmailLink,
+  checkActionCode,
+  type AuthError,
+} from "firebase/auth";
 import { useSigninCheck } from "reactfire";
+import { useEffect, useRef, useState } from "react";
+import { AuthErrorCodes } from "firebase/auth";
+import { auth } from "../utils/firebase";
 
 export { Page };
 
@@ -12,7 +19,51 @@ type AuthProps = {
 
 function Page({ redirectUrl }: AuthProps) {
   const signinCheck = useSigninCheck();
-  if (signinCheck.status === "loading")
+  const [loading, setLoading] = useState(true);
+  const [submitting, setSubmitting] = useState(false);
+  const ref = useRef<HTMLInputElement>(null);
+  useEffect(() => {
+    const redirectUrl = window.localStorage.getItem("redirectUrl") ?? "/";
+    const link = window.location.href;
+
+    if (!isSignInWithEmailLink(auth, link)) {
+      setLoading(false);
+      return;
+    }
+    const email = window.localStorage.getItem("emailForSignIn");
+    if (!email) {
+      setLoading(false);
+      return;
+    }
+    const oobCode = new URL(link).searchParams.get("oobCode")!;
+    checkActionCode(auth, oobCode!)
+      .catch((error) => {
+        const alreadyUsed =
+          error?.code === AuthErrorCodes.INVALID_OOB_CODE ||
+          error?.code === AuthErrorCodes.EXPIRED_OOB_CODE;
+        if (alreadyUsed) {
+          // Do nothing
+        } else {
+          throw error;
+        }
+      })
+      .then(async () => {
+        try {
+          const result = await signInWithEmailLink(auth, email, link);
+          window.localStorage.removeItem("emailForSignIn");
+          window.location.replace(redirectUrl);
+        } catch (error: unknown) {
+          console.error(
+            (error as AuthError)?.message ?? "An unknown error occurred"
+          );
+        }
+      })
+      .finally(() => {
+        setLoading(false);
+      });
+  }, []);
+
+  if (loading || signinCheck.status === "loading")
     return (
       <>
         <p>Loading...</p>
@@ -39,21 +90,41 @@ function Page({ redirectUrl }: AuthProps) {
     );
   }
   return (
-    <StyledFirebaseAuth
-      uiConfig={{
-        signInSuccessUrl: "/" ?? redirectUrl,
-        signInOptions: [
-          {
-            provider: EmailAuthProvider.PROVIDER_ID,
-            signInMethod: EmailAuthProvider.EMAIL_LINK_SIGN_IN_METHOD,
-          },
-          GoogleAuthProvider.PROVIDER_ID,
-        ],
-        callbacks: {
-          signInSuccessWithAuthResult: () => false,
-        },
-      }}
-      firebaseAuth={auth}
-    />
+    <div className="flex flex-col items-center justify-center space-y-4 p-2">
+      <div className="flex flex-col space-y-4 rounded-lg bg-white bg-opacity-80 p-4 shadow backdrop-blur-sm">
+        <p>You are not signed in.</p>
+        <form
+          action="/auth/signin"
+          className="flex flex-col space-y-4"
+          onSubmit={async (e) => {
+            setSubmitting(true);
+            e.preventDefault();
+            await sendSignInLinkToEmail(auth, ref.current!.value, {
+              url: redirectUrl ?? window.location.href,
+              handleCodeInApp: true,
+            }).finally(() => {
+              setSubmitting(false);
+            });
+            window.localStorage.setItem("emailForSignIn", ref.current!.value);
+          }}
+        >
+          <input
+            className="rounded border border-gray-300 px-4 py-2"
+            type="email"
+            placeholder="Email"
+            id="email"
+            required
+            ref={ref}
+            disabled={submitting}
+          />
+          <input
+            disabled={submitting}
+            type="submit"
+            className="w-full rounded bg-indigo-500 px-4 py-2 font-bold text-white hover:bg-indigo-700"
+            value="Sign in with magic link"
+          />
+        </form>
+      </div>
+    </div>
   );
 }
