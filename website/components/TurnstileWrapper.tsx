@@ -3,7 +3,7 @@ import Turnstile from "react-turnstile";
 export function TurnstileWrapper(props: {
   onLoad: () => void;
   onVerify: (token: string) => void;
-  onError: (error: any) => void;
+  onError: (error: unknown) => void;
 }) {
   const siteKey = import.meta.env.PUBLIC_TURNSTILE_SITEKEY;
   return (
