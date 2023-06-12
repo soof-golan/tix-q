@@ -43,6 +43,13 @@ export default function WaitingRoomForm({
   const userTooLate = now.isAfter(moment(closesAt));
   const status = userTooEarly ? "early" : userTooLate ? "late" : "open";
 
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setNow(moment());
+    }, 200);
+    return () => clearInterval(interval);
+  }, []);
+
   const submitDisabled =
     !token ||
     registerApi.isLoading ||
@@ -310,39 +317,29 @@ export default function WaitingRoomForm({
                   )}
                 </dd>
                 <dt className="col-span-3 mt-1 text-sm text-gray-900 sm:mt-0">
-                  <Countdown
-                    date={opensAt}
-                    className=""
-                    onTick={() => {
-                      setNow(moment());
-                    }}
-                  >
-                    {status === "open" ? (
-                      <TurnstileWrapper
-                        onLoad={() =>
-                          setToken("", {
-                            secure: import.meta.env.PROD,
-                            sameSite: "strict",
-                            expires: 0,
-                          })
-                        }
-                        onError={() =>
-                          setToken("", {
-                            secure: import.meta.env.PROD,
-                            sameSite: "strict",
-                            expires: 0,
-                          })
-                        }
-                        onVerify={(token) =>
-                          setToken(token, {
-                            secure: import.meta.env.PROD,
-                            sameSite: "strict",
-                          })
-                        }
-                      />
-                    ) : (
-                      <p>Registration opens in {moment(opensAt).toNow()}</p>
-                    )}
+                  <Countdown date={opensAt} className="">
+                    <TurnstileWrapper
+                      onLoad={() =>
+                        setToken("", {
+                          secure: import.meta.env.PROD,
+                          sameSite: "strict",
+                          expires: 0,
+                        })
+                      }
+                      onError={() =>
+                        setToken("", {
+                          secure: import.meta.env.PROD,
+                          sameSite: "strict",
+                          expires: 0,
+                        })
+                      }
+                      onVerify={(token) =>
+                        setToken(token, {
+                          secure: import.meta.env.PROD,
+                          sameSite: "strict",
+                        })
+                      }
+                    />
                   </Countdown>
                 </dt>
               </div>
