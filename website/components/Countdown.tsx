@@ -6,7 +6,7 @@ const Countdown_ = lazy(() => import("react-countdown"));
 export default function Countdown(props: CountdownProps) {
   return (
     <Suspense fallback={<p>Loading...</p>}>
-      <Countdown_ {...props} />
+      <Countdown_ autoStart {...props} />
     </Suspense>
   );
 }
