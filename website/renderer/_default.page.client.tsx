@@ -6,6 +6,10 @@ import { hydrateRoot, createRoot } from "react-dom/client";
 import { PageShell } from "./PageShell";
 import type { PageContextClient } from "./types";
 
+const globalThisForReactRoot = globalThis as unknown as {
+  reactRoot?: ReturnType<typeof createRoot>;
+};
+
 async function render(pageContext: PageContextClient) {
   const { Page, pageProps } = pageContext;
 
@@ -17,7 +21,15 @@ async function render(pageContext: PageContextClient) {
   const root = document.getElementById("react-root");
   if (!root) throw new Error("DOM element #react-root not found");
   if (root.innerHTML === "" || !pageContext.isHydration) {
-    const reactRoot = createRoot(root);
+    const reactRoot = (() => {
+      if (globalThisForReactRoot.reactRoot) {
+        return globalThisForReactRoot.reactRoot;
+      }
+      const reactRoot = createRoot(root);
+      globalThisForReactRoot.reactRoot = reactRoot;
+      return reactRoot;
+    })();
+
     reactRoot.render(page);
   } else {
     hydrateRoot(root, page);
