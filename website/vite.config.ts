@@ -11,6 +11,7 @@ const config: UserConfig = {
       },
     }),
   ],
+  envPrefix: "PUBLIC_",
 };
 
 export default config;
