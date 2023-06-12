@@ -15,15 +15,13 @@ export default function WaitingRoomEditor({ id }: WaitingRoomContentProps) {
   const roomQuery = trpc.room.readUnique.useQuery(
     { id },
     {
+      // @ts-expect-error: we don't fully define initialData
       initialData: {
         id: id,
-        markdown: "",
-        title: "",
-        opensAt: "",
-        closesAt: "",
-        published: false,
-        updatedAt: "",
-        createdAt: "",
+        markdown: markdownTips,
+        title: markdownTipsTitle,
+        opensAt: moment().add(1, "day").toISOString(),
+        closesAt: moment().add(2, "day").toISOString(),
       },
     }
   );
