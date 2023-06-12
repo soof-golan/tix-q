@@ -5,8 +5,12 @@ ENV PYTHONUNBUFFERED True
 # Copy dependencies
 COPY server/requirements.txt /tmp/requirements.txt
 
-# Install dependencies (pacakges are cached)
-RUN pip install -r /tmp/requirements.txt
+RUN apt-get update && apt-get install -y \
+    git \
+    && pip install -r /tmp/requirements.txt --no-cache-dir \
+    && rm /tmp/requirements.txt \
+    && apt-get purge -y --auto-remove git \
+    && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
 
