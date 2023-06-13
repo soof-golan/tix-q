@@ -176,11 +176,8 @@ async def publish(request: fastapi.Request, room: RoomId) -> TrpcResponse[RoomQu
         raise fastapi.HTTPException(status_code=400, detail="Invalid waiting room ID")
 
     # TODO: Limit deploy hook rate
-    client = cast(httpx.AsyncClient, request.state.client)
-    if CONFIG.deploy_hook_url:
-        await client.post(url=CONFIG.deploy_hook_url)
-    else:
-        logging.error("Deploy hook not configured")
+    if CONFIG.production:
+        await trigger_deployment(request)
 
     result = await models.WaitingRoom.prisma().find_unique(where={"id": room.id})
     return RoomQuery(
@@ -193,3 +190,40 @@ async def publish(request: fastapi.Request, room: RoomId) -> TrpcResponse[RoomQu
         closesAt=result.closesAt,
         published=result.published,
     ).trpc
+
+
+async def trigger_deployment(request: fastapi.Request):
+    """
+    Trigger a deployment of the frontend, this will force the builder to "pre-render" all published waiting rooms
+
+    We use GitHubs API to re-trigger the CI workflow
+
+    https://docs.github.com/en/rest/actions/workflows?apiVersion=2022-11-28#create-a-workflow-dispatch-event
+
+    Equivalent cURL command:
+
+    curl -L \
+      -X POST \
+      -H "Accept: application/vnd.github+json" \
+      -H "Authorization: Bearer <YOUR-TOKEN>"\
+      -H "X-GitHub-Api-Version: 2022-11-28" \
+      https://api.github.com/repos/OWNER/REPO/actions/workflows/WORKFLOW_ID/dispatches \
+      -d '{"ref":"topic-branch","inputs":{"name":"Mona the Octocat","home":"San Francisco, CA"}}'
+
+    """
+
+    url = f"https://api.github.com/repos/{CONFIG.github_repo}/actions/workflows/{CONFIG.github_workflow_id}/dispatches"
+    client = cast(httpx.AsyncClient, request.state.client)
+    response = await client.post(
+        url=url,
+        headers={
+            "Accept": "application/vnd.github+json",
+            "Authorization": f"Bearer {CONFIG.github_token}",
+            "X-GitHub-Api-Version": "2022-11-28",
+        },
+        json={
+            "ref": "main",
+        },
+    )
+    logging.info(f"Triggered deployment: {response.status_code} {response.text}")
+    return response
