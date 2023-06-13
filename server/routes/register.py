@@ -1,9 +1,10 @@
+import uuid
 from typing import Annotated
 
 import fastapi
 from fastapi import Cookie
 from prisma import enums, errors, models
-from pydantic import BaseModel, EmailStr, UUID4
+from pydantic import BaseModel, constr, EmailStr, UUID4
 
 from server.constants import PLAY_NICE_RESPONSE
 from server.db.waiting_room import fetch_waiting_room
@@ -16,12 +17,12 @@ router = fastapi.APIRouter()
 
 class RegisterRequest(BaseModel):
     # DB Record
-    legalName: str
+    legalName: constr(strip_whitespace=True, min_length=1, max_length=255)
     email: EmailStr
-    phoneNumber: str
-    idNumber: str
+    phoneNumber: constr(strip_whitespace=True, min_length=1, max_length=255)
+    idNumber: constr(strip_whitespace=True, min_length=1, max_length=255)
     idType: enums.IdType
-    waitingRoomId: str
+    waitingRoomId: uuid.UUID
 
 
 class RegisterResponse(BaseModel, TrpcMixin):
@@ -67,7 +68,7 @@ async def create_participant(
     handle_turnstile_errors(outcome, data.legalName)
 
     # Verify the waiting room is open at the time of registration
-    room = await fetch_waiting_room(data.waitingRoomId)
+    room = await fetch_waiting_room(str(data.waitingRoomId))
     if room is None:
         # Failed lookup, probably Invalid waiting room ID
         raise fastapi.HTTPException(
@@ -92,7 +93,7 @@ async def create_participant(
                 "phoneNumber": data.phoneNumber,
                 "idNumber": data.idNumber,
                 "idType": data.idType,
-                "waitingRoomId": data.waitingRoomId,
+                "waitingRoomId": str(data.waitingRoomId),
                 "turnstileTimestamp": outcome.challenge_ts,
                 "turnstileSuccess": outcome.success,
             }
