@@ -1,3 +1,4 @@
+import json
 import logging
 import typing
 
@@ -22,6 +23,15 @@ class FirebaseAuthBackend(starlette.middleware.authentication.AuthenticationBack
         try:
             self.fb_app = firebase_admin.get_app(name)
         except ValueError:
+            if credential is None:
+                raise ValueError("Firebase credential is required")
+            if isinstance(credential, str):
+                try:
+                    # Attempt to parse the credential as JSON
+                    credential = json.loads(credential)
+                except json.JSONDecodeError:
+                    # Credential may be a file path, let Firebase handle it
+                    pass
             self.fb_app = firebase_admin.initialize_app(
                 name=name, credential=firebase_admin.credentials.Certificate(credential)
             )
