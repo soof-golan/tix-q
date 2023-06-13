@@ -112,15 +112,6 @@ export default function WaitingRoomEditor({ id }: WaitingRoomContentProps) {
               content and see the changes in real time.
             </p>
           </div>
-          <div className="flex items-center justify-between px-4 py-5 max-sm:flex-col sm:px-6">
-            <button
-              disabled={updateApi.isLoading || publishApi.isLoading || !dirty}
-              type="submit"
-              className="mr-2 mt-2 rounded bg-indigo-500 px-4 py-2 text-white hover:bg-indigo-700 disabled:cursor-not-allowed disabled:opacity-50"
-            >
-              {dirty ? <>Save</> : <>Saved</>}
-            </button>
-          </div>
           <div className="border-t border-gray-200">
             <dl>
               <div className="items-center bg-gray-50 bg-opacity-50 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6 ">
@@ -186,6 +177,15 @@ export default function WaitingRoomEditor({ id }: WaitingRoomContentProps) {
                 </dd>
               </div>
             </dl>
+          </div>
+          <div className="flex items-center justify-between px-4 py-5 max-sm:flex-col sm:px-6">
+            <button
+              disabled={updateApi.isLoading || publishApi.isLoading || !dirty}
+              type="submit"
+              className="mr-2 mt-2 rounded bg-indigo-500 px-4 py-2 text-white hover:bg-indigo-700 disabled:cursor-not-allowed disabled:opacity-50"
+            >
+              {dirty ? <>Save</> : <>Saved</>}
+            </button>
           </div>
         </form>
         <div className="flex justify-between px-4 py-5 max-sm:flex-col sm:px-6">
