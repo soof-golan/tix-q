@@ -99,6 +99,7 @@ export default function WaitingRoomForm({
                     {...register("legalName", {
                       required: true,
                       minLength: 2,
+                      maxLength: 255,
                       disabled: !acceptingInput,
                     })}
                     type="text"
@@ -132,6 +133,7 @@ export default function WaitingRoomForm({
                     {...register("email", {
                       required: true,
                       disabled: !acceptingInput,
+                      minLength: 2,
                     })}
                   />
                 </dt>
@@ -168,6 +170,7 @@ export default function WaitingRoomForm({
                       required: true,
                       disabled: !acceptingInput,
                       minLength: 5,
+                      maxLength: 255,
                     })}
                     type="text"
                     placeholder="Enter your ID number | נא להזין מספר זהות"
@@ -228,9 +231,15 @@ export default function WaitingRoomForm({
               <div className="grid grid-cols-2 bg-gray-50 bg-opacity-50 px-4 py-5 sm:gap-4 sm:px-6">
                 <dd className="text-sm font-medium text-gray-500">
                   <label htmlFor="phoenNumber">Phone Number</label>
+                  <p className="text-xs text-gray-400">
+                    Examples: +18006543210, +972541234567, 0541234567
+                  </p>
                 </dd>
                 <dd className="text-sm font-medium text-gray-500" dir="auto">
                   <label htmlFor="phoenNumber">מספר טלפון</label>
+                  <p className="text-xs text-gray-400">
+                    דוגמאות: 0541234567, 972541234567, 00972541234567
+                  </p>
                 </dd>
                 <dt className="col-span-3 mt-1 text-sm text-gray-900 sm:mt-0">
                   <input
@@ -238,6 +247,8 @@ export default function WaitingRoomForm({
                     {...register("phoneNumber", {
                       required: true,
                       disabled: !acceptingInput,
+                      minLength: 5,
+                      maxLength: 255,
                     })}
                     type="tel"
                     placeholder="Enter your phone number | נא להזין מספר טלפון"

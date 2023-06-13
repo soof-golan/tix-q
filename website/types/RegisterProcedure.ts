@@ -1,12 +1,23 @@
 import { z } from "zod";
+import validator from "validator";
 
 export const registerInputSchema = z.object({
-  email: z.string().email(),
-  legalName: z.string(),
-  idNumber: z.string(),
+  legalName: z.string().nonempty().max(100),
+  email: z.string().max(100).nonempty().email(),
   idType: z.enum(["PASSPORT", "ID_CARD"]),
+  idNumber: z.string().nonempty().max(100),
+  phoneNumber: z
+    .string()
+    .nonempty()
+    .max(100)
+    .refine(
+      (v) =>
+        validator.isMobilePhone(v, "any", {
+          strictMode: false,
+        }),
+      "Invalid phone number"
+    ),
   waitingRoomId: z.string().uuid(),
-  phoneNumber: z.string(),
 });
 export type RegisterInput = z.infer<typeof registerInputSchema>;
 export type RegisterOutput = {
