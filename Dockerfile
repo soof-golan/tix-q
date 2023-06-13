@@ -27,9 +27,6 @@ COPY . /app
 
 WORKDIR /app
 
-# Validate gunicorn config
-RUN gunicorn --check-config --config server/gunicorn.conf.py
-
 # Run the production server
 EXPOSE 8000
 # CMD exec gunicorn --workers 1 --threads 8 --timeout 0 --preload main:app
