@@ -12,15 +12,21 @@ services:
       - "26257:26257"
       # - "8080:8080"
   server:
+    container_name: tix-q-server
     build:
       dockerfile: Dockerfile
       context: .
+      tags:
+        - "latest"
     networks:
       - cockroachdb
     depends_on:
       - cockroachdb
     environment:
+      - PORT=8000
       - DATABASE_URL=postgresql://root@cockroachdb:26257/defaultdb?schema=public&sslmode=disable
+    env_file:
+      - .env
     ports:
       - "8000:8000"
 
