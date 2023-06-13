@@ -6,4 +6,5 @@ port = int(os.environ.get("PORT", 8000))
 wsgi_app = "server.main:app"
 bind = f'0.0.0.0:{port}'
 workers = 1
+threads = 8
 worker_class = 'uvicorn.workers.UvicornWorker'
