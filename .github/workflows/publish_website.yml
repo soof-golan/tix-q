@@ -27,11 +27,8 @@ jobs:
           cache: 'yarn'
           cache-dependency-path: website/yarn.lock
 
-      - name: Install Poetry
-        run: pip install --user poetry==1.5.1
-
       - name: Install dependencies
-        run: poetry export -f requirements.txt --output requirements.txt --without-hashes && pip install -r requirements.txt
+        run: pip install -r requirements.txt
         working-directory: server
 
       - name: Migrate production database with prisma
@@ -57,7 +54,7 @@ jobs:
           PUBLIC_TURNSTILE_SITEKEY: ${{ secrets.PUBLIC_TURNSTILE_SITEKEY }}
 
       - name: Publish to Cloudflare Pages
-        uses: cloudflare/pages-action@v1
+        uses: cloudflare/pages-action@v1.5.0
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
@@ -72,3 +69,4 @@ jobs:
           workingDirectory: website
           # Optional: Change the Wrangler version, allows you to point to a specific version or a tag such as `beta`
           wranglerVersion: '3'
+
