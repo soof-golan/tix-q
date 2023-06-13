@@ -195,7 +195,7 @@ export default function WaitingRoomEditor({ id }: WaitingRoomContentProps) {
           </div>
           <button
             type="button"
-            // disabled={roomQuery.data.published || dirty}
+            disabled={roomQuery.data.published || dirty}
             onClick={() => {
               publishApi.mutate({ id });
             }}
