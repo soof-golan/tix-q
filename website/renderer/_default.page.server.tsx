@@ -23,10 +23,10 @@ async function render(pageContext: PageContextServer) {
 
   // See https://vite-plugin-ssr.com/head
   const { documentProps } = pageContext.exports;
-  const title = (documentProps && documentProps.title) || "Vite SSR app";
+  const title = (documentProps && documentProps.title) || "Waiting Room";
   const desc =
     (documentProps && documentProps.description) ||
-    "App using Vite + vite-plugin-ssr";
+    "Let users wait in a virtual waiting room, without suffering";
 
   const documentHtml = escapeInject`<!DOCTYPE html>
     <html lang="en">
