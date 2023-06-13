@@ -20,5 +20,7 @@ class Config(BaseModel):
 
     deploy_hook_url: str = os.environ.get("DEPLOY_HOOK_URL", "")
 
+    production: bool = os.environ.get("PRODUCTION", "true").lower() == "true"
+
 
 CONFIG = Config()
