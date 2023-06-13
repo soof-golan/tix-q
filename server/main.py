@@ -9,6 +9,7 @@ from starlette.middleware.authentication import AuthenticationMiddleware
 from starlette.middleware.gzip import GZipMiddleware
 
 from server.config import CONFIG
+from server.constants import DEV_CORS_ORIGINS, PROD_CORS_ORIGINS
 from server.middleware.firebase import FirebaseAuthBackend
 from server.middleware.user import UserMiddleware
 from .routes import markdown_edit
@@ -45,7 +46,7 @@ app = fastapi.FastAPI(lifespan=lifespan)
 app.add_middleware(GZipMiddleware, minimum_size=1000)
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=PROD_CORS_ORIGINS if CONFIG.production else DEV_CORS_ORIGINS,
     allow_credentials=True,
     allow_methods=["POST", "OPTIONS", "GET"],
     allow_headers=["X-CSRF-Token", "Authorization", "Content-Type"],
