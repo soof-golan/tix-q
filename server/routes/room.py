@@ -14,6 +14,7 @@ from server.types import TrpcResponse
 
 router = fastapi.APIRouter()
 
+logger = logging.getLogger(__name__)
 
 class RoomQuery(BaseModel, TrpcMixin):
     id: str
@@ -211,9 +212,19 @@ async def trigger_deployment(request: fastapi.Request):
       -d '{"ref":"topic-branch","inputs":{"name":"Mona the Octocat","home":"San Francisco, CA"}}'
 
     """
-
+    if (
+        not CONFIG.github_token
+        or not CONFIG.github_repo
+        or not CONFIG.github_workflow_id
+    ):
+        logger.error("Missing GitHub config, skipping deployment trigger")
+        raise fastapi.HTTPException(
+            status_code=500,
+            detail="Missing GitHub config, cannot trigger deployment",
+        )
+    logger.info("Triggering deployment")
     url = f"https://api.github.com/repos/{CONFIG.github_repo}/actions/workflows/{CONFIG.github_workflow_id}/dispatches"
-    client = cast(httpx.AsyncClient, request.state.client)
+    client = cast(httpx.AsyncClient, request.state.http_client)
     response = await client.post(
         url=url,
         headers={
@@ -225,5 +236,4 @@ async def trigger_deployment(request: fastapi.Request):
             "ref": "main",
         },
     )
-    logging.info(f"Triggered deployment: {response.status_code} {response.text}")
-    return response
+    logger.info(f"Triggered deployment: {response.status_code} {response.text}")
