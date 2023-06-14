@@ -5,6 +5,7 @@ import { useEffect } from "react";
 import { markdownTips, markdownTipsTitle } from "../constants";
 import type { RoomUpdateInput } from "../types/roomsProcedures";
 import moment from "moment";
+import Spinner from "./Spinner";
 
 type WaitingRoomContentProps = {
   id: string;
@@ -82,6 +83,9 @@ export default function WaitingRoomEditor({ id }: WaitingRoomContentProps) {
       moment(roomQuery.data?.opensAt).format("YYYY-MM-DDTHH:mm") ||
     watch("closesAt") !==
       moment(roomQuery.data?.closesAt).format("YYYY-MM-DDTHH:mm");
+
+  const loading =
+    roomQuery.isLoading || updateApi.isLoading || publishApi.isLoading;
 
   const acceptingInput =
     !!roomQuery.data?.published &&
@@ -212,7 +216,9 @@ export default function WaitingRoomEditor({ id }: WaitingRoomContentProps) {
               type="submit"
               className="mr-2 mt-2 rounded bg-indigo-500 px-4 py-2 text-white hover:bg-indigo-700 disabled:cursor-not-allowed disabled:opacity-50"
             >
-              {roomQuery.data?.published ? (
+              {loading ? (
+                <Spinner />
+              ) : roomQuery.data?.published ? (
                 <>Published (cannot be edited)</>
               ) : dirty ? (
                 <>Save</>
@@ -235,7 +241,9 @@ export default function WaitingRoomEditor({ id }: WaitingRoomContentProps) {
             }}
             className="mr-2 mt-2 rounded bg-indigo-500 px-4 py-2 text-white hover:bg-indigo-700 disabled:cursor-not-allowed disabled:opacity-50"
           >
-            {roomQuery.data.published ? (
+            {loading ? (
+              <Spinner />
+            ) : roomQuery.data.published ? (
               <>Room Public 🚀</>
             ) : dirty ? (
               <>Save before publishing</>
