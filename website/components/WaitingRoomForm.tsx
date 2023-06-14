@@ -7,6 +7,7 @@ import Countdown from "./Countdown";
 import { TurnstileWrapper } from "./TurnstileWrapper";
 import moment from "moment/moment";
 import { useEffect, useState } from "react";
+import Spinner from "./Spinner";
 
 type WaitingRoomProps = {
   waitingRoomId: string;
@@ -285,17 +286,21 @@ export default function WaitingRoomForm({
                     disabled={submitDisabled}
                     aria-busy={registerApi.isLoading}
                   >
-                    {userTooEarly
-                      ? "Too early to register"
-                      : userTooLate
-                      ? "Too late to register"
-                      : registerApi.isLoading
-                      ? "Registering..."
-                      : isSubmitSuccessful
-                      ? "Registered!"
-                      : !token
-                      ? "Waiting for captcha..."
-                      : "Register"}
+                    {userTooEarly ? (
+                      "Too early to register"
+                    ) : userTooLate ? (
+                      "Too late to register"
+                    ) : registerApi.isLoading ? (
+                      <>
+                        <Spinner />
+                      </>
+                    ) : isSubmitSuccessful ? (
+                      "Registered!"
+                    ) : !token ? (
+                      <Spinner />
+                    ) : (
+                      "Register"
+                    )}
                   </button>
                 </dt>
                 <dd className="col-span-3 items-center">
