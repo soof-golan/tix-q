@@ -21,6 +21,8 @@ function Page({ redirectUrl }: AuthProps) {
   const signinCheck = useSigninCheck();
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
+  const [sent, setSent] = useState(false);
+  const [error, setError] = useState<AuthError | null>(null);
   const ref = useRef<HTMLInputElement>(null);
   useEffect(() => {
     const redirectUrl = window.localStorage.getItem("redirectUrl") ?? "/";
@@ -95,7 +97,7 @@ function Page({ redirectUrl }: AuthProps) {
   }
   return (
     <div className="flex flex-col items-center justify-center space-y-4 p-2">
-      <div className="flex flex-col space-y-4 rounded-lg bg-white bg-opacity-80 p-4 shadow backdrop-blur-sm">
+      <div className="flex w-[360px] flex-col space-y-4 rounded-lg bg-white bg-opacity-80 p-4 shadow backdrop-blur-sm">
         <p>You are not signed in.</p>
         <form
           action="/auth/signin"
@@ -106,9 +108,16 @@ function Page({ redirectUrl }: AuthProps) {
             await sendSignInLinkToEmail(auth, ref.current?.value ?? "", {
               url: redirectUrl ?? window.location.href,
               handleCodeInApp: true,
-            }).finally(() => {
-              setSubmitting(false);
-            });
+            })
+              .then(() => {
+                setSent(true);
+              })
+              .catch((error) => {
+                setError(error?.message ?? "An unknown error occurred");
+              })
+              .finally(() => {
+                setSubmitting(false);
+              });
             window.localStorage.setItem(
               "emailForSignIn",
               ref.current?.value ?? ""
@@ -116,20 +125,32 @@ function Page({ redirectUrl }: AuthProps) {
           }}
         >
           <input
-            className="rounded border border-gray-300 px-4 py-2"
+            className={`rounded border border-gray-300 px-4 py-2 ${
+              sent ? "bg-green-100" : ""
+            }`}
             type="email"
             placeholder="Email"
             id="email"
             required
             ref={ref}
-            disabled={submitting}
+            disabled={submitting || sent}
           />
           <input
-            disabled={submitting}
+            disabled={submitting || sent}
             type="submit"
-            className="w-full rounded bg-indigo-500 px-4 py-2 font-bold text-white hover:bg-indigo-700"
+            className="w-full rounded bg-indigo-500 px-4 py-2 font-bold text-white hover:bg-indigo-700 disabled:cursor-not-allowed disabled:bg-gray-400"
             value="Sign in with magic link"
           />
+          {sent && (
+            <p className="flex-wrap text-sm text-gray-500">
+              A magic link has been sent to your email. Click on it to sign in.
+            </p>
+          )}
+          {error && (
+            <p className="flex-wrap text-sm text-red-500">
+              {error?.message ?? "An unknown error occurred"}
+            </p>
+          )}
         </form>
       </div>
     </div>
