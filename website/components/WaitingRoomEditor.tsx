@@ -82,20 +82,29 @@ export default function WaitingRoomEditor({ id }: WaitingRoomContentProps) {
       moment(roomQuery.data?.opensAt).format("YYYY-MM-DDTHH:mm") ||
     watch("closesAt") !==
       moment(roomQuery.data?.closesAt).format("YYYY-MM-DDTHH:mm");
+
+  const acceptingInput =
+    !!roomQuery.data?.published &&
+    !updateApi.isLoading &&
+    !publishApi.isLoading &&
+    !roomQuery.isLoading;
   return (
     <>
       <div className="my-2 w-full overflow-hidden rounded-lg bg-white bg-opacity-80 shadow backdrop-blur-sm">
         <form
           className="flex flex-col"
-          onSubmit={handleSubmit((data) =>
+          onSubmit={handleSubmit((data) => {
+            if (roomQuery?.data?.published) {
+              return;
+            }
             updateApi.mutate({
               id: id,
               markdown: data.markdown,
               title: data.title,
               opensAt: moment(data.opensAt).toISOString(),
               closesAt: moment(data.closesAt).toISOString(),
-            })
-          )}
+            });
+          })}
         >
           <div className="flex items-center justify-between px-4 py-5 max-sm:flex-col sm:px-6">
             <h1 className="text-3xl font-medium leading-6 text-gray-900">
@@ -119,7 +128,9 @@ export default function WaitingRoomEditor({ id }: WaitingRoomContentProps) {
                 <dd className="mt-1 text-2xl text-gray-900 sm:col-span-2 sm:mt-0">
                   <input
                     className="w-full rounded bg-indigo-500 bg-opacity-20 px-4 py-2 "
-                    {...register("title")}
+                    {...register("title", {
+                      disabled: acceptingInput,
+                    })}
                     type="text"
                   />
                 </dd>
@@ -156,7 +167,9 @@ export default function WaitingRoomEditor({ id }: WaitingRoomContentProps) {
 
           <div className="flex items-center justify-between px-4 py-5 max-sm:flex-col sm:px-6">
             <textarea
-              {...register("markdown")}
+              {...register("markdown", {
+                disabled: acceptingInput,
+              })}
               className="min-h-[500px] w-full"
             />
           </div>
@@ -165,7 +178,12 @@ export default function WaitingRoomEditor({ id }: WaitingRoomContentProps) {
               <div className="bg-gray-50 bg-opacity-50 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
                 <dt className="text-sm font-medium text-gray-500">Opens At</dt>
                 <dd className="mt-1 text-sm text-gray-900 sm:col-span-2 sm:mt-0">
-                  <input {...register("opensAt")} type="datetime-local" />
+                  <input
+                    {...register("opensAt", {
+                      disabled: acceptingInput,
+                    })}
+                    type="datetime-local"
+                  />
                 </dd>
               </div>
             </dl>
@@ -173,18 +191,34 @@ export default function WaitingRoomEditor({ id }: WaitingRoomContentProps) {
               <div className="bg-gray-50 bg-opacity-50 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
                 <dt className="text-sm font-medium text-gray-500">Closes At</dt>
                 <dd className="mt-1 text-sm text-gray-900 sm:col-span-2 sm:mt-0">
-                  <input {...register("closesAt")} type="datetime-local" />
+                  <input
+                    {...register("closesAt", {
+                      disabled: acceptingInput,
+                    })}
+                    type="datetime-local"
+                  />
                 </dd>
               </div>
             </dl>
           </div>
           <div className="flex items-center justify-between px-4 py-5 max-sm:flex-col sm:px-6">
             <button
-              disabled={updateApi.isLoading || publishApi.isLoading || !dirty}
+              disabled={
+                updateApi.isLoading ||
+                publishApi.isLoading ||
+                !dirty ||
+                roomQuery.data?.published
+              }
               type="submit"
               className="mr-2 mt-2 rounded bg-indigo-500 px-4 py-2 text-white hover:bg-indigo-700 disabled:cursor-not-allowed disabled:opacity-50"
             >
-              {dirty ? <>Save</> : <>Saved</>}
+              {roomQuery.data?.published ? (
+                <>Published (cannot be edited)</>
+              ) : dirty ? (
+                <>Save</>
+              ) : (
+                <>Saved</>
+              )}
             </button>
           </div>
         </form>
