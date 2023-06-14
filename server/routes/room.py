@@ -16,6 +16,7 @@ router = fastapi.APIRouter()
 
 logger = logging.getLogger(__name__)
 
+
 class RoomQuery(BaseModel, TrpcMixin):
     id: str
     title: str
@@ -137,7 +138,10 @@ async def update(
     updated = await models.WaitingRoom.prisma().update_many(
         where={
             "id": room.id,
-            "AND": [{"ownerId": request.state.user.id}],
+            "AND": [
+                {"ownerId": request.state.user.id},
+                {"published": False},
+            ],
         },
         data={
             "title": room.title,
@@ -147,7 +151,7 @@ async def update(
         },
     )
     if updated != 1:
-        raise fastapi.HTTPException(status_code=400, detail="Invalid waiting room ID")
+        raise fastapi.HTTPException(status_code=400, detail="Invalid waiting room ID / already published")
     result = await models.WaitingRoom.prisma().find_unique(where={"id": room.id})
     return RoomQuery(
         id=result.id,
