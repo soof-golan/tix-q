@@ -49,7 +49,7 @@ app.add_middleware(
     allow_origins=PROD_CORS_ORIGINS if CONFIG.production else DEV_CORS_ORIGINS,
     allow_credentials=True,
     allow_methods=["POST", "OPTIONS", "GET"],
-    allow_headers=["X-CSRF-Token", "Authorization", "Content-Type"],
+    allow_headers=["X-CSRF-Token", "Authorization", "Content-Type", "X-Turnstile-Token"],
 )
 app.add_middleware(UserMiddleware)
 app.add_middleware(AuthenticationMiddleware, backend=FirebaseAuthBackend(

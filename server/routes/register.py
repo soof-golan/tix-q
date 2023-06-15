@@ -2,7 +2,7 @@ import uuid
 from typing import Annotated
 
 import fastapi
-from fastapi import Cookie
+from fastapi import Header
 from prisma import enums, errors, models
 from pydantic import BaseModel, constr, EmailStr, UUID4
 
@@ -40,7 +40,7 @@ class RegisterResponse(BaseModel, TrpcMixin):
 async def create_participant(
     request: fastapi.Request,
     data: RegisterRequest,
-    turnstile_token: Annotated[str | None, Cookie()] = None,
+    x_turnstile_token: Annotated[str | None, Header()] = None,
 ) -> TrpcResponse[RegisterResponse]:
     """
     Register a participant for a waiting room
@@ -62,7 +62,7 @@ async def create_participant(
     - Return the new participant ID
         - this will be displayed on the client as "Your number registration number is: X"
     """
-    outcome = await validate_turnstile(request, turnstile_token, name=data.legalName)
+    outcome = await validate_turnstile(request, x_turnstile_token, name=data.legalName)
 
     # This user might be a bot. We don't allow bots to register.
     handle_turnstile_errors(outcome, data.legalName)
