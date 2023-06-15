@@ -10,7 +10,9 @@ export default function DashboardRoomsList() {
   const rooms = trpc.room.readMany.useQuery(
     {},
     {
-      networkMode: "offlineFirst",
+      refetchOnWindowFocus: true,
+      refetchInterval: false,
+      networkMode: "online",
       initialData: [],
     }
   );
