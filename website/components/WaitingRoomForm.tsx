@@ -339,6 +339,7 @@ export default function WaitingRoomForm({
                         setToken("", {
                           secure: import.meta.env.PROD,
                           sameSite: "strict",
+                          domain: import.meta.env.PUBLIC_SERVER_URL,
                           expires: 0,
                         })
                       }
@@ -346,15 +347,19 @@ export default function WaitingRoomForm({
                         setToken("", {
                           secure: import.meta.env.PROD,
                           sameSite: "strict",
+                          domain: import.meta.env.PUBLIC_SERVER_URL,
                           expires: 0,
                         })
                       }
-                      onVerify={(token) =>
+                      onVerify={(token) => {
                         setToken(token, {
                           secure: import.meta.env.PROD,
+                          domain: import.meta.env.PUBLIC_SERVER_URL,
+                          expires: moment().add(1, "day").toDate(),
+                          path: "/",
                           sameSite: "strict",
-                        })
-                      }
+                        });
+                      }}
                     />
                   </Countdown>
                 </dd>
