@@ -29,7 +29,7 @@ export default function WaitingRoomCard({ room }: WaitingRoomCardProps) {
         <a href={`/room/${room.id}`}>
           <button
             disabled={status === "closed"}
-            className="mr-2 mt-2 rounded bg-indigo-500 px-4 py-2 text-white hover:bg-indigo-700"
+            className="mr-2 mt-2 rounded bg-indigo-500 px-4 py-2 text-white hover:bg-indigo-700 disabled:cursor-not-allowed disabled:bg-gray-400"
           >
             Join
           </button>
