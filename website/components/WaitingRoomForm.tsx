@@ -273,7 +273,38 @@ export default function WaitingRoomForm({
           </div>
           <div className="border-t border-gray-200">
             <dl>
-              <div className="grid grid-cols-2 bg-opacity-50 px-4 py-5 sm:gap-4 sm:px-6">
+              <div className="flex items-center justify-between bg-opacity-50 px-4 py-5 max-sm:flex-col max-sm:justify-center sm:px-6">
+                <dd className="text-sm font-medium text-gray-500">
+                  {status === "early" ? (
+                    <>Registration opens in</>
+                  ) : status === "open" ? (
+                    <>Registration now open!</>
+                  ) : (
+                    <>Registration closed</>
+                  )}
+                </dd>
+                <dd className="text-sm font-medium text-gray-500" dir="auto">
+                  {status === "early" ? (
+                    <>הרשמה תפתח בעוד</>
+                  ) : status === "open" ? (
+                    <>הרשמה פתוחה כעת!</>
+                  ) : (
+                    <>הרשמה סגורה</>
+                  )}
+                </dd>
+              </div>
+              <dd className="bg-opacity-50 pb-4 text-center text-3xl text-gray-900">
+                <Countdown date={opensAt}>
+                  <div className="flex w-full flex-row items-center justify-center">
+                    <TurnstileWrapper />
+                  </div>
+                </Countdown>
+              </dd>
+            </dl>
+          </div>
+          <div className="border-t border-gray-200">
+            <dl>
+              <div className="grid grid-cols-2 bg-gray-50 bg-opacity-50 px-4 py-5 sm:gap-4 sm:px-6">
                 <dd className="text-sm font-medium text-gray-500">Register</dd>
                 <dd className="text-sm font-medium text-gray-500" dir="auto">
                   הרשמה
@@ -319,37 +350,6 @@ export default function WaitingRoomForm({
                   )}
                 </dd>
               </div>
-            </dl>
-          </div>
-          <div className="border-t border-gray-200">
-            <dl>
-              <div className="flex items-center justify-between bg-gray-50 bg-opacity-50 px-4 py-5 max-sm:flex-col max-sm:justify-center sm:px-6">
-                <dd className="text-sm font-medium text-gray-500">
-                  {status === "early" ? (
-                    <>Registration opens in</>
-                  ) : status === "open" ? (
-                    <>Registration now open!</>
-                  ) : (
-                    <>Registration closed</>
-                  )}
-                </dd>
-                <dd className="text-sm font-medium text-gray-500" dir="auto">
-                  {status === "early" ? (
-                    <>הרשמה תפתח בעוד</>
-                  ) : status === "open" ? (
-                    <>הרשמה פתוחה כעת!</>
-                  ) : (
-                    <>הרשמה סגורה</>
-                  )}
-                </dd>
-              </div>
-              <dd className="bg-gray-50 bg-opacity-50 pb-4 text-center text-3xl text-gray-900">
-                <Countdown date={opensAt}>
-                  <div className="flex w-full flex-row items-center justify-center">
-                    <TurnstileWrapper />
-                  </div>
-                </Countdown>
-              </dd>
             </dl>
           </div>
         </form>
