@@ -10,7 +10,7 @@ type Props = inferProps<typeof onBeforeRender>;
 
 function Page({ id, markdown, title, opensAt, closesAt }: Props) {
   return (
-    <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+    <div className="mx-auto max-w-7xl px-2 lg:px-8">
       <div className="mx-auto max-w-3xl">
         <MarkdownCard content={markdown} title={title} />
         <WaitingRoomForm

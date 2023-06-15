@@ -323,7 +323,7 @@ export default function WaitingRoomForm({
           </div>
           <div className="border-t border-gray-200">
             <dl>
-              <div className="grid grid-cols-3 items-center bg-gray-50 bg-opacity-50 px-4 py-5 sm:gap-4 sm:px-6">
+              <div className="flex items-center justify-between bg-gray-50 bg-opacity-50 px-4 py-5 max-sm:flex-col max-sm:justify-center sm:px-6">
                 <dd className="text-sm font-medium text-gray-500">
                   {status === "early" ? (
                     <>Registration opens in</>
@@ -333,18 +333,6 @@ export default function WaitingRoomForm({
                     <>Registration closed</>
                   )}
                 </dd>
-                <dd className="mt-1 text-center text-3xl text-gray-900 sm:mt-0">
-                  <Countdown date={opensAt} className="">
-                    <TurnstileWrapper
-                      onLoad={() => setToken("")}
-                      onError={() => setToken("")}
-                      onVerify={(token) => {
-                        setToken(token);
-                      }}
-                    />
-                  </Countdown>
-                </dd>
-
                 <dd className="text-sm font-medium text-gray-500" dir="auto">
                   {status === "early" ? (
                     <>הרשמה תפתח בעוד</>
@@ -355,6 +343,17 @@ export default function WaitingRoomForm({
                   )}
                 </dd>
               </div>
+              <dd className="bg-gray-50 bg-opacity-50 pb-4 text-center text-3xl text-gray-900">
+                <Countdown date={opensAt} className="">
+                  <TurnstileWrapper
+                    onLoad={() => setToken("")}
+                    onError={() => setToken("")}
+                    onVerify={(token) => {
+                      setToken(token);
+                    }}
+                  />
+                </Countdown>
+              </dd>
             </dl>
           </div>
         </form>
