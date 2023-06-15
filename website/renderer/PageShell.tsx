@@ -5,6 +5,7 @@ import "./PageShell.css";
 import Header from "../components/Header";
 import { FirebaseContext } from "../components/FirebaseContext";
 import TrpcContext from "../components/TrpcContext";
+import Footer from "../components/Footer";
 
 export { PageShell };
 
@@ -25,6 +26,7 @@ function PageShell({
               <Suspense fallback={<div>Loading...</div>}>
                 <Content>{children}</Content>
               </Suspense>
+              <Footer />
             </Layout>
           </TrpcContext>
         </FirebaseContext>
@@ -35,7 +37,7 @@ function PageShell({
 
 function Layout({ children }: { children: React.ReactNode }) {
   return (
-    <div className="min-h-screen w-full bg-gradient-to-l from-purple-600 to-indigo-600 pb-8">
+    <div className="min-h-screen w-full bg-gradient-to-l from-purple-600 to-indigo-600">
       {children}
     </div>
   );
