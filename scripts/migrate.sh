@@ -37,10 +37,10 @@ function migrate() {
 function attempt_migration() {
   for i in {1..5}; do
     if migrate; then
-      echo "Migration successful"
+      echo "Migration successful (attempt $i/5)"
       break
     else
-      echo "Migration failed, retrying in 5 seconds..."
+      echo "Migration failed (attempt $i/5), retrying in 5 seconds..."
       sleep 5
     fi
   done
