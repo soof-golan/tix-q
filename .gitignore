@@ -75,7 +75,6 @@ terraform.rc
 [Ll]ib
 [Ll]ib64
 [Ll]ocal
-[Ss]cripts
 pyvenv.cfg
 .venv
 pip-selfcheck.json
@@ -512,5 +511,3 @@ sketch
 /firebase-credentials.json
 firebase-credentials.json
 
-# Don't ignore server scripts
-!server/scripts

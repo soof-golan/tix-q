@@ -19,3 +19,4 @@ server/*.secret.json
 firebase-credentials.json
 server/firebase-credentials.json
 **/node_modules
+scripts/migrate.sh
