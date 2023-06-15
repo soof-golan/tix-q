@@ -1,5 +1,5 @@
-import WaitingRoomEditor from "../../../components/WaitingRoomEditor";
-import { usePageContext } from "../../../renderer/usePageContext";
+import WaitingRoomEditor from "../../../../components/WaitingRoomEditor";
+import { usePageContext } from "../../../../renderer/usePageContext";
 
 export { Page };
 
