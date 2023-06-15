@@ -2,5 +2,5 @@
 
 A platform for issuing a waiting rooms.
 
-## Getting Started
+[![.github/workflows/publish_website.yml](https://github.com/soof-golan/tix-q/actions/workflows/publish_website.yml/badge.svg)](https://github.com/soof-golan/tix-q/actions/workflows/publish_website.yml)
 
