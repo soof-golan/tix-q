@@ -22,11 +22,9 @@ function PageShell({
         <FirebaseContext>
           <TrpcContext>
             <Layout>
-              <Header />
               <Suspense fallback={<div>Loading...</div>}>
                 <Content>{children}</Content>
               </Suspense>
-              <Footer />
             </Layout>
           </TrpcContext>
         </FirebaseContext>
@@ -37,9 +35,13 @@ function PageShell({
 
 function Layout({ children }: { children: React.ReactNode }) {
   return (
-    <div className="min-h-screen w-full bg-gradient-to-l from-purple-600 to-indigo-600">
-      {children}
-    </div>
+    <>
+      <div className="flex min-h-screen w-full flex-col justify-between bg-gradient-to-l from-purple-600 to-indigo-600">
+        <Header />
+        {children}
+        <Footer />
+      </div>
+    </>
   );
 }
 
