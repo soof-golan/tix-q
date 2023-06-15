@@ -4,7 +4,7 @@ from typing import cast, TypeVar
 
 import fastapi
 import httpx
-from prisma import models
+from prisma import enums, models
 from pydantic import BaseModel
 from starlette.authentication import requires
 
@@ -96,6 +96,89 @@ async def read_many(request: fastapi.Request, input: str) -> TrpcResponse[RoomQu
     ).trpc
 
 
+class RoomStats(BaseModel, TrpcMixin):
+    id: str
+    registrantsCount: int
+
+
+@router.get("/room.stats")
+@requires("authenticated", status_code=401)
+async def read_many(request: fastapi.Request, input: str) -> TrpcResponse[RoomStats]:
+    query = RoomId.from_trpc(input)
+    results = await models.Registrant.prisma().count(
+        where={
+            "waitingRoomId": query.id,
+            "AND": {
+                "WaitingRoom": {
+                    "ownerId": request.state.user.id,
+                },
+            },
+        },
+    )
+    return RoomStats(
+        id=query.id,
+        registrantsCount=results,
+    ).trpc
+
+
+class Registrant(BaseModel):
+    id: str
+    legalName: str
+    email: str
+    phoneNumber: str
+    idNumber: str
+    idType: enums.IdType
+    turnstileSuccess: bool
+    turnstileTimestamp: datetime.datetime | None
+
+    createdAt: datetime.datetime
+    updatedAt: datetime.datetime
+
+
+class RoomRegistrants(BaseModel, TrpcMixin):
+    id: str
+    registrants: list[Registrant]
+
+
+@router.get("/room.registrants")
+@requires("authenticated", status_code=401)
+async def read_many(
+    request: fastapi.Request, input: str
+) -> TrpcResponse[RoomRegistrants]:
+    query = RoomId.from_trpc(input)
+    results = await models.Registrant.prisma().find_many(
+        where={
+            "waitingRoomId": query.id,
+            "AND": {
+                "WaitingRoom": {
+                    "ownerId": request.state.user.id,
+                },
+            },
+        },
+        order={
+            "createdAt": "asc",
+        },
+    )
+    return RoomRegistrants(
+        id=query.id,
+        registrants=[
+            Registrant(
+                id=registrant.id,
+                legalName=registrant.legalName,
+                email=registrant.email,
+                phoneNumber=registrant.phoneNumber,
+                idNumber=registrant.idNumber,
+                idType=registrant.idType,
+                turnstileSuccess=registrant.turnstileSuccess,
+                turnstileTimestamp=registrant.turnstileTimestamp,
+                createdAt=registrant.createdAt,
+                updatedAt=registrant.updatedAt,
+            )
+            for registrant in results
+        ],
+    ).trpc
+
+
 class RoomCreateRequest(BaseModel):
     title: str
     markdown: str
@@ -151,7 +234,9 @@ async def update(
         },
     )
     if updated != 1:
-        raise fastapi.HTTPException(status_code=400, detail="Invalid waiting room ID / already published")
+        raise fastapi.HTTPException(
+            status_code=400, detail="Invalid waiting room ID / already published"
+        )
     result = await models.WaitingRoom.prisma().find_unique(where={"id": room.id})
     return RoomQuery(
         id=result.id,
