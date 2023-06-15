@@ -35,7 +35,7 @@ function PageShell({
 
 function Layout({ children }: { children: React.ReactNode }) {
   return (
-    <div className="min-h-screen w-full bg-gradient-to-l from-purple-600 to-indigo-600">
+    <div className="min-h-screen w-full bg-gradient-to-l from-purple-600 to-indigo-600 pb-8">
       {children}
     </div>
   );
