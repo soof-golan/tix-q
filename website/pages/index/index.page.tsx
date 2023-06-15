@@ -1,6 +1,7 @@
 import { onBeforeRender } from "./index.page.server";
 import { inferProps } from "../../renderer/types";
 import WaitingRoomCard from "../../components/WaitingRoomCard";
+import moment from "moment";
 
 export { Page };
 
@@ -15,9 +16,13 @@ function Page({ rooms }: Props) {
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-3xl">
           <ul className="flex flex-col gap-4 p-4">
-            {rooms.map((room) => (
-              <WaitingRoomCard key={room.id} room={room} />
-            ))}
+            {rooms
+              .filter((room) =>
+                moment().subtract(1, "day").isBefore(moment(room.closesAt))
+              )
+              .map((room) => (
+                <WaitingRoomCard key={room.id} room={room} />
+              ))}
           </ul>
         </div>
       </div>
