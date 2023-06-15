@@ -1,5 +1,4 @@
 import { trpc } from "../utils/trpc";
-import * as reactUse from "react-use";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { RegisterInput, registerInputSchema } from "../types/RegisterProcedure";
@@ -8,6 +7,7 @@ import { TurnstileWrapper } from "./TurnstileWrapper";
 import moment from "moment/moment";
 import { useEffect, useState } from "react";
 import Spinner from "./Spinner";
+import { useTurnstile } from "./TurnstileContext";
 
 type WaitingRoomProps = {
   waitingRoomId: string;
@@ -15,7 +15,6 @@ type WaitingRoomProps = {
   closesAt: Date;
 };
 
-const { useCookie } = reactUse;
 type FormInput = Omit<RegisterInput, "waitingRoomId">;
 
 export default function WaitingRoomForm({
@@ -24,13 +23,13 @@ export default function WaitingRoomForm({
   closesAt,
 }: WaitingRoomProps) {
   const [now, setNow] = useState(moment());
-  const [token, setToken] = useCookie("turnstile_token");
+  const [token, setToken] = useTurnstile();
   const registerApi = trpc.register.useMutation();
 
   const {
     register,
     handleSubmit,
-    formState: { isSubmitSuccessful, errors, isSubmitting },
+    formState: { errors, isSubmitting },
   } = useForm<FormInput>({
     resolver: zodResolver(registerInputSchema),
     defaultValues: {
@@ -55,11 +54,11 @@ export default function WaitingRoomForm({
     !token ||
     registerApi.isLoading ||
     status !== "open" ||
-    isSubmitSuccessful ||
+    registerApi.isSuccess ||
     isSubmitting;
 
   const acceptingInput =
-    !registerApi.isLoading && !isSubmitSuccessful && status !== "late";
+    !registerApi.isLoading && !registerApi.isSuccess && status !== "late";
 
   return (
     <>
@@ -294,8 +293,10 @@ export default function WaitingRoomForm({
                       <>
                         <Spinner />
                       </>
-                    ) : isSubmitSuccessful ? (
+                    ) : registerApi.isSuccess ? (
                       "Registered!"
+                    ) : registerApi.isError ? (
+                      "Something went wrong (try again?)"
                     ) : !token ? (
                       <Spinner />
                     ) : (
@@ -335,30 +336,10 @@ export default function WaitingRoomForm({
                 <dd className="mt-1 text-center text-3xl text-gray-900 sm:mt-0">
                   <Countdown date={opensAt} className="">
                     <TurnstileWrapper
-                      onLoad={() =>
-                        setToken("", {
-                          secure: import.meta.env.PROD,
-                          sameSite: "strict",
-                          domain: import.meta.env.PUBLIC_SERVER_URL,
-                          expires: 0,
-                        })
-                      }
-                      onError={() =>
-                        setToken("", {
-                          secure: import.meta.env.PROD,
-                          sameSite: "strict",
-                          domain: import.meta.env.PUBLIC_SERVER_URL,
-                          expires: 0,
-                        })
-                      }
+                      onLoad={() => setToken("")}
+                      onError={() => setToken("")}
                       onVerify={(token) => {
-                        setToken(token, {
-                          secure: import.meta.env.PROD,
-                          domain: import.meta.env.PUBLIC_SERVER_URL,
-                          expires: moment().add(1, "day").toDate(),
-                          path: "/",
-                          sameSite: "strict",
-                        });
+                        setToken(token);
                       }}
                     />
                   </Countdown>

@@ -6,6 +6,7 @@ import Header from "../components/Header";
 import { FirebaseContext } from "../components/FirebaseContext";
 import TrpcContext from "../components/TrpcContext";
 import Footer from "../components/Footer";
+import { TurnstileContext } from "../components/TurnstileContext";
 
 export { PageShell };
 
@@ -19,15 +20,17 @@ function PageShell({
   return (
     <React.StrictMode>
       <PageContextProvider pageContext={pageContext}>
-        <FirebaseContext>
-          <TrpcContext>
-            <Layout>
-              <Suspense fallback={<div>Loading...</div>}>
-                <Content>{children}</Content>
-              </Suspense>
-            </Layout>
-          </TrpcContext>
-        </FirebaseContext>
+        <TurnstileContext>
+          <FirebaseContext>
+            <TrpcContext>
+              <Layout>
+                <Suspense fallback={<div>Loading...</div>}>
+                  <Content>{children}</Content>
+                </Suspense>
+              </Layout>
+            </TrpcContext>
+          </FirebaseContext>
+        </TurnstileContext>
       </PageContextProvider>
     </React.StrictMode>
   );
