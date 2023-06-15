@@ -322,7 +322,7 @@ export default function WaitingRoomForm({
           </div>
           <div className="border-t border-gray-200">
             <dl>
-              <div className="grid grid-cols-2 bg-gray-50 bg-opacity-50 px-4 py-5 sm:gap-4 sm:px-6">
+              <div className="grid grid-cols-3 items-center bg-gray-50 bg-opacity-50 px-4 py-5 sm:gap-4 sm:px-6">
                 <dd className="text-sm font-medium text-gray-500">
                   {status === "early" ? (
                     <>Registration opens in</>
@@ -332,16 +332,7 @@ export default function WaitingRoomForm({
                     <>Registration closed</>
                   )}
                 </dd>
-                <dd className="text-sm font-medium text-gray-500" dir="auto">
-                  {status === "early" ? (
-                    <>הרשמה תפתח בעוד</>
-                  ) : status === "open" ? (
-                    <>הרשמה פתוחה כעת!</>
-                  ) : (
-                    <>הרשמה סגורה</>
-                  )}
-                </dd>
-                <dt className="col-span-3 mt-1 text-sm text-gray-900 sm:mt-0">
+                <dd className="mt-1 text-center text-3xl text-gray-900 sm:mt-0">
                   <Countdown date={opensAt} className="">
                     <TurnstileWrapper
                       onLoad={() =>
@@ -366,7 +357,17 @@ export default function WaitingRoomForm({
                       }
                     />
                   </Countdown>
-                </dt>
+                </dd>
+
+                <dd className="text-sm font-medium text-gray-500" dir="auto">
+                  {status === "early" ? (
+                    <>הרשמה תפתח בעוד</>
+                  ) : status === "open" ? (
+                    <>הרשמה פתוחה כעת!</>
+                  ) : (
+                    <>הרשמה סגורה</>
+                  )}
+                </dd>
               </div>
             </dl>
           </div>
