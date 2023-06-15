@@ -11,17 +11,15 @@ const Header = () => {
       </h1>
       <nav className="space-x-1">
         <AuthButton />
-        <Link
-          href="/"
-          className="rounded bg-purple-600 px-4 py-2 text-sm font-bold text-white hover:bg-purple-700"
-        >
-          Home
+        <Link href="/">
+          <button className="rounded bg-purple-600 px-4 py-2 text-sm font-bold text-white hover:bg-purple-700">
+            Home
+          </button>
         </Link>
-        <Link
-          href="/dashboard"
-          className="rounded bg-purple-600 px-4 py-2 text-sm font-bold text-white hover:bg-purple-700"
-        >
-          Dashboard
+        <Link href="/dashboard">
+          <button className="rounded bg-purple-600 px-4 py-2 text-sm font-bold text-white hover:bg-purple-700">
+            Dashboard
+          </button>
         </Link>
       </nav>
     </header>

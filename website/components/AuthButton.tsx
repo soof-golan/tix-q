@@ -36,11 +36,11 @@ export default function AuthButton() {
     );
   return (
     <>
-      <a href="/auth">
+      <Link href="/auth">
         <button className="rounded bg-purple-600 px-4 py-2 text-sm font-bold text-white hover:bg-purple-700">
           {buttonText}
         </button>
-      </a>
+      </Link>
     </>
   );
 }
