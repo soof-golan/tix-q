@@ -115,6 +115,10 @@ export default function WaitingRoomEditor({ id }: WaitingRoomContentProps) {
     !updateApi.isLoading &&
     !publishApi.isLoading &&
     !roomQuery.isLoading;
+
+  const deploymentInProgress =
+    !roomLiveQuery.data?.urlReady && roomQuery.data.published;
+
   return (
     <>
       <div className="my-2 w-full overflow-hidden rounded-lg bg-white bg-opacity-80 shadow backdrop-blur-sm">
@@ -272,6 +276,9 @@ export default function WaitingRoomEditor({ id }: WaitingRoomContentProps) {
                 </button>
               </Link>
             )}
+            {deploymentInProgress && (
+              <p>(if this takes longer than 5 minutes, please contact us)</p>
+            )}
             <button
               type="button"
               disabled={roomQuery.data.published || dirty}
@@ -282,7 +289,7 @@ export default function WaitingRoomEditor({ id }: WaitingRoomContentProps) {
             >
               {loading ? (
                 <Spinner />
-              ) : !roomLiveQuery.data?.urlReady && roomQuery.data.published ? (
+              ) : deploymentInProgress ? (
                 <>
                   Deployment in progress <Spinner />
                 </>
