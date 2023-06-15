@@ -44,6 +44,10 @@ function attempt_migration() {
       sleep 5
     fi
   done
+  if [ $i -eq 5 ]; then
+    echo "Migration failed after 5 attempts"
+    exit 1
+  fi
 }
 
 attempt_migration
