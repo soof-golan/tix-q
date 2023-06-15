@@ -22,5 +22,8 @@ export async function findRoomById(id: string) {
     where: {
       id,
     },
+    include: {
+      owner: true,
+    },
   });
 }

@@ -21,6 +21,10 @@ async function onBeforeRender(pageContext: PageContextServer) {
         markdown: room.markdown,
         opensAt: moment(room.opensAt),
         closesAt: moment(room.closesAt),
+        owner: {
+          // TODO: add email once in DB
+          email: "",
+        },
       },
     },
   };
