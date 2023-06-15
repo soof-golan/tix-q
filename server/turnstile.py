@@ -21,7 +21,7 @@ class TurnstileOutcome(BaseModel):
     data: dict | None = None
 
 
-async def validate_turnstile(request: fastapi.Request, token: str | None) -> TurnstileOutcome:
+async def validate_turnstile(request: fastapi.Request, token: str | None, name: str = "stranger") -> TurnstileOutcome:
     """
     Validate the turnstile token
     As documented in https://developers.cloudflare.com/turnstile/get-started/server-side-validation/
@@ -46,7 +46,7 @@ async def validate_turnstile(request: fastapi.Request, token: str | None) -> Tur
     try:
         challenge_ts = datetime.datetime.fromisoformat(data["challenge_ts"])
     except (KeyError, ValueError):
-        raise fastapi.HTTPException(status_code=500, detail="Invalid turnstile token (challenge_ts)" + PLAY_NICE_RESPONSE.format(name="stranger"))
+        raise fastapi.HTTPException(status_code=500, detail="Invalid turnstile token (challenge_ts)" + PLAY_NICE_RESPONSE.format(name=name))
     return TurnstileOutcome(
         success=data["success"],
         challenge_ts=challenge_ts,

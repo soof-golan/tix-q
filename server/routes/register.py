@@ -62,7 +62,7 @@ async def create_participant(
     - Return the new participant ID
         - this will be displayed on the client as "Your number registration number is: X"
     """
-    outcome = await validate_turnstile(request, turnstile_token)
+    outcome = await validate_turnstile(request, turnstile_token, name=data.legalName)
 
     # This user might be a bot. We don't allow bots to register.
     handle_turnstile_errors(outcome, data.legalName)
