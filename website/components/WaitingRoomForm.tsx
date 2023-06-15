@@ -23,7 +23,7 @@ export default function WaitingRoomForm({
   closesAt,
 }: WaitingRoomProps) {
   const [now, setNow] = useState(moment());
-  const [token, setToken] = useTurnstile();
+  const [token] = useTurnstile();
   const registerApi = trpc.register.useMutation();
 
   const {
@@ -344,14 +344,10 @@ export default function WaitingRoomForm({
                 </dd>
               </div>
               <dd className="bg-gray-50 bg-opacity-50 pb-4 text-center text-3xl text-gray-900">
-                <Countdown date={opensAt} className="">
-                  <TurnstileWrapper
-                    onLoad={() => setToken("")}
-                    onError={() => setToken("")}
-                    onVerify={(token) => {
-                      setToken(token);
-                    }}
-                  />
+                <Countdown date={opensAt}>
+                  <div className="flex w-full flex-row items-center justify-center">
+                    <TurnstileWrapper />
+                  </div>
                 </Countdown>
               </dd>
             </dl>

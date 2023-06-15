@@ -1,11 +1,10 @@
 import Turnstile from "react-turnstile";
+import { useTurnstile } from "./TurnstileContext";
 
-export function TurnstileWrapper(props: {
-  onLoad: () => void;
-  onVerify: (token: string) => void;
-  onError: (error: unknown) => void;
-}) {
+export function TurnstileWrapper() {
   const siteKey = import.meta.env.PUBLIC_TURNSTILE_SITEKEY;
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const [token, setToken] = useTurnstile();
   return (
     <>
       <Turnstile
@@ -13,14 +12,14 @@ export function TurnstileWrapper(props: {
         action="register"
         size="normal"
         retry="auto"
-        onLoad={props.onLoad}
-        onVerify={props.onVerify}
-        onError={props.onError}
-        onExpire={props.onLoad}
+        onLoad={() => setToken("")}
+        onVerify={(v) => setToken(v)}
+        onError={() => setToken("")}
+        onExpire={() => setToken("")}
         retryInterval={1000}
         refreshExpired="auto"
         execution="render"
-        onTimeout={props.onLoad}
+        onTimeout={() => setToken("")}
         appearance="always"
       />
     </>
