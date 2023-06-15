@@ -55,6 +55,7 @@ jobs:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
           PUBLIC_SERVER_URL: ${{ secrets.PUBLIC_SERVER_URL }}
           PUBLIC_TURNSTILE_SITEKEY: ${{ secrets.PUBLIC_TURNSTILE_SITEKEY }}
+          PUBLIC_GTAG: ${{ secrets.PUBLIC_GTAG }}
 
       - name: Publish to Cloudflare Pages
         uses: cloudflare/pages-action@v1.5.0
