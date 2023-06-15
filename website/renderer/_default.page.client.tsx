@@ -20,20 +20,16 @@ async function render(pageContext: PageContextClient) {
   );
   const root = document.getElementById("react-root");
   if (!root) throw new Error("DOM element #react-root not found");
-  if (root.innerHTML === "" || !pageContext.isHydration) {
-    const reactRoot = (() => {
-      if (globalThisForReactRoot.reactRoot) {
-        return globalThisForReactRoot.reactRoot;
-      }
-      const reactRoot = createRoot(root);
-      globalThisForReactRoot.reactRoot = reactRoot;
-      return reactRoot;
-    })();
+  const reactRoot = (() => {
+    if (globalThisForReactRoot.reactRoot) {
+      return globalThisForReactRoot.reactRoot;
+    }
+    const reactRoot = createRoot(root);
+    globalThisForReactRoot.reactRoot = reactRoot;
+    return reactRoot;
+  })();
 
-    reactRoot.render(page);
-  } else {
-    hydrateRoot(root, page);
-  }
+  reactRoot.render(page);
 }
 
 /* To enable Client-side Routing:
