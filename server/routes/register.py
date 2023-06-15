@@ -1,18 +1,23 @@
+import logging
 import uuid
-from typing import Annotated
+from typing import cast
 
 import fastapi
-from fastapi import Header
+import orjson
 from prisma import enums, errors, models
 from pydantic import BaseModel, constr, EmailStr, UUID4
 
 from server.constants import PLAY_NICE_RESPONSE
 from server.db.waiting_room import fetch_waiting_room
 from server.trpc import TrpcMixin
-from server.turnstile import handle_turnstile_errors, validate_turnstile
-from server.types import TrpcResponse
+from server.turnstile import handle_turnstile_errors
+from server.types import TrpcResponse, TurnstileOutcome
 
 router = fastapi.APIRouter()
+
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
+logger.addHandler(logging.StreamHandler())
 
 
 class RegisterRequest(BaseModel):
@@ -40,7 +45,6 @@ class RegisterResponse(BaseModel, TrpcMixin):
 async def create_participant(
     request: fastapi.Request,
     data: RegisterRequest,
-    x_turnstile_token: Annotated[str | None, Header()] = None,
 ) -> TrpcResponse[RegisterResponse]:
     """
     Register a participant for a waiting room
@@ -62,10 +66,7 @@ async def create_participant(
     - Return the new participant ID
         - this will be displayed on the client as "Your number registration number is: X"
     """
-    outcome = await validate_turnstile(request, x_turnstile_token, name=data.legalName)
-
-    # This user might be a bot. We don't allow bots to register.
-    handle_turnstile_errors(outcome, data.legalName)
+    outcome = cast(TurnstileOutcome, request.state.turnstile_outcome)
 
     # Verify the waiting room is open at the time of registration
     room = await fetch_waiting_room(str(data.waitingRoomId))
@@ -77,6 +78,38 @@ async def create_participant(
             + PLAY_NICE_RESPONSE.format(name=data.legalName),
         )
 
+    registrant = {
+        "legalName": data.legalName,
+        "email": data.email,
+        "phoneNumber": data.phoneNumber,
+        "idNumber": data.idNumber,
+        "idType": data.idType,
+        "waitingRoomId": str(data.waitingRoomId),
+        "turnstileTimestamp": outcome.challenge_ts,
+        "turnstileSuccess": outcome.success,
+    }
+
+    logline = orjson.dumps(registrant).decode("utf-8")
+    logger.info(logline)
+
+    if outcome.challenge_ts is None:
+        raise fastapi.HTTPException(
+            status_code=400,
+            detail=f"missing challenge_ts."
+            + PLAY_NICE_RESPONSE.format(name=data.legalName)
+            + "\nbtw this request was recorded.",
+        )
+
+    # Someone is trying to register too early
+    # We recorded the request, but we won't return a success response
+    if outcome.challenge_ts < room.opensAt:
+        raise fastapi.HTTPException(
+            status_code=400,
+            detail=f"Too early to register."
+            + PLAY_NICE_RESPONSE.format(name=data.legalName)
+            + "\nbtw this request was recorded.",
+        )
+
     # Someone is trying to register too late
     if outcome.challenge_ts > room.closesAt:
         raise fastapi.HTTPException(
@@ -86,18 +119,7 @@ async def create_participant(
         )
 
     try:
-        result = await models.Registrant.prisma().create(
-            data={
-                "legalName": data.legalName,
-                "email": data.email,
-                "phoneNumber": data.phoneNumber,
-                "idNumber": data.idNumber,
-                "idType": data.idType,
-                "waitingRoomId": str(data.waitingRoomId),
-                "turnstileTimestamp": outcome.challenge_ts,
-                "turnstileSuccess": outcome.success,
-            }
-        )
+        result = await models.Registrant.prisma().create(data=registrant)
     except errors.ForeignKeyViolationError:
         raise fastapi.HTTPException(
             status_code=400,
@@ -123,15 +145,7 @@ async def create_participant(
             + PLAY_NICE_RESPONSE.format(name=data.legalName),
         )
     else:
-        # Someone is trying to register too early
-        # We'll still record the request, but we won't return a success response
-        if outcome.challenge_ts < room.opensAt:
-            raise fastapi.HTTPException(
-                status_code=400,
-                detail=f"Too early to register."
-                + PLAY_NICE_RESPONSE.format(name=data.legalName)
-                + "\nbtw this request was recorded.",
-            )
+        handle_turnstile_errors(outcome, data.legalName)
 
         return RegisterResponse(
             id=result.id,

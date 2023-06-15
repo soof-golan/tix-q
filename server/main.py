@@ -11,6 +11,7 @@ from starlette.middleware.gzip import GZipMiddleware
 from server.config import CONFIG
 from server.constants import DEV_CORS_ORIGINS, PROD_CORS_ORIGINS
 from server.middleware.firebase import FirebaseAuthBackend
+from server.middleware.turnstile import TurnstileMiddleware
 from server.middleware.user import UserMiddleware
 from .routes import markdown_edit
 from .routes import markdown_read
@@ -52,6 +53,7 @@ app.add_middleware(
     allow_headers=["X-CSRF-Token", "Authorization", "Content-Type", "X-Turnstile-Token"],
 )
 app.add_middleware(UserMiddleware)
+app.add_middleware(TurnstileMiddleware)
 app.add_middleware(AuthenticationMiddleware, backend=FirebaseAuthBackend(
     credential=CONFIG.firebase_credentials
 ))

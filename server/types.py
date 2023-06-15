@@ -1,8 +1,10 @@
+import datetime
 import typing
 from typing import TypedDict
 
 import httpx
 from prisma import Prisma
+from pydantic import BaseModel
 from pydantic.generics import GenericModel
 from starlette.authentication import BaseUser
 
@@ -30,7 +32,6 @@ class FirebasePayload(TypedDict):
 
 
 class FirebaseJwt(TypedDict):
-
     name: str
     iss: str
     aud: str
@@ -57,3 +58,23 @@ class FirebaseUser(BaseUser):
     @property
     def identity(self) -> str:
         return self.token.get("sub", "")
+
+
+class TurnstileOutcome(BaseModel):
+    """
+    Models most of the response from the turnstile API
+    More details: https://developers.cloudflare.com/turnstile/get-started/server-side-validation/
+
+    """
+
+    success: bool
+    challenge_ts: datetime.datetime | None  # Verify people don't submit too early
+    error_codes: list[str]
+    hostname: str | None = None
+    action: str | None = None
+    data: dict | None = None
+
+    @classmethod
+    def NO_TOKEN(cls):
+        return cls(success=False, error_codes=["no-token"])
+
