@@ -14,7 +14,7 @@ class TurnstileOutcome(BaseModel):
 
     """
     success: bool
-    challenge_ts: datetime.datetime | None = None  # Verify people don't submit too early
+    challenge_ts: datetime.datetime  # Verify people don't submit too early
     error_codes: list[str]
     hostname: str | None = None
     action: str | None = None
@@ -33,6 +33,9 @@ async def validate_turnstile(request: fastapi.Request, token: str | None, name: 
 
     """
     client = request.state.http_client
+    if not token:
+        raise fastapi.HTTPException(status_code=400, detail="Missing turnstile token" + PLAY_NICE_RESPONSE.format(name=name))
+
     response = await client.post(
         "https://challenges.cloudflare.com/turnstile/v0/siteverify/",
         timeout=5,
