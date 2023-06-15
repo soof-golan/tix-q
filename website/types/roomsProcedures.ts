@@ -19,6 +19,29 @@ export const roomMutationInputSchema = z.object({
   closesAt: z.string(),
 });
 
+export const roomStatsOutputSchema = z.object({
+  id: z.string().uuid(),
+  registrantsCount: z.number(),
+});
+
+export const roomParticipantsOutputSchema = z.object({
+  id: z.string().uuid(),
+  registrants: z.array(
+    z.object({
+      id: z.string().uuid(),
+      legalName: z.string(),
+      email: z.string().email(),
+      phoneNumber: z.string(),
+      idNumber: z.string(),
+      idType: z.string(),
+      turnstileSuccess: z.string(),
+      turnstileTimestamp: z.string(),
+      createdAt: z.string(),
+      updatedAt: z.string(),
+    })
+  ),
+});
+
 export const roomQueryInputSchema = z.object({
   id: z.string().uuid(),
 });
@@ -47,3 +70,9 @@ export const roomUpdateOutputSchema = roomQueryOutputSchema;
 
 export type RoomUpdateInput = z.infer<typeof roomUpdateInputSchema>;
 export type RoomUpdateOutput = z.infer<typeof roomUpdateOutputSchema>;
+
+export type RoomStatsOutput = z.infer<typeof roomStatsOutputSchema>;
+
+export type RoomParticipantsOutput = z.infer<
+  typeof roomParticipantsOutputSchema
+>;

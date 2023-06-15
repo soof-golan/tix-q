@@ -20,6 +20,8 @@ import {
   RoomReadManyOutput,
   roomQueryInputSchema,
   RoomReadUniqueOutput,
+  RoomStatsOutput,
+  RoomParticipantsOutput,
 } from "../types/roomsProcedures";
 
 export const appRouter = router({
@@ -66,6 +68,16 @@ export const appRouter = router({
       .input(roomQueryInputSchema)
       .mutation(async (): Promise<RoomUpdateOutput> => {
         return {} as RoomUpdateOutput;
+      }),
+    stats: protectedProcedure
+      .input(roomQueryInputSchema)
+      .query(async (): Promise<RoomStatsOutput> => {
+        return {} as RoomStatsOutput;
+      }),
+    registrants: protectedProcedure
+      .input(roomQueryInputSchema)
+      .query(async (): Promise<RoomParticipantsOutput> => {
+        return {} as RoomParticipantsOutput;
       }),
   }),
 });
