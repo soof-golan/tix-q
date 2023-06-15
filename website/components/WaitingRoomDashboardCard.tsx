@@ -26,16 +26,18 @@ export default function WaitingRoomDashboardCard({
         <h3 className="text-lg font-medium leading-6 text-gray-900">
           {headline}
         </h3>
-        <a href={`/dashboard/live/${room.id}`}>
-          <button className="mr-2 mt-2 rounded bg-indigo-500 px-4 py-2 text-white hover:bg-indigo-700">
-            Live Data
-          </button>
-        </a>
-        <a href={`/dashboard/editor/${room.id}`}>
-          <button className="mr-2 mt-2 rounded bg-indigo-500 px-4 py-2 text-white hover:bg-indigo-700">
-            Edit
-          </button>
-        </a>
+        <div className="flex flex-row">
+          <a href={`/dashboard/live/${room.id}`}>
+            <button className="mr-2 mt-2 rounded bg-indigo-500 px-4 py-2 text-white hover:bg-indigo-700">
+              Live Data
+            </button>
+          </a>
+          <a href={`/dashboard/editor/${room.id}`}>
+            <button className="mr-2 mt-2 rounded bg-indigo-500 px-4 py-2 text-white hover:bg-indigo-700">
+              Edit
+            </button>
+          </a>
+        </div>
       </div>
       <div className="border-t border-gray-200">
         <dl>
