@@ -32,7 +32,7 @@ class FirebasePayload(TypedDict):
 
 
 class FirebaseJwt(TypedDict):
-    name: str
+    name: str | None
     iss: str
     aud: str
     auth_time: int
@@ -40,6 +40,7 @@ class FirebaseJwt(TypedDict):
     sub: str
     iat: int
     exp: int
+    email: str
     firebase: FirebasePayload
 
 
@@ -58,6 +59,10 @@ class FirebaseUser(BaseUser):
     @property
     def identity(self) -> str:
         return self.token.get("sub", "")
+
+    @property
+    def email(self) -> str:
+        return self.token.get("email", "")
 
 
 class TurnstileOutcome(BaseModel):
