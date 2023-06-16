@@ -51,6 +51,7 @@ app.add_middleware(
     allow_credentials=True,
     allow_methods=["POST", "OPTIONS", "GET"],
     allow_headers=["X-CSRF-Token", "Authorization", "Content-Type", "X-Turnstile-Token"],
+    max_age=3600,
 )
 app.add_middleware(UserMiddleware)
 app.add_middleware(TurnstileMiddleware)
