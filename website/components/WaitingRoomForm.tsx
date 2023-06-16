@@ -13,6 +13,7 @@ type WaitingRoomProps = {
   waitingRoomId: string;
   opensAt: Date;
   closesAt: Date;
+  ownerEmail: string;
 };
 
 type FormInput = Omit<RegisterInput, "waitingRoomId">;
@@ -21,6 +22,7 @@ export default function WaitingRoomForm({
   waitingRoomId,
   opensAt,
   closesAt,
+  ownerEmail,
 }: WaitingRoomProps) {
   const [now, setNow] = useState(moment());
   const [token] = useTurnstile();
@@ -350,6 +352,21 @@ export default function WaitingRoomForm({
                   )}
                 </dd>
               </div>
+            </dl>
+          </div>
+          <div className="border-t border-gray-200 pb-4">
+            <dl>
+              <div className="flex items-center justify-between px-4 py-5 max-sm:flex-col max-sm:justify-center sm:px-6">
+                <dd className="text-sm  font-medium text-gray-500">
+                  This form is managed by
+                </dd>
+                <dd className="text-sm font-medium text-gray-500" dir="auto">
+                  טופס זה מנוהל על ידי
+                </dd>
+              </div>
+              <dd className="text-center text-sm font-medium text-gray-500">
+                {ownerEmail}
+              </dd>
             </dl>
           </div>
         </form>

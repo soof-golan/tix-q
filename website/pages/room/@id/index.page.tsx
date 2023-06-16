@@ -8,7 +8,7 @@ export { Page };
 
 type Props = inferProps<typeof onBeforeRender>;
 
-function Page({ id, markdown, title, opensAt, closesAt }: Props) {
+function Page({ id, markdown, title, opensAt, closesAt, ownerEmail }: Props) {
   return (
     <div className="mx-auto max-w-7xl px-2 lg:px-8">
       <div className="mx-auto max-w-3xl">
@@ -17,6 +17,7 @@ function Page({ id, markdown, title, opensAt, closesAt }: Props) {
           waitingRoomId={id}
           opensAt={moment(opensAt).toDate()}
           closesAt={moment(closesAt).toDate()}
+          ownerEmail={ownerEmail}
         />
       </div>
     </div>
