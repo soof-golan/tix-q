@@ -1,14 +1,19 @@
 import json
 import logging
 import typing
+from functools import partial
 
 import asyncer
 import firebase_admin
 import starlette.middleware.authentication
+from asyncache import cached, cachedmethod
+from cachetools import TTLCache
+from cachetools.keys import hashkey
 from firebase_admin import auth
 from starlette.authentication import AuthCredentials, AuthenticationError
 from starlette.requests import HTTPConnection
 
+from server.constants import TTL_FIVE_MINUTES
 from server.types import FirebaseUser
 
 logger = logging.getLogger(__name__)
@@ -20,6 +25,7 @@ class FirebaseAuthBackend(starlette.middleware.authentication.AuthenticationBack
         Initialize the Firebase App for the authentication backend
         The rest of the logic is handled by starlette (see https://www.starlette.io/authentication/)
         """
+        self.cache = TTLCache(maxsize=1024, ttl=TTL_FIVE_MINUTES)
         try:
             self.fb_app = firebase_admin.get_app(name)
         except ValueError:
@@ -36,7 +42,15 @@ class FirebaseAuthBackend(starlette.middleware.authentication.AuthenticationBack
                 name=name, credential=firebase_admin.credentials.Certificate(credential)
             )
 
-    async def authenticate(self, conn: HTTPConnection) -> typing.Optional[typing.Tuple[AuthCredentials, FirebaseUser]]:
+    @cachedmethod(cache=lambda self: self.cache, key=partial(hashkey, "decode_token"))
+    async def decode_token(self, credentials: str) -> dict:
+        return await asyncer.asyncify(auth.verify_id_token)(
+            credentials, app=self.fb_app, check_revoked=False
+        )
+
+    async def authenticate(
+        self, conn: HTTPConnection
+    ) -> typing.Optional[typing.Tuple[AuthCredentials, FirebaseUser]]:
         """
         Authenticate the user using the Authorization header
         We only support OAuth2 bearer tokens created by Firebase
@@ -62,16 +76,16 @@ class FirebaseAuthBackend(starlette.middleware.authentication.AuthenticationBack
             raise AuthenticationError("Invalid authorization scheme")
 
         try:
-            decoded = await asyncer.asyncify(lambda: auth.verify_id_token(credentials, app=self.fb_app))()
+            decoded = await self.decode_token(credentials)
             return AuthCredentials(["authenticated"]), FirebaseUser(decoded)
         except (
-                ValueError,
-                auth.InvalidIdTokenError,
-                auth.ExpiredIdTokenError,
-                auth.RevokedIdTokenError,
-                auth.CertificateFetchError,
-                auth.UnexpectedResponseError,
-                auth.UserDisabledError,
+            ValueError,
+            auth.InvalidIdTokenError,
+            auth.ExpiredIdTokenError,
+            auth.RevokedIdTokenError,
+            auth.CertificateFetchError,
+            auth.UnexpectedResponseError,
+            auth.UserDisabledError,
         ):
             logger.exception("Invalid authorization header")
             raise AuthenticationError("Invalid authorization header")
