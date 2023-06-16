@@ -43,6 +43,7 @@ model User {
   updatedAt DateTime @updatedAt
 
   firebaseUid  String        @unique
+  email        String        @default("")
   waitingRooms WaitingRoom[]
 }
 
