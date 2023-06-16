@@ -6,7 +6,7 @@ from functools import partial
 import asyncer
 import firebase_admin
 import starlette.middleware.authentication
-from asyncache import cached, cachedmethod
+from asyncache import cachedmethod
 from cachetools import TTLCache
 from cachetools.keys import hashkey
 from firebase_admin import auth
