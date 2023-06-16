@@ -20,6 +20,7 @@ asyncache = "^0.3.1"
 firebase-admin = "^6.1.0"
 asyncer = {git = "https://github.com/tiangolo/asyncer.git", rev = "bf0ae5c4f7977863e5de9d8cd45b8965d925e3b1"}
 orjson = "^3.9.1"
+timing-asgi = "^0.3.0"
 
 
 [tool.poetry.group.dev.dependencies]
