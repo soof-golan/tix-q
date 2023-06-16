@@ -9,12 +9,11 @@ from pydantic import BaseModel
 from starlette.authentication import requires
 
 from server.config import CONFIG
+from server.logger import logger
 from server.trpc import trpc, TrpcMixin
 from server.types import TrpcResponse
 
 router = fastapi.APIRouter()
-
-logger = logging.getLogger(__name__)
 
 
 class RoomQuery(BaseModel, TrpcMixin):

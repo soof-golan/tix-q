@@ -9,15 +9,12 @@ from pydantic import BaseModel, constr, EmailStr, UUID4
 
 from server.constants import PLAY_NICE_RESPONSE
 from server.db.waiting_room import fetch_waiting_room
+from server.logger import logger
 from server.trpc import TrpcMixin
 from server.turnstile import handle_turnstile_errors
 from server.types import TrpcResponse, TurnstileOutcome
 
 router = fastapi.APIRouter()
-
-logger = logging.getLogger(__name__)
-logger.setLevel(logging.INFO)
-logger.addHandler(logging.StreamHandler())
 
 
 class RegisterRequest(BaseModel):
@@ -89,8 +86,7 @@ async def create_participant(
         "turnstileSuccess": outcome.success,
     }
 
-    logline = orjson.dumps(registrant).decode("utf-8")
-    logger.info(logline)
+    logger.info(orjson.dumps(registrant).decode("utf-8"))
 
     if outcome.challenge_ts is None:
         raise fastapi.HTTPException(

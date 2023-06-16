@@ -14,9 +14,9 @@ from starlette.authentication import AuthCredentials, AuthenticationError
 from starlette.requests import HTTPConnection
 
 from server.constants import TTL_FIVE_MINUTES
+from server.logger import logger
 from server.types import FirebaseUser
 
-logger = logging.getLogger(__name__)
 
 
 class FirebaseAuthBackend(starlette.middleware.authentication.AuthenticationBackend):

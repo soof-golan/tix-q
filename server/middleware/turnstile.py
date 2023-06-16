@@ -6,9 +6,9 @@ from starlette.requests import Request
 from starlette.responses import Response
 
 from server.config import CONFIG
+from server.logger import logger
 from server.types import TurnstileOutcome
 
-logger = logging.getLogger(__name__)
 
 
 class TurnstileMiddleware(BaseHTTPMiddleware):

@@ -6,9 +6,8 @@ from starlette.requests import Request
 from starlette.responses import Response
 
 from server.db.user import fetch_or_create_cached_user
+from server.logger import logger
 from server.types import FirebaseUser
-
-logger = logging.getLogger(__name__)
 
 
 class UserMiddleware(BaseHTTPMiddleware):
