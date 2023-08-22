@@ -6,7 +6,6 @@ from logging.config import dictConfig
 import fastapi
 import httpx
 from fastapi.middleware.cors import CORSMiddleware
-from prisma import Prisma
 from starlette.middleware.authentication import AuthenticationMiddleware
 from starlette.middleware.gzip import GZipMiddleware
 from sqlalchemy.ext.asyncio import async_sessionmaker, create_async_engine
@@ -47,9 +46,7 @@ async def lifespan(_app: fastapi.FastAPI) -> typing.AsyncIterator[State]:
 
     async_session = async_sessionmaker(engine)
 
-    async with httpx.AsyncClient() as client, Prisma(
-        auto_register=True, use_dotenv=True
-    ):
+    async with httpx.AsyncClient() as client:
         yield {
             "http_client": client,
             "db": async_session,

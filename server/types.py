@@ -3,7 +3,6 @@ import typing
 from typing import TypedDict
 
 import httpx
-from prisma import Prisma
 from pydantic import BaseModel
 from pydantic.generics import GenericModel
 from sqlalchemy.ext.asyncio import async_sessionmaker, AsyncSession
