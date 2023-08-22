@@ -95,6 +95,12 @@ class WaitingRoom(Base):
 
     markdown: Mapped[str] = mapped_column(nullable=False)
     title: Mapped[str] = mapped_column(nullable=False)
+    desktop_image_blob: Mapped[str | None] = mapped_column(
+        nullable=True, name="desktopImageBlob"
+    )
+    mobile_image_blob: Mapped[str | None] = mapped_column(
+        nullable=True, name="mobileImageBlob"
+    )
 
     registrants: Mapped[List[Registrant]] = relationship(back_populates="waiting_room")
 

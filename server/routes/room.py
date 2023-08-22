@@ -24,6 +24,8 @@ class RoomQuery(BaseModel, TrpcMixin):
     id: str
     title: str
     markdown: str
+    desktopImageBlob: str | None
+    mobileImageBlob: str | None
     createdAt: datetime.datetime
     updatedAt: datetime.datetime
     opensAt: datetime.datetime
@@ -35,6 +37,8 @@ class RoomMutation(BaseModel):
     id: str
     title: str
     markdown: str
+    desktopImageBlob: str | None
+    mobileImageBlob: str | None
     opensAt: datetime.datetime
     closesAt: datetime.datetime
 
@@ -60,6 +64,8 @@ async def read_many(
                 id=str(room.id),
                 title=room.title,
                 markdown=room.markdown,
+                desktopImageBlob=room.desktop_image_blob,
+                mobileImageBlob=room.mobile_image_blob,
                 createdAt=room.created_at,
                 updatedAt=room.updated_at,
                 opensAt=room.opens_at,
@@ -90,6 +96,8 @@ async def read_unique(
         id=str(room.id),
         title=room.title,
         markdown=room.markdown,
+        desktopImageBlob=room.desktop_image_blob,
+        mobileImageBlob=room.mobile_image_blob,
         createdAt=room.created_at,
         updatedAt=room.updated_at,
         opensAt=room.opens_at,
@@ -233,6 +241,8 @@ async def room_update(
             .values(
                 title=room.title,
                 markdown=room.markdown,
+                desktop_image_blob=room.desktopImageBlob,
+                mobile_image_blob=room.mobileImageBlob,
                 opens_at=room.opensAt,
                 closes_at=room.closesAt,
             )
@@ -243,6 +253,8 @@ async def room_update(
             id=str(result.id),
             title=result.title,
             markdown=result.markdown,
+            desktopImageBlob=result.desktop_image_blob,
+            mobileImageBlob=result.mobile_image_blob,
             createdAt=result.created_at,
             updatedAt=result.updated_at,
             opensAt=result.opens_at,
@@ -269,7 +281,6 @@ async def publish(
         result = (await session.execute(statement)).scalar_one()
         session.expunge(result)
 
-
     # TODO: Limit deploy hook rate
     if CONFIG.production:
         await trigger_deployment(request)
@@ -278,6 +289,8 @@ async def publish(
         id=str(result.id),
         title=result.title,
         markdown=result.markdown,
+        desktopImageBlob=result.desktop_image_blob,
+        mobileImageBlob=result.mobile_image_blob,
         createdAt=result.created_at,
         updatedAt=result.updated_at,
         opensAt=result.opens_at,
