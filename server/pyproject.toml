@@ -24,7 +24,7 @@ timing-asgi = "^0.3.0"
 sqlalchemy = {extras = ["asyncio"], version = "^2.0.20"}
 sqlalchemy-cockroachdb = "^2.0.1"
 asyncpg = "^0.28.0"
-psycopg2 = "^2.9.7"
+psycopg2-binary = "^2.9.7"
 
 
 [tool.poetry.group.dev.dependencies]
