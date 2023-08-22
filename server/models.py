@@ -36,7 +36,9 @@ class Base(DeclarativeBase):
 
 class Registrant(Base):
     __tablename__ = "Registrant"
-    id: Mapped[uuid.UUID] = mapped_column(primary_key=True, server_default=sqlalchemy.text("gen_random_uuid()"))
+    id: Mapped[uuid.UUID] = mapped_column(
+        primary_key=True, server_default=sqlalchemy.text("gen_random_uuid()")
+    )
     created_at: Mapped[datetime] = mapped_column(
         server_default=sqlalchemy.sql.func.now(), name="createdAt", nullable=False
     )
@@ -58,7 +60,7 @@ class Registrant(Base):
         nullable=False, name="turnstileSuccess", default=False
     )
     turnstile_timestamp: Mapped[datetime] = mapped_column(
-        nullable=True, name="turnstileTimestamp"
+        types.DateTime(timezone=True), nullable=True, name="turnstileTimestamp"
     )
 
     waiting_room_id: Mapped[uuid.UUID] = mapped_column(
@@ -69,7 +71,9 @@ class Registrant(Base):
 
 class WaitingRoom(Base):
     __tablename__ = "WaitingRoom"
-    id: Mapped[uuid.UUID] = mapped_column(primary_key=True, server_default=sqlalchemy.text("gen_random_uuid()"))
+    id: Mapped[uuid.UUID] = mapped_column(
+        primary_key=True, server_default=sqlalchemy.text("gen_random_uuid()")
+    )
     created_at: Mapped[datetime] = mapped_column(
         server_default=sqlalchemy.sql.func.now(), name="createdAt", nullable=False
     )
@@ -81,8 +85,12 @@ class WaitingRoom(Base):
         nullable=False,
     )
 
-    opens_at: Mapped[datetime] = mapped_column(types.DateTime(timezone=True), nullable=False, name="opensAt")
-    closes_at: Mapped[datetime] = mapped_column(types.DateTime(timezone=True), nullable=False, name="closesAt")
+    opens_at: Mapped[datetime] = mapped_column(
+        types.DateTime(timezone=True), nullable=False, name="opensAt"
+    )
+    closes_at: Mapped[datetime] = mapped_column(
+        types.DateTime(timezone=True), nullable=False, name="closesAt"
+    )
     published: Mapped[bool] = mapped_column(nullable=False, default=False)
 
     markdown: Mapped[str] = mapped_column(nullable=False)
@@ -98,7 +106,9 @@ class WaitingRoom(Base):
 
 class User(Base):
     __tablename__ = "User"
-    id: Mapped[uuid.UUID] = mapped_column(primary_key=True, server_default=sqlalchemy.text("gen_random_uuid()"))
+    id: Mapped[uuid.UUID] = mapped_column(
+        primary_key=True, server_default=sqlalchemy.text("gen_random_uuid()")
+    )
     created_at: Mapped[datetime] = mapped_column(
         server_default=sqlalchemy.sql.func.now(), name="createdAt", nullable=False
     )
