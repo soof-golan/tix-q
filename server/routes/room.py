@@ -6,9 +6,13 @@ import httpx
 from fastapi import Depends
 from prisma import enums, models
 from pydantic import BaseModel
+from sqlalchemy import select
+from sqlalchemy.ext.asyncio import AsyncSession
 from starlette.authentication import requires
 
+from server.models import WaitingRoom
 from server.config import CONFIG
+from server.db.session import db_session
 from server.logger import logger
 from server.trpc import trpc, TrpcMixin
 from server.types import TrpcResponse
@@ -72,28 +76,25 @@ async def read_many(
 async def read_unique(
     request: fastapi.Request,
     query: Annotated[RoomId, Depends(RoomId.from_trpc)],
+    session: Annotated[AsyncSession, Depends(db_session)],
 ) -> TrpcResponse[RoomQuery]:
-    # TODO: remove this terrible query
-    results = await models.WaitingRoom.prisma().find_many(
-        where={
-            "ownerId": request.state.user.id,
-            "AND": {
-                "id": query.id,
-            },
-        },
+
+    room = await session.scalar(
+        select(WaitingRoom)
+        .where(WaitingRoom.id == query.id)
+        .where(WaitingRoom.owner_id == request.state.user.id)
     )
-    if len(results) != 1:
+    if room is None:
         raise fastapi.HTTPException(status_code=401, detail="Invalid waiting room ID")
 
-    room = results[0]
     return RoomQuery(
-        id=room.id,
+        id=str(room.id),
         title=room.title,
         markdown=room.markdown,
-        createdAt=room.createdAt,
-        updatedAt=room.updatedAt,
-        opensAt=room.opensAt,
-        closesAt=room.closesAt,
+        createdAt=room.created_at,
+        updatedAt=room.updated_at,
+        opensAt=room.opens_at,
+        closesAt=room.closes_at,
         published=room.published,
     ).trpc
 
