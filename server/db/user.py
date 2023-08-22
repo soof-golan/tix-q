@@ -27,7 +27,7 @@ async def fetch_or_create_cached_user(
 
     @cached(cache=TTLCache(maxsize=1024, ttl=TTL_FIVE_MINUTES))
     async def _cached_fetch_or_create_user(_user: FirebaseUser) -> User:
-        async with session.begin_nested():
+        async with session.begin():
             stmt = (
                 insert(DbUser)
                 .values(firebase_uid=_user.identity, email=_user.email)
@@ -38,6 +38,7 @@ async def fetch_or_create_cached_user(
                 .returning(DbUser)
             )
             _result = (await session.execute(stmt)).scalar_one()
+            session.expunge(_result)
             result = User(
                 id=_result.id, firebase_uid=_result.firebase_uid, email=_result.email
             )
