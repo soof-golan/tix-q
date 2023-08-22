@@ -1,9 +1,9 @@
 import datetime
-import logging
-from typing import cast, TypeVar
+from typing import Annotated, cast
 
 import fastapi
 import httpx
+from fastapi import Depends
 from prisma import enums, models
 from pydantic import BaseModel
 from starlette.authentication import requires
@@ -69,8 +69,11 @@ async def read_many(
 
 @router.get("/room.readUnique")
 @requires("authenticated", status_code=401)
-async def read_many(request: fastapi.Request, input: str) -> TrpcResponse[RoomQuery]:
-    query = RoomId.from_trpc(input)
+async def read_unique(
+    request: fastapi.Request,
+    query: Annotated[RoomId, Depends(RoomId.from_trpc)],
+) -> TrpcResponse[RoomQuery]:
+    # TODO: remove this terrible query
     results = await models.WaitingRoom.prisma().find_many(
         where={
             "ownerId": request.state.user.id,
@@ -102,8 +105,9 @@ class RoomStats(BaseModel, TrpcMixin):
 
 @router.get("/room.stats")
 @requires("authenticated", status_code=401)
-async def read_many(request: fastapi.Request, input: str) -> TrpcResponse[RoomStats]:
-    query = RoomId.from_trpc(input)
+async def stats(
+    request: fastapi.Request, query: Annotated[RoomId, Depends(RoomId.from_trpc)]
+) -> TrpcResponse[RoomStats]:
     results = await models.Registrant.prisma().count(
         where={
             "waitingRoomId": query.id,
@@ -141,10 +145,10 @@ class RoomRegistrants(BaseModel, TrpcMixin):
 
 @router.get("/room.registrants")
 @requires("authenticated", status_code=401)
-async def read_many(
-    request: fastapi.Request, input: str
+async def registrants(
+    request: fastapi.Request,
+    query: Annotated[RoomId, Depends(RoomId.from_trpc)],
 ) -> TrpcResponse[RoomRegistrants]:
-    query = RoomId.from_trpc(input)
     results = await models.Registrant.prisma().find_many(
         where={
             "waitingRoomId": query.id,
