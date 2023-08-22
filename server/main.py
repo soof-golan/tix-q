@@ -1,3 +1,4 @@
+import asyncio
 import contextlib
 import typing
 from logging.config import dictConfig
@@ -8,6 +9,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from prisma import Prisma
 from starlette.middleware.authentication import AuthenticationMiddleware
 from starlette.middleware.gzip import GZipMiddleware
+from sqlalchemy.ext.asyncio import async_sessionmaker, create_async_engine
 from timing_asgi import TimingClient, TimingMiddleware
 from timing_asgi.integrations import StarletteScopeToName
 
@@ -42,13 +44,22 @@ async def lifespan(_app: fastapi.FastAPI) -> typing.AsyncIterator[State]:
      - disconnect from the database
 
     """
+    engine = create_async_engine(CONFIG.database_url, echo=True)
+
+    async_session = async_sessionmaker(engine)
+
     async with httpx.AsyncClient() as client, Prisma(
         auto_register=True, use_dotenv=True
-    ) as db:
+    ):
         yield {
             "http_client": client,
-            "db": db,
+            "db": async_session,
         }
+
+    cleanup_coros = [
+        engine.dispose(),
+    ]
+    await asyncio.gather(*cleanup_coros)
 
 
 class TimingLogger(TimingClient):
