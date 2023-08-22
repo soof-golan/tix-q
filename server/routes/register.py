@@ -1,9 +1,10 @@
 import logging
 import uuid
-from typing import cast
+from typing import Annotated, cast
 
 import fastapi
 import orjson
+from fastapi import Depends
 from prisma import enums, errors, models
 from pydantic import BaseModel, constr, EmailStr, UUID4
 
@@ -38,10 +39,35 @@ class RegisterResponse(BaseModel, TrpcMixin):
     waitingRoomId: str
 
 
+def turnstile_outcome(request: fastapi.Request) -> TurnstileOutcome:
+    """
+    Get the turnstile outcome from the request state
+    """
+    return cast(TurnstileOutcome, request.state.turnstile_outcome)
+
+
+async def waiting_room(data: RegisterRequest) -> models.WaitingRoom:
+    """
+    Query the database for the waiting room
+
+    :raises fastapi.HTTPException: If the waiting room ID is invalid
+    """
+    room = await fetch_waiting_room(str(data.waitingRoomId))
+    if room is None:
+        # Failed lookup, probably Invalid waiting room ID
+        raise fastapi.HTTPException(
+            status_code=400,
+            detail="Invalid waiting room ID"
+            + PLAY_NICE_RESPONSE.format(name=data.legalName),
+        )
+    return room
+
+
 @router.post("/register")
 async def create_participant(
-    request: fastapi.Request,
     data: RegisterRequest,
+    outcome: Annotated[TurnstileOutcome, Depends(turnstile_outcome)],
+    room: Annotated[models.WaitingRoom, Depends(waiting_room)],
 ) -> TrpcResponse[RegisterResponse]:
     """
     Register a participant for a waiting room
@@ -63,17 +89,6 @@ async def create_participant(
     - Return the new participant ID
         - this will be displayed on the client as "Your number registration number is: X"
     """
-    outcome = cast(TurnstileOutcome, request.state.turnstile_outcome)
-
-    # Verify the waiting room is open at the time of registration
-    room = await fetch_waiting_room(str(data.waitingRoomId))
-    if room is None:
-        # Failed lookup, probably Invalid waiting room ID
-        raise fastapi.HTTPException(
-            status_code=400,
-            detail="Invalid waiting room ID"
-            + PLAY_NICE_RESPONSE.format(name=data.legalName),
-        )
 
     registrant = {
         "legalName": data.legalName,
