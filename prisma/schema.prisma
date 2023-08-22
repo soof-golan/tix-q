@@ -23,8 +23,10 @@ model WaitingRoom {
   closesAt  DateTime
   published Boolean  @default(false)
 
-  markdown String
-  title    String
+  markdown         String
+  title            String
+  desktopImageBlob String?
+  mobileImageBlob  String?
 
   registrants Registrant[]
   owner       User         @relation(fields: [ownerId], references: [id])
