@@ -11,7 +11,7 @@ from sqlalchemy.ext.asyncio import (
 )
 
 
-def _session_maker(request: fastapi.Request) -> async_sessionmaker[AsyncSession]:
+def create_session_maker(request: fastapi.Request) -> async_sessionmaker[AsyncSession]:
     """
     Get a database session from the request state
     """
@@ -19,7 +19,7 @@ def _session_maker(request: fastapi.Request) -> async_sessionmaker[AsyncSession]
 
 
 async def db_session(
-    session_maker: Annotated[async_sessionmaker[AsyncSession], Depends(_session_maker)]
+    session_maker: Annotated[async_sessionmaker[AsyncSession], Depends(create_session_maker)]
 ) -> AsyncSession:
     """
     Get a database session from the request state
