@@ -6,13 +6,13 @@ import httpx
 from prisma import Prisma
 from pydantic import BaseModel
 from pydantic.generics import GenericModel
+from sqlalchemy.ext.asyncio import async_sessionmaker, AsyncSession
 from starlette.authentication import BaseUser
 
 
 class State(TypedDict):
     http_client: httpx.AsyncClient
-    turnstile_secret: str
-    db: Prisma
+    db: async_sessionmaker[AsyncSession]
 
 
 DataT = typing.TypeVar("DataT")
