@@ -16,15 +16,11 @@ from datetime import datetime
 from typing import List
 
 import sqlalchemy
-from sqlalchemy import ForeignKey
+from sqlalchemy import ForeignKey, types
 from sqlalchemy.orm import DeclarativeBase
 from sqlalchemy.orm import Mapped
 from sqlalchemy.orm import mapped_column
 from sqlalchemy.orm import relationship
-
-
-class Base(DeclarativeBase):
-    pass
 
 
 class IdType(enum.Enum):
@@ -32,9 +28,15 @@ class IdType(enum.Enum):
     PASSPORT = "PASSPORT"
 
 
+class Base(DeclarativeBase):
+    type_annotation_map = {
+        IdType: sqlalchemy.Enum(IdType, name="IdType"),
+    }
+
+
 class Registrant(Base):
     __tablename__ = "Registrant"
-    id: Mapped[uuid.UUID] = mapped_column(primary_key=True)
+    id: Mapped[uuid.UUID] = mapped_column(primary_key=True, server_default=sqlalchemy.text("gen_random_uuid()"))
     created_at: Mapped[datetime] = mapped_column(
         server_default=sqlalchemy.sql.func.now(), name="createdAt", nullable=False
     )
@@ -67,7 +69,7 @@ class Registrant(Base):
 
 class WaitingRoom(Base):
     __tablename__ = "WaitingRoom"
-    id: Mapped[uuid.UUID] = mapped_column(primary_key=True)
+    id: Mapped[uuid.UUID] = mapped_column(primary_key=True, server_default=sqlalchemy.text("gen_random_uuid()"))
     created_at: Mapped[datetime] = mapped_column(
         server_default=sqlalchemy.sql.func.now(), name="createdAt", nullable=False
     )
@@ -79,8 +81,8 @@ class WaitingRoom(Base):
         nullable=False,
     )
 
-    opens_at: Mapped[datetime] = mapped_column(nullable=False, name="opensAt")
-    closes_at: Mapped[datetime] = mapped_column(nullable=False, name="closesAt")
+    opens_at: Mapped[datetime] = mapped_column(types.DateTime(timezone=True), nullable=False, name="opensAt")
+    closes_at: Mapped[datetime] = mapped_column(types.DateTime(timezone=True), nullable=False, name="closesAt")
     published: Mapped[bool] = mapped_column(nullable=False, default=False)
 
     markdown: Mapped[str] = mapped_column(nullable=False)
@@ -96,7 +98,7 @@ class WaitingRoom(Base):
 
 class User(Base):
     __tablename__ = "User"
-    id: Mapped[uuid.UUID] = mapped_column(primary_key=True)
+    id: Mapped[uuid.UUID] = mapped_column(primary_key=True, server_default=sqlalchemy.text("gen_random_uuid()"))
     created_at: Mapped[datetime] = mapped_column(
         server_default=sqlalchemy.sql.func.now(), name="createdAt", nullable=False
     )
@@ -114,4 +116,3 @@ class User(Base):
     email: Mapped[str] = mapped_column(nullable=False)
 
     waiting_rooms: Mapped[List[WaitingRoom]] = relationship(back_populates="owner")
-
