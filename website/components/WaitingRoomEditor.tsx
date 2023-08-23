@@ -384,7 +384,16 @@ export default function WaitingRoomEditor({ id }: WaitingRoomContentProps) {
               </Link>
             )}
             {deploymentInProgress && (
-              <p>(if this takes longer than 5 minutes, please contact us)</p>
+              <>
+                <a
+                  href={"https://github.com/soof-golan/tix-q/actions"}
+                  target={"_blank"}
+                  rel={"noreferrer"}
+                >
+                  See deployment progress
+                </a>
+                <p>(if this takes longer than 5 minutes, please contact us)</p>
+              </>
             )}
             <button
               type="button"
@@ -398,7 +407,9 @@ export default function WaitingRoomEditor({ id }: WaitingRoomContentProps) {
                 <Spinner />
               ) : deploymentInProgress ? (
                 <>
-                  Deployment in progress <Spinner />
+                  <p>
+                    Deployment in progress <Spinner />
+                  </p>
                 </>
               ) : roomQuery.data.published ? (
                 <>Room Public 🚀</>
