@@ -42,7 +42,7 @@ async def lifespan(_app: fastapi.FastAPI) -> typing.AsyncIterator[State]:
      - disconnect from the database
 
     """
-    engine = create_async_engine(CONFIG.database_url, echo=True)
+    engine = create_async_engine(CONFIG.database_url, echo=not CONFIG.production, hide_parameters=CONFIG.production)
 
     async_session = async_sessionmaker(engine)
 
