@@ -28,7 +28,7 @@ fi
 
 function migrate() {
   echo "Attempting to migrate database"
-  yarn prisma migrate deploy
+  yarn dlx prisma migrate deploy
 }
 
 # Attempt to migrate database (retry 5 times with 5 second delay)
