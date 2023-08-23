@@ -9,11 +9,5 @@ function Page() {
   if (!id) {
     return <div>Missing id</div>;
   }
-  return (
-    <div className="mx-auto max-w-7xl px-2 sm:px-6 lg:px-8">
-      <div className="mx-auto max-w-3xl">
-        <WaitingRoomEditor id={id} />
-      </div>
-    </div>
-  );
+  return <WaitingRoomEditor id={id} />;
 }
