@@ -30,6 +30,8 @@ export default function CreateRoomCard() {
             markdown: data.markdown,
             opensAt: moment(data.opensAt).local().utc().toISOString(),
             closesAt: moment(data.closesAt).local().local().toISOString(),
+            mobileImageBlob: null,
+            desktopImageBlob: null,
           });
         })}
       >

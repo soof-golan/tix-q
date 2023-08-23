@@ -9,6 +9,8 @@ export const roomQueryOutputSchema = z.object({
   opensAt: z.string(),
   closesAt: z.string(),
   published: z.boolean(),
+  desktopImageBlob: z.string().nullable(),
+  mobileImageBlob: z.string().nullable(),
 });
 
 export const roomMutationInputSchema = z.object({
@@ -17,6 +19,8 @@ export const roomMutationInputSchema = z.object({
   markdown: z.string(),
   opensAt: z.string(),
   closesAt: z.string(),
+  desktopImageBlob: z.string().nullable(),
+  mobileImageBlob: z.string().nullable(),
 });
 
 export const roomStatsOutputSchema = z.object({
