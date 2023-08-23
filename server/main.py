@@ -6,9 +6,10 @@ from logging.config import dictConfig
 import fastapi
 import httpx
 from fastapi.middleware.cors import CORSMiddleware
+from sqlalchemy import select
 from starlette.middleware.authentication import AuthenticationMiddleware
 from starlette.middleware.gzip import GZipMiddleware
-from sqlalchemy.ext.asyncio import async_sessionmaker, create_async_engine
+from sqlalchemy.ext.asyncio import async_sessionmaker, AsyncEngine, create_async_engine
 from timing_asgi import TimingClient, TimingMiddleware
 from timing_asgi.integrations import StarletteScopeToName
 
@@ -42,20 +43,31 @@ async def lifespan(_app: fastapi.FastAPI) -> typing.AsyncIterator[State]:
      - disconnect from the database
 
     """
+    cleanup_coroutines = []
+    logger.info("Starting application")
+
     engine = create_async_engine(CONFIG.database_url, echo=not CONFIG.production, hide_parameters=CONFIG.production)
+    cleanup_coroutines.append(engine.dispose())
+    session_maker = async_sessionmaker(engine)
+    try:
+        await db_connection_check(engine)
+        async with httpx.AsyncClient() as client:
+            yield {
+                "http_client": client,
+                "db": session_maker,
+            }
+    finally:
+        await asyncio.gather(*cleanup_coroutines)
 
-    async_session = async_sessionmaker(engine)
 
-    async with httpx.AsyncClient() as client:
-        yield {
-            "http_client": client,
-            "db": async_session,
-        }
-
-    cleanup_coros = [
-        engine.dispose(),
-    ]
-    await asyncio.gather(*cleanup_coros)
+async def db_connection_check(engine: AsyncEngine) -> None:
+    """
+    Check that we can connect to the database
+    """
+    logger.info("db_connection_check: Connecting to database")
+    async with engine.connect() as connection:
+        connection_check = (await connection.execute(select(1))).scalar_one()
+        logger.info("db_connection_check: select %s", connection_check)
 
 
 class TimingLogger(TimingClient):
