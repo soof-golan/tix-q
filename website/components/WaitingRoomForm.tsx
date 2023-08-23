@@ -319,9 +319,9 @@ export default function WaitingRoomForm({
                     aria-busy={registerApi.isLoading}
                   >
                     {userTooEarly ? (
-                      "Too early to register"
+                      `Registration opens ${moment(opensAt).fromNow()}`
                     ) : userTooLate ? (
-                      "Too late to register"
+                      `registration closed ${moment(closesAt).fromNow()}`
                     ) : registerApi.isLoading ? (
                       <>
                         <Spinner />

@@ -10,8 +10,8 @@ type Props = inferProps<typeof onBeforeRender>;
 function Page({ rooms: _rooms }: Props) {
   const rooms = _rooms.map((room) => ({
     ...room,
-    opensAt: moment(room.opensAt).utc(true).local(),
-    closesAt: moment(room.closesAt).utc(true).local(),
+    opensAt: moment(room.opensAt),
+    closesAt: moment(room.closesAt),
   }));
   return (
     <>
