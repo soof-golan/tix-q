@@ -10,8 +10,8 @@ export async function onBeforeRender() {
       title: r.title,
       markdown: r.markdown,
       published: r.published,
-      opensAt: moment(r.opensAt).toISOString(),
-      closesAt: moment(r.closesAt).toISOString(),
+      opensAt: moment(r.opensAt).utc().toISOString(),
+      closesAt: moment(r.closesAt).utc().toISOString(),
     })),
   };
 
