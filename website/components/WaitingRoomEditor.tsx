@@ -180,255 +180,260 @@ export default function WaitingRoomEditor({ id }: WaitingRoomContentProps) {
 
   return (
     <>
-      <div className="my-2 w-full overflow-hidden rounded-lg bg-white bg-opacity-80 shadow backdrop-blur-sm">
-        {roomQuery.data.published === false && (
-          <form
-            className="flex flex-col"
-            onSubmit={handleSubmit(async (data) => {
-              if (roomQuery?.data?.published) {
-                return;
-              }
-              const [mobileImageBlob, desktopImageBlob] = await Promise.all([
-                toDataUrl(data.mobileImagFile[0]).catch(() => {
-                  alert("could not upload mobile image, please try again");
-                  return null;
-                }),
-                toDataUrl(data.desktopImagFile[0]).catch(() => {
-                  alert("could not upload desktop image, please try again");
-                  return null;
-                }),
-              ]);
-              updateApi.mutate({
-                id: id,
-                markdown: data.markdown,
-                mobileImageBlob,
-                desktopImageBlob,
-                title: data.title,
-                opensAt: moment(data.opensAt).local().utc().toISOString(),
-                closesAt: moment(data.closesAt).local().utc().toISOString(),
-              });
-            })}
-          >
-            <div className="flex items-center justify-between px-4 py-5 max-sm:flex-col sm:px-6">
-              <h1 className="text-3xl font-medium leading-6 text-gray-900">
-                Waiting Room Editor
-              </h1>
-            </div>
-            <div className="items-center px-4 py-5 max-sm:flex-col sm:px-6">
-              <p className="font-medium leading-6 text-gray-900">
-                Edit the content of the waiting room here, once you are done
-                click the save button below.
-              </p>
-              <p className="font-medium leading-6 text-gray-900">
-                There is a live preview of the content in the card below, edit
-                the content and see the changes in real time.
-              </p>
-            </div>
-            <div className="border-t border-gray-200">
-              <dl>
-                <div className="items-center bg-gray-50 bg-opacity-50 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6 ">
-                  <dt className="text-sm font-medium text-gray-500">Title</dt>
-                  <dd className="mt-1 text-2xl text-gray-900 sm:col-span-2 sm:mt-0">
-                    <input
-                      className="w-full rounded bg-indigo-500 bg-opacity-20 px-4 py-2 "
-                      {...register("title", {
-                        disabled: acceptingInput,
-                      })}
-                      type="text"
-                    />
-                  </dd>
-                </div>
-              </dl>
-            </div>
-            <div className="border-t border-gray-200">
-              <dl>
-                <div className="items-center bg-gray-50 bg-opacity-50 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6 ">
-                  <dt className="text-sm font-medium text-gray-500">
-                    Mobile Background Image
-                  </dt>
-                  <dd className="mt-1 text-2xl text-gray-900 sm:col-span-2 sm:mt-0">
-                    <input
-                      className="w-full rounded bg-indigo-500 bg-opacity-20 px-4 py-2 "
-                      {...register("mobileImagFile", {
-                        disabled: acceptingInput,
-                      })}
-                      type="file"
-                    />
-                  </dd>
-                </div>
-              </dl>
-            </div>
-            <div className="border-t border-gray-200">
-              <dl>
-                <div className="items-center bg-gray-50 bg-opacity-50 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6 ">
-                  <dt className="text-sm font-medium text-gray-500">
-                    Desktop Background Image
-                  </dt>
-                  <dd className="mt-1 text-2xl text-gray-900 sm:col-span-2 sm:mt-0">
-                    <input
-                      className="w-full rounded bg-indigo-500 bg-opacity-20 px-4 py-2 "
-                      {...register("desktopImagFile", {
-                        disabled: acceptingInput,
-                      })}
-                      type="file"
-                    />
-                  </dd>
-                </div>
-              </dl>
-            </div>
-            <div className="items-center  px-4 py-5 max-sm:flex-col sm:px-6">
-              <label className="text-2xl font-medium leading-6 text-gray-900">
-                Content editor
-              </label>
-              <p className="text-sm leading-6 text-gray-900">
-                Psst... This editor is a bit janky, so you may want to use
-                another editor and paste the content here after you are done.
-                you can use{" "}
-                <a
-                  className="text-blue-500 underline"
-                  href="https://stackedit.io/app#"
-                  target="_blank"
-                  rel="noreferrer"
-                >
-                  StackEdit
-                </a>{" "}
-                or{" "}
-                <a
-                  className="text-blue-500 underline"
-                  href="https://dillinger.io/"
-                  target="_blank"
-                  rel="noreferrer"
-                >
-                  Dillinger
-                </a>{" "}
-                to edit the content.
-              </p>
-            </div>
-            <div className="flex items-center justify-between px-4 py-5 max-sm:flex-col sm:px-6">
-              <textarea
-                {...register("markdown", {
-                  disabled: acceptingInput,
-                })}
-                className="min-h-[500px] w-full"
-              />
-            </div>
-            <div className="border-t border-gray-200">
-              <dl>
-                <div className="bg-gray-50 bg-opacity-50 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
-                  <dt className="text-sm font-medium text-gray-500">
-                    Opens At
-                  </dt>
-                  <dd className="mt-1 text-sm text-gray-900 sm:col-span-2 sm:mt-0">
-                    <input
-                      {...register("opensAt", {
-                        disabled: acceptingInput,
-                      })}
-                      type="datetime-local"
-                    />
-                  </dd>
-                </div>
-              </dl>
-              <dl>
-                <div className="bg-gray-50 bg-opacity-50 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
-                  <dt className="text-sm font-medium text-gray-500">
-                    Closes At
-                  </dt>
-                  <dd className="mt-1 text-sm text-gray-900 sm:col-span-2 sm:mt-0">
-                    <input
-                      {...register("closesAt", {
-                        disabled: acceptingInput,
-                      })}
-                      type="datetime-local"
-                    />
-                  </dd>
-                </div>
-              </dl>
-            </div>
-            <div className="flex items-center justify-between px-4 py-5 max-sm:flex-col sm:px-6">
-              <button
-                disabled={
-                  updateApi.isLoading ||
-                  publishApi.isLoading ||
-                  !dirty ||
-                  roomQuery.data?.published
+      <div className="flex flex-col justify-center space-x-2 space-y-2 xl:flex-row xl:space-y-0">
+        <div className="w-full max-w-3xl overflow-hidden rounded-lg bg-white bg-opacity-80 shadow backdrop-blur-sm xl:w-1/2">
+          {roomQuery.data.published === false && (
+            <form
+              className="flex flex-col"
+              onSubmit={handleSubmit(async (data) => {
+                if (roomQuery?.data?.published) {
+                  return;
                 }
-                type="submit"
+                const [mobileImageBlob, desktopImageBlob] = await Promise.all([
+                  toDataUrl(data.mobileImagFile[0]).catch(() => {
+                    alert("could not upload mobile image, please try again");
+                    return null;
+                  }),
+                  toDataUrl(data.desktopImagFile[0]).catch(() => {
+                    alert("could not upload desktop image, please try again");
+                    return null;
+                  }),
+                ]);
+                updateApi.mutate({
+                  id: id,
+                  markdown: data.markdown,
+                  mobileImageBlob,
+                  desktopImageBlob,
+                  title: data.title,
+                  opensAt: moment(data.opensAt).local().utc().toISOString(),
+                  closesAt: moment(data.closesAt).local().utc().toISOString(),
+                });
+              })}
+            >
+              <div className="flex items-center justify-between px-4 py-5 max-sm:flex-col sm:px-6">
+                <h1 className="text-3xl font-medium leading-6 text-gray-900">
+                  Waiting Room Editor
+                </h1>
+              </div>
+              <div className="items-center px-4 py-5 max-sm:flex-col sm:px-6">
+                <p className="font-medium leading-6 text-gray-900">
+                  Edit the content of the waiting room here, once you are done
+                  click the save button below.
+                </p>
+                <p className="font-medium leading-6 text-gray-900">
+                  There is a live preview of the content in the card below, edit
+                  the content and see the changes in real time.
+                </p>
+              </div>
+              <div className="border-t border-gray-200">
+                <dl>
+                  <div className="items-center bg-gray-50 bg-opacity-50 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6 ">
+                    <dt className="text-sm font-medium text-gray-500">Title</dt>
+                    <dd className="mt-1 text-2xl text-gray-900 sm:col-span-2 sm:mt-0">
+                      <input
+                        className="w-full rounded bg-indigo-500 bg-opacity-20 px-4 py-2 "
+                        {...register("title", {
+                          disabled: acceptingInput,
+                        })}
+                        type="text"
+                      />
+                    </dd>
+                  </div>
+                </dl>
+              </div>
+              <div className="border-t border-gray-200">
+                <dl>
+                  <div className="items-center bg-gray-50 bg-opacity-50 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6 ">
+                    <dt className="text-sm font-medium text-gray-500">
+                      Mobile Background Image
+                    </dt>
+                    <dd className="mt-1 text-2xl text-gray-900 sm:col-span-2 sm:mt-0">
+                      <input
+                        className="w-full rounded bg-indigo-500 bg-opacity-20 px-4 py-2 "
+                        {...register("mobileImagFile", {
+                          disabled: acceptingInput,
+                        })}
+                        type="file"
+                      />
+                    </dd>
+                  </div>
+                </dl>
+              </div>
+              <div className="border-t border-gray-200">
+                <dl>
+                  <div className="items-center bg-gray-50 bg-opacity-50 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6 ">
+                    <dt className="text-sm font-medium text-gray-500">
+                      Desktop Background Image
+                    </dt>
+                    <dd className="mt-1 text-2xl text-gray-900 sm:col-span-2 sm:mt-0">
+                      <input
+                        className="w-full rounded bg-indigo-500 bg-opacity-20 px-4 py-2 "
+                        {...register("desktopImagFile", {
+                          disabled: acceptingInput,
+                        })}
+                        type="file"
+                      />
+                    </dd>
+                  </div>
+                </dl>
+              </div>
+              <div className="items-center  px-4 py-5 max-sm:flex-col sm:px-6">
+                <label className="text-2xl font-medium leading-6 text-gray-900">
+                  Content editor
+                </label>
+                <p className="text-sm leading-6 text-gray-900">
+                  Psst... This editor is a bit janky, so you may want to use
+                  another editor and paste the content here after you are done.
+                  you can use{" "}
+                  <a
+                    className="text-blue-500 underline"
+                    href="https://stackedit.io/app#"
+                    target="_blank"
+                    rel="noreferrer"
+                  >
+                    StackEdit
+                  </a>{" "}
+                  or{" "}
+                  <a
+                    className="text-blue-500 underline"
+                    href="https://dillinger.io/"
+                    target="_blank"
+                    rel="noreferrer"
+                  >
+                    Dillinger
+                  </a>{" "}
+                  to edit the content.
+                </p>
+              </div>
+              <div className="flex items-center justify-between px-4 py-5 max-sm:flex-col sm:px-6">
+                <textarea
+                  {...register("markdown", {
+                    disabled: acceptingInput,
+                  })}
+                  className="min-h-[500px] w-full"
+                />
+              </div>
+              <div className="border-t border-gray-200">
+                <dl>
+                  <div className="bg-gray-50 bg-opacity-50 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+                    <dt className="text-sm font-medium text-gray-500">
+                      Opens At
+                    </dt>
+                    <dd className="mt-1 text-sm text-gray-900 sm:col-span-2 sm:mt-0">
+                      <input
+                        {...register("opensAt", {
+                          disabled: acceptingInput,
+                        })}
+                        type="datetime-local"
+                      />
+                    </dd>
+                  </div>
+                </dl>
+                <dl>
+                  <div className="bg-gray-50 bg-opacity-50 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+                    <dt className="text-sm font-medium text-gray-500">
+                      Closes At
+                    </dt>
+                    <dd className="mt-1 text-sm text-gray-900 sm:col-span-2 sm:mt-0">
+                      <input
+                        {...register("closesAt", {
+                          disabled: acceptingInput,
+                        })}
+                        type="datetime-local"
+                      />
+                    </dd>
+                  </div>
+                </dl>
+              </div>
+              <div className="flex items-center justify-between px-4 py-5 max-sm:flex-col sm:px-6">
+                <button
+                  disabled={
+                    updateApi.isLoading ||
+                    publishApi.isLoading ||
+                    !dirty ||
+                    roomQuery.data?.published
+                  }
+                  type="submit"
+                  className="mr-2 mt-2 rounded bg-indigo-500 px-4 py-2 text-white hover:bg-indigo-700 disabled:cursor-not-allowed disabled:opacity-50"
+                >
+                  {loading ? (
+                    <Spinner />
+                  ) : roomQuery.data?.published ? (
+                    <>Published (cannot be edited)</>
+                  ) : dirty ? (
+                    <>Save</>
+                  ) : (
+                    <>Saved</>
+                  )}
+                </button>
+              </div>
+            </form>
+          )}
+          <div className="flex justify-between px-4 py-5 max-sm:flex-col sm:px-6">
+            <div>
+              <p>Preview:</p>
+            </div>
+            <div>
+              {roomLiveQuery.data.urlReady && (
+                <Link href={`/room/${id}`}>
+                  <button
+                    className="mr-2 mt-2 rounded bg-indigo-500 px-4 py-2 text-white hover:bg-indigo-700 disabled:cursor-not-allowed disabled:opacity-50"
+                    type="button"
+                  >
+                    Open Waiting Room
+                  </button>
+                </Link>
+              )}
+              {deploymentInProgress && (
+                <>
+                  <a
+                    href={"https://github.com/soof-golan/tix-q/actions"}
+                    target={"_blank"}
+                    rel={"noreferrer"}
+                  >
+                    See deployment progress
+                  </a>
+                  <p>
+                    (if this takes longer than 5 minutes, please contact us)
+                  </p>
+                </>
+              )}
+              <button
+                type="button"
+                disabled={roomQuery.data.published || dirty}
+                onClick={() => {
+                  publishApi.mutate({ id });
+                }}
                 className="mr-2 mt-2 rounded bg-indigo-500 px-4 py-2 text-white hover:bg-indigo-700 disabled:cursor-not-allowed disabled:opacity-50"
               >
                 {loading ? (
                   <Spinner />
-                ) : roomQuery.data?.published ? (
-                  <>Published (cannot be edited)</>
+                ) : deploymentInProgress ? (
+                  <>
+                    <p>
+                      Deployment in progress <Spinner />
+                    </p>
+                  </>
+                ) : roomQuery.data.published ? (
+                  <>Room Public 🚀</>
                 ) : dirty ? (
-                  <>Save</>
+                  <>Save before publishing</>
                 ) : (
-                  <>Saved</>
+                  <>Publish (cannot be undone)</>
                 )}
               </button>
             </div>
-          </form>
-        )}
-        <div className="flex justify-between px-4 py-5 max-sm:flex-col sm:px-6">
-          <div>
-            <p>Preview:</p>
-          </div>
-          <div>
-            {roomLiveQuery.data.urlReady && (
-              <Link href={`/room/${id}`}>
-                <button
-                  className="mr-2 mt-2 rounded bg-indigo-500 px-4 py-2 text-white hover:bg-indigo-700 disabled:cursor-not-allowed disabled:opacity-50"
-                  type="button"
-                >
-                  Open Waiting Room
-                </button>
-              </Link>
-            )}
-            {deploymentInProgress && (
-              <>
-                <a
-                  href={"https://github.com/soof-golan/tix-q/actions"}
-                  target={"_blank"}
-                  rel={"noreferrer"}
-                >
-                  See deployment progress
-                </a>
-                <p>(if this takes longer than 5 minutes, please contact us)</p>
-              </>
-            )}
-            <button
-              type="button"
-              disabled={roomQuery.data.published || dirty}
-              onClick={() => {
-                publishApi.mutate({ id });
-              }}
-              className="mr-2 mt-2 rounded bg-indigo-500 px-4 py-2 text-white hover:bg-indigo-700 disabled:cursor-not-allowed disabled:opacity-50"
-            >
-              {loading ? (
-                <Spinner />
-              ) : deploymentInProgress ? (
-                <>
-                  <p>
-                    Deployment in progress <Spinner />
-                  </p>
-                </>
-              ) : roomQuery.data.published ? (
-                <>Room Public 🚀</>
-              ) : dirty ? (
-                <>Save before publishing</>
-              ) : (
-                <>Publish (cannot be undone)</>
-              )}
-            </button>
           </div>
         </div>
+        <div className="w-full max-w-3xl xl:w-1/2">
+          <MarkdownCard
+            title={liveTitle}
+            content={liveMarkdown}
+            mobileImageBlob={smallImageUrl}
+            desktopImageBlob={largeImageUrl}
+          />
+        </div>
       </div>
-
-      <MarkdownCard
-        title={liveTitle}
-        content={liveMarkdown}
-        mobileImageBlob={smallImageUrl}
-        desktopImageBlob={largeImageUrl}
-      />
     </>
   );
 }

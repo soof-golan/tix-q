@@ -1,7 +1,7 @@
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import rehypeSanitize from "rehype-sanitize";
-import { useMediaQuery } from "@mui/material";
+import { useContainerQuery } from "react-container-query";
 
 type MarkdownProps = {
   content: string;
@@ -16,12 +16,21 @@ export default function MarkdownCard({
   desktopImageBlob,
   mobileImageBlob,
 }: MarkdownProps) {
-  const isSmallScreen = useMediaQuery("(max-width:600px)");
-  const imageUrl = isSmallScreen ? mobileImageBlob : desktopImageBlob;
+  const [params, containerRef] = useContainerQuery(
+    {
+      isMobile: {
+        maxWidth: 700,
+      },
+    },
+    {}
+  );
+  const isMobile = params.isMobile;
+  const imageUrl = isMobile ? mobileImageBlob : desktopImageBlob;
 
   return (
     <div
-      className="backdrop-blur-10 rounded-xl bg-white bg-opacity-25 p-4"
+      className="backdrop-blur-10 max-w-3xl rounded-xl bg-white bg-opacity-25 p-4 transition-all duration-100 ease-in-out"
+      ref={containerRef}
       style={{
         backgroundImage: `url(${imageUrl})`,
         backgroundSize: "cover",
