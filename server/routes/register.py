@@ -1,4 +1,3 @@
-import logging
 import uuid
 from typing import Annotated, cast
 
@@ -143,7 +142,7 @@ async def create_participant(
                 id_type=data.idType,
                 waiting_room_id=data.waitingRoomId,
                 turnstile_success=outcome.success,
-                turnstile_timestamp=outcome.challenge_ts.replace(tzinfo=None),
+                turnstile_timestamp=outcome.challenge_ts,
             )
             .returning(Registrant.id)
         )
