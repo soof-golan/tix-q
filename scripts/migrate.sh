@@ -5,25 +5,25 @@ set -eou pipefail
 # Check DATABASE_URL is set
 if [ -z ${DATABASE_URL+x} ]; then
   echo "DATABASE_URL is unset"
-  exit
+  exit 1
 fi
 
-# Check if prisma executable is available
-if ! command -v prisma &>/dev/null; then
+# Check if yarn executable is available
+if ! command -v yarn &>/dev/null; then
   echo "Prisma CLI could not be found"
-  exit
+  exit 1
 fi
 
 # Check if prisma schema file exists
 if [ ! -f ./prisma/schema.prisma ]; then
   echo "Prisma schema file not found"
-  exit
+  exit 1
 fi
 
 # Check if prisma migration directory exists
 if [ ! -d ./prisma/migrations ]; then
   echo "Prisma migrations directory not found"
-  exit
+  exit 1
 fi
 
 function migrate() {
