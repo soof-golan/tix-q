@@ -36,9 +36,6 @@ jobs:
           cache: 'yarn'
           cache-dependency-path: website/yarn.lock
 
-      - name: Install Prisma
-        run: "pip install -r server/requirements.txt"
-
       - name: Migrate production database with prisma
         run: bash scripts/migrate.sh
         env:

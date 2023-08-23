@@ -26,11 +26,9 @@ if [ ! -d ./prisma/migrations ]; then
   exit
 fi
 
-prisma py fetch
-
 function migrate() {
   echo "Attempting to migrate database"
-  prisma migrate deploy
+  yarn prisma migrate deploy
 }
 
 # Attempt to migrate database (retry 5 times with 5 second delay)
