@@ -341,13 +341,23 @@ export default function WaitingRoomForm({
                   {registerApi.isSuccess && registerApi.data.id && (
                     <>
                       <p>Registered Successfully!</p>
-                      <p>Your registration ID is: {registerApi.data.id}</p>
                       <a
                         className="text-blue-500 underline"
                         href={window.location.href}
                       >
-                        Register another person
+                        <p>Click here to register another person</p>
                       </a>
+                      <p dir="auto">ההרשמה בוצעה בהצלחה!</p>
+                      <a
+                        dir="auto"
+                        className="text-blue-500 underline"
+                        href={window.location.href}
+                      >
+                        <p>לחצו כאן לביצוע הרשמה נוספת</p>
+                      </a>
+                      <p>Registration ID: </p>
+                      <p className="font-mono">{registerApi.data.id}</p>
+                      <p>({"you don't need to save this id"})</p>
                     </>
                   )}
                 </dd>
