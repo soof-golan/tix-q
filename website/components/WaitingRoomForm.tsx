@@ -240,7 +240,7 @@ export default function WaitingRoomForm({
                 <dd className="text-sm font-medium text-gray-500" dir="auto">
                   <label htmlFor="phoenNumber">מספר טלפון</label>
                   <p className="text-xs text-gray-400">
-                    דוגמאות: 0541234567, 972541234567, 00972541234567
+                    דוגמאות: 0541234567, 972541234567+, 00972541234567
                   </p>
                 </dd>
                 <dt className="col-span-3 mt-1 text-sm text-gray-900 sm:mt-0">
