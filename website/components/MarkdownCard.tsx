@@ -1,7 +1,7 @@
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import rehypeSanitize from "rehype-sanitize";
-import useMediaQuery from "@mui/material/useMediaQuery";
+import { useMediaQuery } from "@mui/material";
 
 type MarkdownProps = {
   content: string;
