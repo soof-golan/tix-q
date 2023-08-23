@@ -9,10 +9,7 @@
   },
   "dependencies": {
     "@builder.io/partytown": "^0.8.0",
-    "@emotion/react": "^11.11.1",
-    "@emotion/styled": "^11.11.0",
     "@hookform/resolvers": "^3.1.1",
-    "@mui/material": "^5.14.5",
     "@prisma/client": "4.15.0",
     "@tanstack/react-query": "^4.29.12",
     "@trpc/client": "^10.30.0",
@@ -36,6 +33,7 @@
     "firebase": "^9.22.2",
     "moment": "^2.29.4",
     "react": "^18.2.0",
+    "react-container-query": "^0.12.1",
     "react-countdown": "^2.3.5",
     "react-countup": "^6.4.2",
     "react-dom": "^18.2.0",
