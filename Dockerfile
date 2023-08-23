@@ -14,16 +14,6 @@ RUN apt-get update && apt-get install -y \
 
 WORKDIR /app
 
-# Copy prisma schema
-COPY prisma /app/prisma
-
-# Generate prisma client (this is stored in site-packages directory)
-# This downloads NodeJS and runs the prisma generator
-# The script removes node binaries after generation is complete
-COPY server/scripts/prisma-generate.sh /tmp/prisma-generate.sh
-RUN chmod +x /tmp/prisma-generate.sh
-RUN /tmp/prisma-generate.sh
-
 # Copy the rest of the app
 COPY . /app
 

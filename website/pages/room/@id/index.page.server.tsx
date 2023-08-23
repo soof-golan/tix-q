@@ -22,6 +22,8 @@ async function onBeforeRender(pageContext: PageContextServer) {
         opensAt: moment(room.opensAt),
         closesAt: moment(room.closesAt),
         ownerEmail: room.owner.email,
+        mobileImageBlob: room.mobileImageBlob,
+        desktopImageBlob: room.desktopImageBlob,
       },
     },
   };

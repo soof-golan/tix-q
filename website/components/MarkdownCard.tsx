@@ -1,15 +1,33 @@
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import rehypeSanitize from "rehype-sanitize";
+import useMediaQuery from "@mui/material/useMediaQuery";
 
 type MarkdownProps = {
   content: string;
   title: string;
+  mobileImageBlob?: string;
+  desktopImageBlob?: string;
 };
 
-export default function MarkdownCard({ content, title }: MarkdownProps) {
+export default function MarkdownCard({
+  content,
+  title,
+  desktopImageBlob,
+  mobileImageBlob,
+}: MarkdownProps) {
+  const isSmallScreen = useMediaQuery("(max-width:600px)");
+  const imageUrl = isSmallScreen ? mobileImageBlob : desktopImageBlob;
+
   return (
-    <div className="backdrop-blur-10 rounded-xl bg-white bg-opacity-25 p-4">
+    <div
+      className="backdrop-blur-10 rounded-xl bg-white bg-opacity-25 p-4"
+      style={{
+        backgroundImage: `url(${imageUrl})`,
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+      }}
+    >
       <h2 className="my-4 text-center text-3xl font-extrabold sm:text-4xl">
         {title}
       </h2>

@@ -3,12 +3,16 @@ from typing import Annotated, cast
 
 import fastapi
 import httpx
+import sqlalchemy
 from fastapi import Depends
-from prisma import enums, models
 from pydantic import BaseModel
+from sqlalchemy import insert, select, update
+from sqlalchemy.ext.asyncio import AsyncSession
 from starlette.authentication import requires
 
+from server.models import IdType, WaitingRoom, Registrant as DbRegistrant
 from server.config import CONFIG
+from server.db.session import db_session
 from server.logger import logger
 from server.trpc import trpc, TrpcMixin
 from server.types import TrpcResponse
@@ -20,6 +24,8 @@ class RoomQuery(BaseModel, TrpcMixin):
     id: str
     title: str
     markdown: str
+    desktopImageBlob: str | None
+    mobileImageBlob: str | None
     createdAt: datetime.datetime
     updatedAt: datetime.datetime
     opensAt: datetime.datetime
@@ -31,6 +37,8 @@ class RoomMutation(BaseModel):
     id: str
     title: str
     markdown: str
+    desktopImageBlob: str | None
+    mobileImageBlob: str | None
     opensAt: datetime.datetime
     closesAt: datetime.datetime
 
@@ -43,26 +51,28 @@ class RoomId(BaseModel, TrpcMixin):
 @requires("authenticated", status_code=401)
 async def read_many(
     request: fastapi.Request,
+    db: Annotated[AsyncSession, Depends(db_session)],
 ) -> TrpcResponse[list[RoomQuery]]:
-    rooms = await models.WaitingRoom.prisma().find_many(
-        where={"ownerId": request.state.user.id},
-        order={
-            "createdAt": "desc",
-        },
+    rooms_iterable = await db.scalars(
+        select(WaitingRoom)
+        .where(WaitingRoom.owner_id == str(request.state.user.id))
+        .order_by(WaitingRoom.created_at.desc())
     )
     return trpc(
         [
             RoomQuery(
-                id=room.id,
+                id=str(room.id),
                 title=room.title,
                 markdown=room.markdown,
-                createdAt=room.createdAt,
-                updatedAt=room.updatedAt,
-                opensAt=room.opensAt,
-                closesAt=room.closesAt,
+                desktopImageBlob=room.desktop_image_blob,
+                mobileImageBlob=room.mobile_image_blob,
+                createdAt=room.created_at,
+                updatedAt=room.updated_at,
+                opensAt=room.opens_at,
+                closesAt=room.closes_at,
                 published=room.published,
             )
-            for room in rooms
+            for room in rooms_iterable
         ]
     )
 
@@ -72,28 +82,26 @@ async def read_many(
 async def read_unique(
     request: fastapi.Request,
     query: Annotated[RoomId, Depends(RoomId.from_trpc)],
+    session: Annotated[AsyncSession, Depends(db_session)],
 ) -> TrpcResponse[RoomQuery]:
-    # TODO: remove this terrible query
-    results = await models.WaitingRoom.prisma().find_many(
-        where={
-            "ownerId": request.state.user.id,
-            "AND": {
-                "id": query.id,
-            },
-        },
+    room = await session.scalar(
+        select(WaitingRoom)
+        .where(WaitingRoom.id == query.id)
+        .where(WaitingRoom.owner_id == request.state.user.id)
     )
-    if len(results) != 1:
+    if room is None:
         raise fastapi.HTTPException(status_code=401, detail="Invalid waiting room ID")
 
-    room = results[0]
     return RoomQuery(
-        id=room.id,
+        id=str(room.id),
         title=room.title,
         markdown=room.markdown,
-        createdAt=room.createdAt,
-        updatedAt=room.updatedAt,
-        opensAt=room.opensAt,
-        closesAt=room.closesAt,
+        desktopImageBlob=room.desktop_image_blob,
+        mobileImageBlob=room.mobile_image_blob,
+        createdAt=room.created_at,
+        updatedAt=room.updated_at,
+        opensAt=room.opens_at,
+        closesAt=room.closes_at,
         published=room.published,
     ).trpc
 
@@ -106,21 +114,22 @@ class RoomStats(BaseModel, TrpcMixin):
 @router.get("/room.stats")
 @requires("authenticated", status_code=401)
 async def stats(
-    request: fastapi.Request, query: Annotated[RoomId, Depends(RoomId.from_trpc)]
+    request: fastapi.Request,
+    query: Annotated[RoomId, Depends(RoomId.from_trpc)],
+    session: Annotated[AsyncSession, Depends(db_session)],
 ) -> TrpcResponse[RoomStats]:
-    results = await models.Registrant.prisma().count(
-        where={
-            "waitingRoomId": query.id,
-            "AND": {
-                "WaitingRoom": {
-                    "ownerId": request.state.user.id,
-                },
-            },
-        },
-    )
+    count: int = (
+        await session.execute(
+            select(sqlalchemy.func.count())
+            .select_from(DbRegistrant)
+            .where(DbRegistrant.waiting_room_id == query.id)
+            .where(WaitingRoom.owner_id == request.state.user.id)
+        )
+    ).scalar_one()
+
     return RoomStats(
-        id=query.id,
-        registrantsCount=results,
+        id=str(query.id),
+        registrantsCount=count,
     ).trpc
 
 
@@ -130,7 +139,7 @@ class Registrant(BaseModel):
     email: str
     phoneNumber: str
     idNumber: str
-    idType: enums.IdType
+    idType: IdType
     turnstileSuccess: bool
     turnstileTimestamp: datetime.datetime | None
 
@@ -148,36 +157,31 @@ class RoomRegistrants(BaseModel, TrpcMixin):
 async def registrants(
     request: fastapi.Request,
     query: Annotated[RoomId, Depends(RoomId.from_trpc)],
+    session: Annotated[AsyncSession, Depends(db_session)],
 ) -> TrpcResponse[RoomRegistrants]:
-    results = await models.Registrant.prisma().find_many(
-        where={
-            "waitingRoomId": query.id,
-            "AND": {
-                "WaitingRoom": {
-                    "ownerId": request.state.user.id,
-                },
-            },
-        },
-        order={
-            "createdAt": "asc",
-        },
+    result = await session.scalars(
+        select(DbRegistrant)
+        .where(DbRegistrant.waiting_room_id == query.id)
+        .where(WaitingRoom.owner_id == request.state.user.id)
+        .order_by(DbRegistrant.created_at.asc())
     )
+
     return RoomRegistrants(
         id=query.id,
         registrants=[
             Registrant(
                 id=registrant.id,
-                legalName=registrant.legalName,
+                legalName=registrant.legal_name,
                 email=registrant.email,
-                phoneNumber=registrant.phoneNumber,
-                idNumber=registrant.idNumber,
-                idType=registrant.idType,
-                turnstileSuccess=registrant.turnstileSuccess,
-                turnstileTimestamp=registrant.turnstileTimestamp,
-                createdAt=registrant.createdAt,
-                updatedAt=registrant.updatedAt,
+                phoneNumber=registrant.phone_number,
+                idNumber=registrant.id_number,
+                idType=registrant.id_type,
+                turnstileSuccess=registrant.turnstile_success,
+                turnstileTimestamp=registrant.turnstile_timestamp,
+                createdAt=registrant.created_at,
+                updatedAt=registrant.updated_at,
             )
-            for registrant in results
+            for registrant in result
         ],
     ).trpc
 
@@ -192,95 +196,105 @@ class RoomCreateRequest(BaseModel):
 @router.post("/room.create")
 @requires("authenticated", status_code=401)
 async def create(
-    request: fastapi.Request, new_room: RoomCreateRequest
+    request: fastapi.Request,
+    new_room: RoomCreateRequest,
+    session: Annotated[AsyncSession, Depends(db_session)],
 ) -> TrpcResponse[RoomQuery]:
-    result = await models.WaitingRoom.prisma().create(
-        data={
-            "title": new_room.title,
-            "markdown": new_room.markdown,
-            "ownerId": request.state.user.id,
-            "opensAt": new_room.opensAt,
-            "closesAt": new_room.closesAt,
-            "published": False,
-        }
-    )
-    return RoomQuery(
-        id=result.id,
-        title=result.title,
-        markdown=result.markdown,
-        createdAt=result.createdAt,
-        updatedAt=result.updatedAt,
-        opensAt=result.opensAt,
-        closesAt=result.closesAt,
-        published=result.published,
-    ).trpc
+    async with session.begin():
+        statement = (
+            insert(WaitingRoom)
+            .values(
+                title=new_room.title,
+                markdown=new_room.markdown,
+                owner_id=request.state.user.id,
+                opens_at=new_room.opensAt,
+                closes_at=new_room.closesAt,
+                published=False,
+            )
+            .returning(WaitingRoom)
+        )
+        result = (await session.execute(statement)).scalar_one()
+        return RoomQuery(
+            id=str(result.id),
+            title=result.title,
+            markdown=result.markdown,
+            createdAt=result.created_at,
+            updatedAt=result.updated_at,
+            opensAt=result.opens_at,
+            closesAt=result.closes_at,
+            published=result.published,
+        ).trpc
 
 
 @router.post("/room.update")
 @requires("authenticated", status_code=401)
-async def update(
-    request: fastapi.Request, room: RoomMutation
+async def room_update(
+    request: fastapi.Request,
+    room: RoomMutation,
+    session: Annotated[AsyncSession, Depends(db_session)],
 ) -> TrpcResponse[RoomQuery]:
-    updated = await models.WaitingRoom.prisma().update_many(
-        where={
-            "id": room.id,
-            "AND": [
-                {"ownerId": request.state.user.id},
-                {"published": False},
-            ],
-        },
-        data={
-            "title": room.title,
-            "markdown": room.markdown,
-            "opensAt": room.opensAt,
-            "closesAt": room.closesAt,
-        },
-    )
-    if updated != 1:
-        raise fastapi.HTTPException(
-            status_code=400, detail="Invalid waiting room ID / already published"
+    async with session.begin():
+        statement = (
+            update(WaitingRoom)
+            .where(WaitingRoom.id == room.id)
+            .where(WaitingRoom.owner_id == request.state.user.id)
+            .values(
+                title=room.title,
+                markdown=room.markdown,
+                desktop_image_blob=room.desktopImageBlob,
+                mobile_image_blob=room.mobileImageBlob,
+                opens_at=room.opensAt,
+                closes_at=room.closesAt,
+            )
+            .returning(WaitingRoom)
         )
-    result = await models.WaitingRoom.prisma().find_unique(where={"id": room.id})
-    return RoomQuery(
-        id=result.id,
-        title=result.title,
-        markdown=result.markdown,
-        createdAt=result.createdAt,
-        updatedAt=result.updatedAt,
-        opensAt=result.opensAt,
-        closesAt=result.closesAt,
-        published=result.published,
-    ).trpc
+        result = (await session.execute(statement)).scalar_one()
+        return RoomQuery(
+            id=str(result.id),
+            title=result.title,
+            markdown=result.markdown,
+            desktopImageBlob=result.desktop_image_blob,
+            mobileImageBlob=result.mobile_image_blob,
+            createdAt=result.created_at,
+            updatedAt=result.updated_at,
+            opensAt=result.opens_at,
+            closesAt=result.closes_at,
+            published=result.published,
+        ).trpc
 
 
 @router.post("/room.publish")
 @requires("authenticated", status_code=401)
-async def publish(request: fastapi.Request, room: RoomId) -> TrpcResponse[RoomQuery]:
-    updated = await models.WaitingRoom.prisma().update_many(
-        where={
-            "id": room.id,
-            "AND": [{"ownerId": request.state.user.id}],
-        },
-        data={
-            "published": True,
-        },
-    )
-    if updated != 1:
-        raise fastapi.HTTPException(status_code=400, detail="Invalid waiting room ID")
+async def publish(
+    request: fastapi.Request,
+    room: RoomId,
+    session: Annotated[AsyncSession, Depends(db_session)],
+) -> TrpcResponse[RoomQuery]:
+    async with session.begin():
+        statement = (
+            update(WaitingRoom)
+            .where(WaitingRoom.id == room.id)
+            .where(WaitingRoom.owner_id == request.state.user.id)
+            .values(published=True)
+            .returning(WaitingRoom)
+        )
+        result = (await session.execute(statement)).scalar_one()
+        session.expunge(result)
 
     # TODO: Limit deploy hook rate
     if CONFIG.production:
         await trigger_deployment(request)
 
-    result = await models.WaitingRoom.prisma().find_unique(where={"id": room.id})
     return RoomQuery(
-        id=result.id,
+        id=str(result.id),
         title=result.title,
         markdown=result.markdown,
-        createdAt=result.createdAt,
-        updatedAt=result.updatedAt,
-        opensAt=result.opensAt,
-        closesAt=result.closesAt,
+        desktopImageBlob=result.desktop_image_blob,
+        mobileImageBlob=result.mobile_image_blob,
+        createdAt=result.created_at,
+        updatedAt=result.updated_at,
+        opensAt=result.opens_at,
+        closesAt=result.closes_at,
         published=result.published,
     ).trpc
 

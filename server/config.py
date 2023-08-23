@@ -38,5 +38,10 @@ class Config(BaseModel):
     Whether or not the server is running in production mode (affects CORS origins and deployment triggers)
     """
 
+    database_url: str = os.environ.get("SQLALCHEMY_DATABASE_URL")
+    """
+    The URL to the database (cockroachdb)
+    """
+
 
 CONFIG = Config()

@@ -1,10 +1,15 @@
 import datetime
+from typing import Annotated
 
 import fastapi
-from prisma import errors, models
+from fastapi import Depends
 from pydantic import BaseModel
+from sqlalchemy import update
+from sqlalchemy.ext.asyncio import AsyncSession
 from starlette.authentication import requires
 
+from server.db.session import db_session
+from server.models import WaitingRoom
 from server.types import TrpcData, TrpcResponse
 
 router = fastapi.APIRouter()
@@ -25,7 +30,11 @@ class WaitingRoomEditResponse(BaseModel):
 
 @router.post("/markdown.edit")
 @requires("authenticated", status_code=401)
-async def edit_waiting_room_content(request: fastapi.Request, edit_request: WaitingRoomEditRequest) -> TrpcResponse[WaitingRoomEditResponse]:
+async def edit_waiting_room_content(
+    request: fastapi.Request,
+    edit_request: WaitingRoomEditRequest,
+    session: Annotated[AsyncSession, Depends(db_session)],
+) -> TrpcResponse[WaitingRoomEditResponse]:
     """
     Edit the markdown contents of a waiting room
 
@@ -37,29 +46,19 @@ async def edit_waiting_room_content(request: fastapi.Request, edit_request: Wait
 
     - TrpcResponse[WaitingRoomEditResponse]: The response containing the updated waiting room
     """
-    try:
-        result = await models.WaitingRoom.prisma().update_many(
-            where={
-                # Ensure the user owns the waiting room
-                "AND": [
-                    {
-                        "ownerId": request.state.user.id,
-                    },
-                    {
-                        "id": edit_request.id,
-                    }
-                ]
-            },
-            data={
-                "markdown": edit_request.markdown,
-                "title": edit_request.title,
-            },
-        )
-        if result != 1:
-            raise fastapi.HTTPException(status_code=400, detail="Invalid waiting room ID")
-        room = await models.WaitingRoom.prisma().find_unique(where={"id": edit_request.id})
-    except errors.RecordNotFoundError:
-        raise fastapi.HTTPException(status_code=400, detail="Invalid waiting room ID")
+    async with session.begin():
+        room = (
+            await session.execute(
+                update(WaitingRoom)
+                .where(WaitingRoom.id == edit_request.id)
+                .where(WaitingRoom.owner_id == request.user.id)
+                .values(
+                    markdown=edit_request.markdown,
+                    title=edit_request.title,
+                )
+                .returning(WaitingRoom)
+            )
+        ).scalar_one()
 
     return TrpcResponse(
         result=TrpcData(
@@ -67,7 +66,7 @@ async def edit_waiting_room_content(request: fastapi.Request, edit_request: Wait
                 id=room.id,
                 markdown=room.markdown,
                 title=room.title,
-                updatedAt=room.updatedAt,
+                updatedAt=room.updated_at,
             )
         )
     )

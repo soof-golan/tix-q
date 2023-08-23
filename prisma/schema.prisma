@@ -1,12 +1,6 @@
 // This is your Prisma schema file,
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
-generator client {
-  provider             = "prisma-client-py"
-  recursive_type_depth = 3
-  interface            = "asyncio"
-}
-
 generator jsclient {
   provider = "prisma-client-js"
 
@@ -29,8 +23,10 @@ model WaitingRoom {
   closesAt  DateTime
   published Boolean  @default(false)
 
-  markdown String
-  title    String
+  markdown         String
+  title            String
+  desktopImageBlob String?
+  mobileImageBlob  String?
 
   registrants Registrant[]
   owner       User         @relation(fields: [ownerId], references: [id])

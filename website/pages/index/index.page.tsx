@@ -7,7 +7,12 @@ export { Page };
 
 type Props = inferProps<typeof onBeforeRender>;
 
-function Page({ rooms }: Props) {
+function Page({ rooms: _rooms }: Props) {
+  const rooms = _rooms.map((room) => ({
+    ...room,
+    opensAt: moment(room.opensAt).utc(true).local(),
+    closesAt: moment(room.closesAt).utc(true).local(),
+  }));
   return (
     <>
       <h1 className="p-4 text-center text-4xl font-bold text-white">

@@ -42,7 +42,7 @@ class TurnstileMiddleware(BaseHTTPMiddleware):
 
         data = response.json()
         try:
-            challenge_ts = datetime.fromisoformat(data["challenge_ts"])
+            challenge_ts = datetime.fromisoformat(data["challenge_ts"]).replace(tzinfo=None)
         except (KeyError, ValueError):
             logger.debug("Invalid turnstile token (challenge_ts)")
             request.state.turnstile_outcome = TurnstileOutcome(

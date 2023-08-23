@@ -1,15 +1,18 @@
-import logging
 import uuid
-from typing import cast
+from typing import Annotated, cast
 
 import fastapi
 import orjson
-from prisma import enums, errors, models
+from fastapi import Depends
 from pydantic import BaseModel, constr, EmailStr, UUID4
+from sqlalchemy import insert
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from server.constants import PLAY_NICE_RESPONSE
+from server.db.session import db_session
 from server.db.waiting_room import fetch_waiting_room
 from server.logger import logger
+from server.models import IdType, Registrant, WaitingRoom
 from server.trpc import TrpcMixin
 from server.turnstile import handle_turnstile_errors
 from server.types import TrpcResponse, TurnstileOutcome
@@ -23,7 +26,7 @@ class RegisterRequest(BaseModel):
     email: EmailStr
     phoneNumber: constr(strip_whitespace=True, min_length=1, max_length=255)
     idNumber: constr(strip_whitespace=True, min_length=1, max_length=255)
-    idType: enums.IdType
+    idType: IdType
     waitingRoomId: uuid.UUID
 
 
@@ -34,14 +37,40 @@ class RegisterResponse(BaseModel, TrpcMixin):
     email: EmailStr
     phoneNumber: str
     idNumber: str
-    idType: enums.IdType
+    idType: IdType
     waitingRoomId: str
+
+
+def turnstile_outcome(request: fastapi.Request) -> TurnstileOutcome:
+    """
+    Get the turnstile outcome from the request state
+    """
+    return cast(TurnstileOutcome, request.state.turnstile_outcome)
+
+
+async def waiting_room(data: RegisterRequest, session: Annotated[AsyncSession, Depends(db_session)]) -> WaitingRoom:
+    """
+    Query the database for the waiting room
+
+    :raises fastapi.HTTPException: If the waiting room ID is invalid
+    """
+    room = await fetch_waiting_room(session, str(data.waitingRoomId))
+    if room is None:
+        # Failed lookup, probably Invalid waiting room ID
+        raise fastapi.HTTPException(
+            status_code=400,
+            detail="Invalid waiting room ID"
+            + PLAY_NICE_RESPONSE.format(name=data.legalName),
+        )
+    return room
 
 
 @router.post("/register")
 async def create_participant(
-    request: fastapi.Request,
     data: RegisterRequest,
+    outcome: Annotated[TurnstileOutcome, Depends(turnstile_outcome)],
+    room: Annotated[WaitingRoom, Depends(waiting_room)],
+    session: Annotated[AsyncSession, Depends(db_session)],
 ) -> TrpcResponse[RegisterResponse]:
     """
     Register a participant for a waiting room
@@ -63,18 +92,6 @@ async def create_participant(
     - Return the new participant ID
         - this will be displayed on the client as "Your number registration number is: X"
     """
-    outcome = cast(TurnstileOutcome, request.state.turnstile_outcome)
-
-    # Verify the waiting room is open at the time of registration
-    room = await fetch_waiting_room(str(data.waitingRoomId))
-    if room is None:
-        # Failed lookup, probably Invalid waiting room ID
-        raise fastapi.HTTPException(
-            status_code=400,
-            detail="Invalid waiting room ID"
-            + PLAY_NICE_RESPONSE.format(name=data.legalName),
-        )
-
     registrant = {
         "legalName": data.legalName,
         "email": data.email,
@@ -98,7 +115,7 @@ async def create_participant(
 
     # Someone is trying to register too early
     # We recorded the request, but we won't return a success response
-    if outcome.challenge_ts < room.opensAt:
+    if outcome.challenge_ts < room.opens_at:
         raise fastapi.HTTPException(
             status_code=400,
             detail=f"Too early to register."
@@ -107,48 +124,38 @@ async def create_participant(
         )
 
     # Someone is trying to register too late
-    if outcome.challenge_ts > room.closesAt:
+    if outcome.challenge_ts > room.closes_at:
         raise fastapi.HTTPException(
             status_code=400,
             detail="Too late to register"
             + PLAY_NICE_RESPONSE.format(name=data.legalName),
         )
 
-    try:
-        result = await models.Registrant.prisma().create(data=registrant)
-    except errors.ForeignKeyViolationError:
-        raise fastapi.HTTPException(
-            status_code=400,
-            detail="Invalid waiting room ID"
-            + PLAY_NICE_RESPONSE.format(name=data.legalName),
+    async with session.begin_nested():
+        result = await session.execute(
+            insert(Registrant)
+            .values(
+                legal_name=data.legalName,
+                email=data.email,
+                phone_number=data.phoneNumber,
+                id_number=data.idNumber,
+                id_type=data.idType,
+                waiting_room_id=data.waitingRoomId,
+                turnstile_success=outcome.success,
+                turnstile_timestamp=outcome.challenge_ts,
+            )
+            .returning(Registrant.id)
         )
-    except errors.RecordNotFoundError:
-        raise fastapi.HTTPException(
-            status_code=500,
-            detail="Internal server error (table not found)"
-            + PLAY_NICE_RESPONSE.format(name=data.legalName),
-        )
-    except errors.DataError as e:
-        raise fastapi.HTTPException(
-            status_code=500,
-            detail=repr(e.data)
-            or "Invalid data" + PLAY_NICE_RESPONSE.format(name=data.legalName),
-        )
-    except errors.ClientNotConnectedError:
-        raise fastapi.HTTPException(
-            status_code=500,
-            detail="Internal server error (db not connected)"
-            + PLAY_NICE_RESPONSE.format(name=data.legalName),
-        )
-    else:
-        handle_turnstile_errors(outcome, data.legalName)
+        _id = result.scalars().first()
 
-        return RegisterResponse(
-            id=result.id,
-            email=result.email,
-            legalName=result.legalName,
-            phoneNumber=result.phoneNumber,
-            idNumber=result.idNumber,
-            idType=result.idType,
-            waitingRoomId=result.waitingRoomId,
-        ).trpc
+    handle_turnstile_errors(outcome, data.legalName)
+
+    return RegisterResponse(
+        id=str(_id),
+        email=data.email,
+        legalName=data.legalName,
+        phoneNumber=data.phoneNumber,
+        idNumber=data.idNumber,
+        idType=data.idType,
+        waitingRoomId=str(data.waitingRoomId),
+    ).trpc

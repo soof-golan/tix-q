@@ -1,3 +1,4 @@
+import asyncio
 import contextlib
 import typing
 from logging.config import dictConfig
@@ -5,9 +6,9 @@ from logging.config import dictConfig
 import fastapi
 import httpx
 from fastapi.middleware.cors import CORSMiddleware
-from prisma import Prisma
 from starlette.middleware.authentication import AuthenticationMiddleware
 from starlette.middleware.gzip import GZipMiddleware
+from sqlalchemy.ext.asyncio import async_sessionmaker, create_async_engine
 from timing_asgi import TimingClient, TimingMiddleware
 from timing_asgi.integrations import StarletteScopeToName
 
@@ -18,7 +19,6 @@ from server.middleware.firebase import FirebaseAuthBackend
 from server.middleware.turnstile import TurnstileMiddleware
 from server.middleware.user import UserMiddleware
 from .routes import markdown_edit
-from .routes import markdown_read
 from .routes import register as register_routes
 from .routes import room
 from .types import State
@@ -42,13 +42,20 @@ async def lifespan(_app: fastapi.FastAPI) -> typing.AsyncIterator[State]:
      - disconnect from the database
 
     """
-    async with httpx.AsyncClient() as client, Prisma(
-        auto_register=True, use_dotenv=True
-    ) as db:
+    engine = create_async_engine(CONFIG.database_url, echo=True)
+
+    async_session = async_sessionmaker(engine)
+
+    async with httpx.AsyncClient() as client:
         yield {
             "http_client": client,
-            "db": db,
+            "db": async_session,
         }
+
+    cleanup_coros = [
+        engine.dispose(),
+    ]
+    await asyncio.gather(*cleanup_coros)
 
 
 class TimingLogger(TimingClient):
@@ -85,7 +92,6 @@ app.add_middleware(
 
 app.include_router(register_routes.router)
 app.include_router(markdown_edit.router)
-app.include_router(markdown_read.router)
 app.include_router(room.router)
 
 if __name__ == "__main__":

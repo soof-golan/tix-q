@@ -1,7 +1,7 @@
 import { trpc } from "../utils/trpc";
 import { useForm } from "react-hook-form";
 import MarkdownCard from "./MarkdownCard";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { markdownTips, markdownTipsTitle } from "../constants";
 import type { RoomUpdateInput } from "../types/roomsProcedures";
 import moment from "moment";
@@ -13,7 +13,28 @@ type WaitingRoomContentProps = {
   id: string;
 };
 
+function toDataUrl(file: File | null): Promise<string> {
+  if (!file) {
+    return Promise.resolve("");
+  }
+
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => {
+      if (!reader.result) {
+        return reject(new Error("failed to read file"));
+      }
+      resolve(reader.result.toString());
+    };
+    reader.onerror = reject;
+    reader.onabort = reject;
+    reader.readAsDataURL(file);
+  });
+}
+
 export default function WaitingRoomEditor({ id }: WaitingRoomContentProps) {
+  const [smallImageUrl, setSmallImageUrl] = useState<string>("");
+  const [largeImageUrl, setLargeImageUrl] = useState<string>("");
   const utils = trpc.useContext();
   const roomQuery = trpc.room.readUnique.useQuery(
     { id },
@@ -22,13 +43,23 @@ export default function WaitingRoomEditor({ id }: WaitingRoomContentProps) {
       initialData: {
         id: id,
         markdown: markdownTips,
+        mobileImageBlob: "",
+        desktopImageBlob: "",
         title: markdownTipsTitle,
-        opensAt: moment().add(1, "day").toISOString(),
-        closesAt: moment().add(2, "day").toISOString(),
+        opensAt: moment().add(1, "day").utc().toISOString(),
+        closesAt: moment().add(2, "day").utc().toISOString(),
       },
     }
   );
 
+  const closesAt = moment(roomQuery.data?.closesAt)
+    .utc(true)
+    .local()
+    .format("YYYY-MM-DDTHH:mm");
+  const opensAt = moment(roomQuery.data?.opensAt)
+    .utc(true)
+    .local()
+    .format("YYYY-MM-DDTHH:mm");
   const roomLiveQuery = useQuery<{
     urlReady: boolean;
   }>({
@@ -50,13 +81,20 @@ export default function WaitingRoomEditor({ id }: WaitingRoomContentProps) {
   });
 
   const { register, handleSubmit, watch, setValue } = useForm<
-    Omit<RoomUpdateInput, "id">
+    Omit<RoomUpdateInput, "id" | "desktopImageBlob" | "mobileImageBlob"> & {
+      mobileImagFile: FileList;
+      desktopImagFile: FileList;
+    }
   >({
     defaultValues: {
       markdown: roomQuery.data?.markdown || markdownTips,
       title: roomQuery.data?.title || markdownTipsTitle,
-      closesAt: moment(roomQuery.data?.closesAt).format("YYYY-MM-DDTHH:mm"),
-      opensAt: moment(roomQuery.data?.opensAt).format("YYYY-MM-DDTHH:mm"),
+      closesAt: closesAt,
+      opensAt: opensAt,
+      // @ts-expect-error: typescript is wrong
+      mobileImagFile: [],
+      // @ts-expect-error: typescript is wrong
+      desktopImagFile: [],
     },
   });
 
@@ -81,31 +119,29 @@ export default function WaitingRoomEditor({ id }: WaitingRoomContentProps) {
   useEffect(() => {
     setValue("markdown", roomQuery.data?.markdown || markdownTips);
     setValue("title", roomQuery.data?.title || markdownTipsTitle);
-    setValue(
-      "opensAt",
-      moment(roomQuery.data?.opensAt).format("YYYY-MM-DDTHH:mm")
-    );
-    setValue(
-      "closesAt",
-      moment(roomQuery.data?.closesAt).format("YYYY-MM-DDTHH:mm")
-    );
+    setValue("opensAt", opensAt);
+    setValue("closesAt", closesAt);
   }, [
     roomQuery.data?.markdown,
     roomQuery.data?.title,
     setValue,
-    roomQuery.data?.opensAt,
-    roomQuery.data?.closesAt,
+    opensAt,
+    closesAt,
   ]);
 
   const liveMarkdown = watch("markdown");
   const liveTitle = watch("title");
-  const dirty =
-    liveMarkdown !== roomQuery.data?.markdown ||
-    liveTitle !== roomQuery.data?.title ||
-    watch("opensAt") !==
-      moment(roomQuery.data?.opensAt).format("YYYY-MM-DDTHH:mm") ||
-    watch("closesAt") !==
-      moment(roomQuery.data?.closesAt).format("YYYY-MM-DDTHH:mm");
+  const liveOpensAt = watch("opensAt");
+  const liveClosesAt = watch("closesAt");
+
+  const dirty = [
+    liveMarkdown !== roomQuery.data?.markdown,
+    liveTitle !== roomQuery.data?.title,
+    liveOpensAt !== opensAt,
+    liveClosesAt !== closesAt,
+    smallImageUrl !== roomQuery.data?.mobileImageBlob,
+    largeImageUrl !== roomQuery.data?.desktopImageBlob,
+  ].some(Boolean);
 
   const loading =
     roomQuery.isLoading || updateApi.isLoading || publishApi.isLoading;
@@ -119,22 +155,57 @@ export default function WaitingRoomEditor({ id }: WaitingRoomContentProps) {
   const deploymentInProgress =
     !roomLiveQuery.data?.urlReady && roomQuery.data.published;
 
+  const smallImageFile = watch("mobileImagFile");
+  const largeImageFile = watch("desktopImagFile");
+
+  useEffect(() => {
+    if (smallImageFile.length > 0) {
+      toDataUrl(smallImageFile[0]).then(setSmallImageUrl);
+    }
+  }, [smallImageFile]);
+
+  useEffect(() => {
+    if (largeImageFile.length > 0) {
+      toDataUrl(largeImageFile[0]).then(setLargeImageUrl);
+    }
+  }, [largeImageFile]);
+
+  useEffect(() => {
+    setLargeImageUrl(roomQuery.data?.desktopImageBlob || "");
+  }, [roomQuery.data?.desktopImageBlob]);
+
+  useEffect(() => {
+    setSmallImageUrl(roomQuery.data?.mobileImageBlob || "");
+  }, [roomQuery.data?.mobileImageBlob]);
+
   return (
     <>
       <div className="my-2 w-full overflow-hidden rounded-lg bg-white bg-opacity-80 shadow backdrop-blur-sm">
         {roomQuery.data.published === false && (
           <form
             className="flex flex-col"
-            onSubmit={handleSubmit((data) => {
+            onSubmit={handleSubmit(async (data) => {
               if (roomQuery?.data?.published) {
                 return;
               }
+              const [mobileImageBlob, desktopImageBlob] = await Promise.all([
+                toDataUrl(data.mobileImagFile[0]).catch(() => {
+                  alert("could not upload mobile image, please try again");
+                  return null;
+                }),
+                toDataUrl(data.desktopImagFile[0]).catch(() => {
+                  alert("could not upload desktop image, please try again");
+                  return null;
+                }),
+              ]);
               updateApi.mutate({
                 id: id,
                 markdown: data.markdown,
+                mobileImageBlob,
+                desktopImageBlob,
                 title: data.title,
-                opensAt: moment(data.opensAt).toISOString(),
-                closesAt: moment(data.closesAt).toISOString(),
+                opensAt: moment(data.opensAt).local().utc().toISOString(),
+                closesAt: moment(data.closesAt).local().utc().toISOString(),
               });
             })}
           >
@@ -164,6 +235,42 @@ export default function WaitingRoomEditor({ id }: WaitingRoomContentProps) {
                         disabled: acceptingInput,
                       })}
                       type="text"
+                    />
+                  </dd>
+                </div>
+              </dl>
+            </div>
+            <div className="border-t border-gray-200">
+              <dl>
+                <div className="items-center bg-gray-50 bg-opacity-50 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6 ">
+                  <dt className="text-sm font-medium text-gray-500">
+                    Mobile Background Image
+                  </dt>
+                  <dd className="mt-1 text-2xl text-gray-900 sm:col-span-2 sm:mt-0">
+                    <input
+                      className="w-full rounded bg-indigo-500 bg-opacity-20 px-4 py-2 "
+                      {...register("mobileImagFile", {
+                        disabled: acceptingInput,
+                      })}
+                      type="file"
+                    />
+                  </dd>
+                </div>
+              </dl>
+            </div>
+            <div className="border-t border-gray-200">
+              <dl>
+                <div className="items-center bg-gray-50 bg-opacity-50 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6 ">
+                  <dt className="text-sm font-medium text-gray-500">
+                    Desktop Background Image
+                  </dt>
+                  <dd className="mt-1 text-2xl text-gray-900 sm:col-span-2 sm:mt-0">
+                    <input
+                      className="w-full rounded bg-indigo-500 bg-opacity-20 px-4 py-2 "
+                      {...register("desktopImagFile", {
+                        disabled: acceptingInput,
+                      })}
+                      type="file"
                     />
                   </dd>
                 </div>
@@ -305,7 +412,12 @@ export default function WaitingRoomEditor({ id }: WaitingRoomContentProps) {
         </div>
       </div>
 
-      <MarkdownCard title={liveTitle} content={liveMarkdown} />
+      <MarkdownCard
+        title={liveTitle}
+        content={liveMarkdown}
+        mobileImageBlob={smallImageUrl}
+        desktopImageBlob={largeImageUrl}
+      />
     </>
   );
 }
