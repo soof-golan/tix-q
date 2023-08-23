@@ -9,8 +9,8 @@ if [ -z ${DATABASE_URL+x} ]; then
 fi
 
 # Check if yarn executable is available
-if ! command -v yarn &>/dev/null; then
-  echo "Prisma CLI could not be found"
+if ! command -v npx &>/dev/null; then
+  echo "NPX CLI could not be found"
   exit 1
 fi
 
@@ -28,7 +28,7 @@ fi
 
 function migrate() {
   echo "Attempting to migrate database"
-  yarn dlx prisma migrate deploy
+  npx prisma migrate deploy
 }
 
 # Attempt to migrate database (retry 5 times with 5 second delay)
