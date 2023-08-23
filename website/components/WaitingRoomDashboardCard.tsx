@@ -1,12 +1,12 @@
 import Countdown from "./Countdown";
-import moment from "moment";
+import moment, { type Moment } from "moment";
 
 type WaitingRoomDashboardCardProps = {
   room: {
     id: string;
     title: string;
-    opensAt: string;
-    closesAt: string;
+    opensAt: Moment;
+    closesAt: Moment;
   };
 };
 export default function WaitingRoomDashboardCard({
@@ -57,11 +57,11 @@ export default function WaitingRoomDashboardCard({
             >
               {status === "before" ? (
                 <>
-                  <Countdown date={room.opensAt} />
+                  <Countdown date={room.opensAt.toDate()} />
                 </>
               ) : status === "open" ? (
                 <>
-                  <Countdown date={room.closesAt} />
+                  <Countdown date={room.closesAt.toDate()} />
                 </>
               ) : (
                 <></>

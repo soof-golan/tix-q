@@ -23,12 +23,20 @@ export default function WaitingRoomEditor({ id }: WaitingRoomContentProps) {
         id: id,
         markdown: markdownTips,
         title: markdownTipsTitle,
-        opensAt: moment().add(1, "day").toISOString(),
-        closesAt: moment().add(2, "day").toISOString(),
+        opensAt: moment().add(1, "day").utc().toISOString(),
+        closesAt: moment().add(2, "day").utc().toISOString(),
       },
     }
   );
 
+  const closesAt = moment(roomQuery.data?.closesAt)
+    .utc(true)
+    .local()
+    .format("YYYY-MM-DDTHH:mm");
+  const opensAt = moment(roomQuery.data?.opensAt)
+    .utc(true)
+    .local()
+    .format("YYYY-MM-DDTHH:mm");
   const roomLiveQuery = useQuery<{
     urlReady: boolean;
   }>({
@@ -81,31 +89,29 @@ export default function WaitingRoomEditor({ id }: WaitingRoomContentProps) {
   useEffect(() => {
     setValue("markdown", roomQuery.data?.markdown || markdownTips);
     setValue("title", roomQuery.data?.title || markdownTipsTitle);
-    setValue(
-      "opensAt",
-      moment(roomQuery.data?.opensAt).format("YYYY-MM-DDTHH:mm")
-    );
-    setValue(
-      "closesAt",
-      moment(roomQuery.data?.closesAt).format("YYYY-MM-DDTHH:mm")
-    );
+    setValue("opensAt", opensAt);
+    setValue("closesAt", closesAt);
   }, [
     roomQuery.data?.markdown,
     roomQuery.data?.title,
     setValue,
-    roomQuery.data?.opensAt,
-    roomQuery.data?.closesAt,
+    opensAt,
+    closesAt,
   ]);
 
   const liveMarkdown = watch("markdown");
   const liveTitle = watch("title");
-  const dirty =
-    liveMarkdown !== roomQuery.data?.markdown ||
-    liveTitle !== roomQuery.data?.title ||
-    watch("opensAt") !==
-      moment(roomQuery.data?.opensAt).format("YYYY-MM-DDTHH:mm") ||
-    watch("closesAt") !==
-      moment(roomQuery.data?.closesAt).format("YYYY-MM-DDTHH:mm");
+  const liveOpensAt = watch("opensAt");
+  const liveClosesAt = watch("closesAt");
+
+  const dirty = [
+    liveMarkdown !== roomQuery.data?.markdown,
+    liveTitle !== roomQuery.data?.title,
+    liveOpensAt !== opensAt,
+    liveClosesAt !== closesAt,
+    smallImageUrl !== roomQuery.data?.mobileImageBlob,
+    largeImageUrl !== roomQuery.data?.desktopImageBlob,
+  ].some(Boolean);
 
   const loading =
     roomQuery.isLoading || updateApi.isLoading || publishApi.isLoading;
@@ -133,8 +139,8 @@ export default function WaitingRoomEditor({ id }: WaitingRoomContentProps) {
                 id: id,
                 markdown: data.markdown,
                 title: data.title,
-                opensAt: moment(data.opensAt).toISOString(),
-                closesAt: moment(data.closesAt).toISOString(),
+                opensAt: moment(data.opensAt).local().utc().toISOString(),
+                closesAt: moment(data.closesAt).local().utc().toISOString(),
               });
             })}
           >

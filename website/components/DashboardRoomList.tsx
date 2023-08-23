@@ -8,7 +8,7 @@ import Spinner from "./Spinner";
 
 export default function DashboardRoomsList() {
   const signInCheck = useSigninCheck();
-  const rooms = trpc.room.readMany.useQuery(
+  const { data } = trpc.room.readMany.useQuery(
     {},
     {
       refetchOnWindowFocus: true,
@@ -16,6 +16,12 @@ export default function DashboardRoomsList() {
       networkMode: "online",
     }
   );
+  const rooms = data?.map((room) => ({
+    ...room,
+    opensAt: moment(room.opensAt).utc(true).local(),
+    closesAt: moment(room.closesAt).utc(true).local(),
+  }));
+
   if (!signInCheck.data?.signedIn) {
     return (
       <div
@@ -31,8 +37,8 @@ export default function DashboardRoomsList() {
     <>
       <div className="flex flex-col">
         <CreateRoomCard />
-        {rooms.data ? (
-          rooms.data
+        {rooms ? (
+          rooms
             .sort((a, b) => moment(b.updatedAt).diff(moment(a.updatedAt)))
             .map((room) => (
               <div key={room.id} className="flex flex-row">
