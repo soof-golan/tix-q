@@ -8,7 +8,7 @@ on:
 
 jobs:
   publish:
-    runs-on: UbuntuLatest32Cores128G
+    runs-on: ubuntu-latest
     permissions:
       contents: read
       deployments: write
