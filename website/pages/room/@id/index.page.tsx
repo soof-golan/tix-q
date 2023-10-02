@@ -8,6 +8,17 @@ export { Page };
 
 type Props = inferProps<typeof onBeforeRender>;
 
+console.log(`👋 Hey There!
+You're more than welcome to look around, but please don't write scripts that spam my servers.
+If you're interested in the code, it's all open source and available here:
+https://github.com/soof-golan/tix-q
+    
+This project is run voluntarily and I'm paying for it out of my own pocket.
+See you around!
+)'(
+
+- Soof`);
+
 function Page({
   id,
   markdown,

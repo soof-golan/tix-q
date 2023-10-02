@@ -1,6 +1,7 @@
 import { findRoomById, findPublishedRooms } from "../../../utils/queries";
 import { PageContextServer } from "../../../renderer/types";
 import moment from "moment";
+import { render } from "vite-plugin-ssr/abort";
 
 export { onBeforeRender, prerender };
 
@@ -12,6 +13,9 @@ async function prerender() {
 async function onBeforeRender(pageContext: PageContextServer) {
   const id = pageContext.routeParams.id;
   const room = await findRoomById(id);
+  if (!room.published) {
+    throw render(403, "Room not published");
+  }
 
   return {
     pageContext: {

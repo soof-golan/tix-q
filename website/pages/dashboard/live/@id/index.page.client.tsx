@@ -1,6 +1,8 @@
 import { usePageContext } from "../../../../renderer/usePageContext";
 import { trpc } from "../../../../utils/trpc";
 import CountUp from "react-countup";
+import moment from "moment";
+import Spinner from "../../../../components/Spinner";
 
 export { Page };
 
@@ -16,6 +18,7 @@ function Page() {
   const stats = trpc.room.stats.useQuery(
     { id },
     {
+      retry: false,
       refetchOnWindowFocus: true,
       refetchInterval: 5000,
       networkMode: "online",
@@ -43,13 +46,18 @@ function Page() {
               <h3 className="text-lg font-medium leading-6 text-gray-900">
                 Stats
               </h3>
-              <p className="mt-1 max-w-2xl text-sm text-gray-500">
+              <div>
+                {stats.isFetching ? (
+                  <Spinner />
+                ) : (
+                  <Spinner className="opacity-0" />
+                )}
+              </div>
+              <p className="">
                 Participants in this room:{" "}
-                <CountUp
-                  end={stats.data?.registrantsCount || 0}
-                  preserveValue
-                />
+                <CountUp end={stats.data?.registrantsCount} preserveValue />
               </p>
+              <p>(updates every 5 seconds)</p>
             </div>
           </div>
         </div>
@@ -64,6 +72,11 @@ function Page() {
                 onClick={async () => {
                   const XLSX = await import("xlsx");
                   const response = await participants.refetch();
+                  if (participants.error) {
+                    console.error(participants.error);
+                    alert("Error fetching participants");
+                    return;
+                  }
                   const rows = response.data?.registrants ?? [];
                   const worksheet = XLSX.utils.json_to_sheet(rows);
                   const workbook = XLSX.utils.book_new();
@@ -72,14 +85,18 @@ function Page() {
                     worksheet,
                     "Participants"
                   );
-                  XLSX.writeFile(workbook, `participants-${id}.csv`, {
-                    bookType: "csv",
-                    sheet: "Participants",
-                  });
+                  XLSX.writeFile(
+                    workbook,
+                    `participants-${id}-${moment()}.xlsx`,
+                    {
+                      bookType: "xlsx",
+                      sheet: "Participants",
+                    }
+                  );
                 }}
                 className="mr-2 mt-2 rounded bg-indigo-500 px-4 py-2 text-white hover:bg-indigo-700"
               >
-                Download CSV
+                Download XLSX
               </button>
             </div>
           </div>

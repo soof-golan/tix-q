@@ -32,6 +32,6 @@ class TrpcMixin:
             return cls.parse_obj(decode_trpc_input(input))
         except pydantic.ValidationError as e:
             raise fastapi.HTTPException(
-                status_code=400,
+                status_code=422,
                 detail=e.errors(),
             )

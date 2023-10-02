@@ -7,9 +7,13 @@ import fastapi
 import httpx
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy import select
+from sqlalchemy.ext.asyncio import (
+    async_sessionmaker,
+    AsyncEngine,
+    create_async_engine,
+)
 from starlette.middleware.authentication import AuthenticationMiddleware
 from starlette.middleware.gzip import GZipMiddleware
-from sqlalchemy.ext.asyncio import async_sessionmaker, AsyncEngine, create_async_engine
 from timing_asgi import TimingClient, TimingMiddleware
 from timing_asgi.integrations import StarletteScopeToName
 
@@ -18,7 +22,6 @@ from server.constants import DEV_CORS_ORIGINS, log_config, PROD_CORS_ORIGINS
 from server.logger import logger
 from server.middleware.firebase import FirebaseAuthBackend
 from server.middleware.turnstile import TurnstileMiddleware
-from server.middleware.user import UserMiddleware
 from .routes import markdown_edit
 from .routes import register as register_routes
 from .routes import room
@@ -46,7 +49,11 @@ async def lifespan(_app: fastapi.FastAPI) -> typing.AsyncIterator[State]:
     cleanup_coroutines = []
     logger.info("Starting application")
 
-    engine = create_async_engine(CONFIG.database_url, echo=not CONFIG.production, hide_parameters=CONFIG.production)
+    engine = create_async_engine(
+        CONFIG.database_url,
+        echo=not CONFIG.production,
+        hide_parameters=CONFIG.production,
+    )
     cleanup_coroutines.append(engine.dispose())
     session_maker = async_sessionmaker(engine)
     try:
@@ -95,7 +102,6 @@ app.add_middleware(
     ],
     max_age=3600,
 )
-app.add_middleware(UserMiddleware)
 app.add_middleware(TurnstileMiddleware)
 app.add_middleware(
     AuthenticationMiddleware,

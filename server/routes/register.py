@@ -10,9 +10,9 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from server.constants import PLAY_NICE_RESPONSE
 from server.db.session import db_session
-from server.db.waiting_room import fetch_waiting_room
+from server.db.waiting_room import CachedWaitingRoomQueryResult, fetch_waiting_room
 from server.logger import logger
-from server.models import IdType, Registrant, WaitingRoom
+from server.models import IdType, Registrant
 from server.trpc import TrpcMixin
 from server.turnstile import handle_turnstile_errors
 from server.types import TrpcResponse, TurnstileOutcome
@@ -48,12 +48,16 @@ def turnstile_outcome(request: fastapi.Request) -> TurnstileOutcome:
     return cast(TurnstileOutcome, request.state.turnstile_outcome)
 
 
-async def waiting_room(data: RegisterRequest, session: Annotated[AsyncSession, Depends(db_session)]) -> WaitingRoom:
+async def waiting_room(
+    data: RegisterRequest,
+    session: Annotated[AsyncSession, Depends(db_session)],
+) -> CachedWaitingRoomQueryResult:
     """
     Query the database for the waiting room
 
     :raises fastapi.HTTPException: If the waiting room ID is invalid
     """
+
     room = await fetch_waiting_room(session, str(data.waitingRoomId))
     if room is None:
         # Failed lookup, probably Invalid waiting room ID
@@ -69,7 +73,7 @@ async def waiting_room(data: RegisterRequest, session: Annotated[AsyncSession, D
 async def create_participant(
     data: RegisterRequest,
     outcome: Annotated[TurnstileOutcome, Depends(turnstile_outcome)],
-    room: Annotated[WaitingRoom, Depends(waiting_room)],
+    room: Annotated[CachedWaitingRoomQueryResult, Depends(waiting_room)],
     session: Annotated[AsyncSession, Depends(db_session)],
 ) -> TrpcResponse[RegisterResponse]:
     """
@@ -105,48 +109,49 @@ async def create_participant(
 
     logger.info(orjson.dumps(registrant).decode("utf-8"))
 
-    if outcome.challenge_ts is None:
+    await session.commit()
+    result = await session.execute(
+        insert(Registrant)
+        .values(
+            legal_name=data.legalName,
+            email=data.email,
+            phone_number=data.phoneNumber,
+            id_number=data.idNumber,
+            id_type=data.idType,
+            waiting_room_id=data.waitingRoomId,
+            turnstile_success=outcome.success,
+            turnstile_timestamp=outcome.challenge_ts,
+        )
+        .returning(Registrant.id)
+    )
+    await session.commit()
+
+    _id = result.scalars().first()
+
+    if not outcome.challenge_ts:
         raise fastapi.HTTPException(
             status_code=400,
             detail=f"missing challenge_ts."
             + PLAY_NICE_RESPONSE.format(name=data.legalName)
             + "\nbtw this request was recorded.",
         )
-
-    # Someone is trying to register too early
-    # We recorded the request, but we won't return a success response
+    # Someone is trying to register too late
+    if outcome.challenge_ts > room.closes_at:
+        raise fastapi.HTTPException(
+            status_code=400,
+            detail="Too late to register"
+                   + PLAY_NICE_RESPONSE.format(name=data.legalName)
+                   + "\nbtw this request was recorded.",
+        )
     if outcome.challenge_ts < room.opens_at:
+        # Someone is trying to register too early
+        # We recorded the request, but we won't return a success response
         raise fastapi.HTTPException(
             status_code=400,
             detail=f"Too early to register."
             + PLAY_NICE_RESPONSE.format(name=data.legalName)
             + "\nbtw this request was recorded.",
         )
-
-    # Someone is trying to register too late
-    if outcome.challenge_ts > room.closes_at:
-        raise fastapi.HTTPException(
-            status_code=400,
-            detail="Too late to register"
-            + PLAY_NICE_RESPONSE.format(name=data.legalName),
-        )
-
-    async with session.begin_nested():
-        result = await session.execute(
-            insert(Registrant)
-            .values(
-                legal_name=data.legalName,
-                email=data.email,
-                phone_number=data.phoneNumber,
-                id_number=data.idNumber,
-                id_type=data.idType,
-                waiting_room_id=data.waitingRoomId,
-                turnstile_success=outcome.success,
-                turnstile_timestamp=outcome.challenge_ts,
-            )
-            .returning(Registrant.id)
-        )
-        _id = result.scalars().first()
 
     handle_turnstile_errors(outcome, data.legalName)
 

@@ -48,7 +48,7 @@
     "typescript": "^4.9.4",
     "validator": "^13.9.0",
     "vite": "^4.3.9",
-    "vite-plugin-ssr": "^0.4.131",
+    "vite-plugin-ssr": "^0.4.142",
     "xlsx": "https://cdn.sheetjs.com/xlsx-0.19.3/xlsx-0.19.3.tgz",
     "zod": "^3.21.4"
   },
