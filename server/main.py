@@ -7,9 +7,13 @@ import fastapi
 import httpx
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy import select
+from sqlalchemy.ext.asyncio import (
+    async_sessionmaker,
+    AsyncEngine,
+    create_async_engine,
+)
 from starlette.middleware.authentication import AuthenticationMiddleware
 from starlette.middleware.gzip import GZipMiddleware
-from sqlalchemy.ext.asyncio import async_sessionmaker, AsyncEngine, create_async_engine
 from timing_asgi import TimingClient, TimingMiddleware
 from timing_asgi.integrations import StarletteScopeToName
 
@@ -46,7 +50,11 @@ async def lifespan(_app: fastapi.FastAPI) -> typing.AsyncIterator[State]:
     cleanup_coroutines = []
     logger.info("Starting application")
 
-    engine = create_async_engine(CONFIG.database_url, echo=not CONFIG.production, hide_parameters=CONFIG.production)
+    engine = create_async_engine(
+        CONFIG.database_url,
+        echo=not CONFIG.production,
+        hide_parameters=CONFIG.production,
+    )
     cleanup_coroutines.append(engine.dispose())
     session_maker = async_sessionmaker(engine)
     try:
