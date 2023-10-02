@@ -53,6 +53,8 @@ async def lifespan(_app: fastapi.FastAPI) -> typing.AsyncIterator[State]:
         CONFIG.database_url,
         echo=not CONFIG.production,
         hide_parameters=CONFIG.production,
+        pool_size=30,
+        max_overflow=70,
     )
     cleanup_coroutines.append(engine.dispose())
     session_maker = async_sessionmaker(engine)
