@@ -3,6 +3,7 @@ from datetime import datetime
 
 from asyncache import cached
 from cachetools import TTLCache
+from cachetools.keys import methodkey
 from pydantic import BaseModel
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -17,6 +18,7 @@ class CachedWaitingRoomQueryResult(BaseModel):
     closes_at: datetime
 
 
+@cached(cache=TTLCache(maxsize=1024, ttl=TTL_FIVE_MINUTES), key=methodkey)
 async def fetch_waiting_room(
     session: AsyncSession, waiting_room_id: str
 ) -> CachedWaitingRoomQueryResult | None:
@@ -28,25 +30,19 @@ async def fetch_waiting_room(
     :param waiting_room_id: The ID of the waiting room to fetch
     """
 
-    @cached(cache=TTLCache(maxsize=1024, ttl=TTL_FIVE_MINUTES))
-    async def _cached_fetch_waiting_room(
-        _waiting_room_id: str,
-    ) -> CachedWaitingRoomQueryResult | None:
-        _room = await session.execute(
-            (
-                select(WaitingRoom.id, WaitingRoom.opens_at, WaitingRoom.closes_at)
-                .where(WaitingRoom.id == _waiting_room_id)
-                .where(WaitingRoom.published == True)
-            )
+    _room = await session.execute(
+        (
+            select(WaitingRoom.id, WaitingRoom.opens_at, WaitingRoom.closes_at)
+            .where(WaitingRoom.id == waiting_room_id)
+            .where(WaitingRoom.published == True)
         )
+    )
 
-        room = _room.one_or_none()
-        if room is None:
-            return None
-        return CachedWaitingRoomQueryResult(
-            id=room[0],
-            opens_at=room[1],
-            closes_at=room[2],
-        )
-
-    return await _cached_fetch_waiting_room(waiting_room_id)
+    room = _room.one_or_none()
+    if room is None:
+        return None
+    return CachedWaitingRoomQueryResult(
+        id=room[0],
+        opens_at=room[1],
+        closes_at=room[2],
+    )
