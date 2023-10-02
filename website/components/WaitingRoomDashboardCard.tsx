@@ -27,8 +27,8 @@ export default function WaitingRoomDashboardCard({
   }>({
     // enabled: !!roomQuery.data?.published,
     queryKey: ["roomLiveQuery", room.id],
-    retry: true,
-    retryDelay: 10000,
+    retry: false,
+    networkMode: "online",
     initialData: { urlReady: false },
     queryFn: async () => {
       const roomUrl = `/room/${room.id}`;
