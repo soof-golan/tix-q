@@ -22,7 +22,6 @@ from server.constants import DEV_CORS_ORIGINS, log_config, PROD_CORS_ORIGINS
 from server.logger import logger
 from server.middleware.firebase import FirebaseAuthBackend
 from server.middleware.turnstile import TurnstileMiddleware
-from server.middleware.user import UserMiddleware
 from .routes import markdown_edit
 from .routes import register as register_routes
 from .routes import room
@@ -103,7 +102,6 @@ app.add_middleware(
     ],
     max_age=3600,
 )
-app.add_middleware(UserMiddleware)
 app.add_middleware(TurnstileMiddleware)
 app.add_middleware(
     AuthenticationMiddleware,

@@ -1,6 +1,6 @@
 from starlette.authentication import UnauthenticatedUser
 from starlette.middleware.base import BaseHTTPMiddleware, RequestResponseEndpoint
-from starlette.requests import Request
+from fastapi import Request
 from starlette.responses import Response
 
 from server.db.session import create_session_maker

@@ -1,4 +1,5 @@
 import datetime
+import uuid
 from typing import Annotated, cast
 
 import fastapi
@@ -7,9 +8,10 @@ import sqlalchemy
 from fastapi import Depends
 from pydantic import BaseModel
 from sqlalchemy import insert, select, update
-from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.ext.asyncio import AsyncConnection, AsyncSession
 from starlette.authentication import requires
 
+from server.db.user import User, authenticated_user
 from server.models import IdType, WaitingRoom, Registrant as DbRegistrant
 from server.config import CONFIG
 from server.db.session import db_session
@@ -21,7 +23,7 @@ router = fastapi.APIRouter()
 
 
 class RoomQuery(BaseModel, TrpcMixin):
-    id: str
+    id: uuid.UUID
     title: str
     markdown: str
     desktopImageBlob: str | None
@@ -34,7 +36,7 @@ class RoomQuery(BaseModel, TrpcMixin):
 
 
 class RoomMutation(BaseModel):
-    id: str
+    id: uuid.UUID
     title: str
     markdown: str
     desktopImageBlob: str | None
@@ -44,18 +46,19 @@ class RoomMutation(BaseModel):
 
 
 class RoomId(BaseModel, TrpcMixin):
-    id: str
+    id: uuid.UUID
 
 
 @router.get("/room.readMany")
 @requires("authenticated", status_code=401)
 async def read_many(
     request: fastapi.Request,
-    db: Annotated[AsyncSession, Depends(db_session)],
+    db: Annotated[AsyncConnection, Depends(db_session)],
+    user: Annotated[User, Depends(authenticated_user)],
 ) -> TrpcResponse[list[RoomQuery]]:
     rooms_iterable = await db.scalars(
         select(WaitingRoom)
-        .where(WaitingRoom.owner_id == str(request.state.user.id))
+        .where(WaitingRoom.owner_id == str(user.id))
         .order_by(WaitingRoom.created_at.desc())
     )
     return trpc(
@@ -81,28 +84,30 @@ async def read_many(
 @requires("authenticated", status_code=401)
 async def read_unique(
     request: fastapi.Request,
+    user: Annotated[User, Depends(authenticated_user)],
     query: Annotated[RoomId, Depends(RoomId.from_trpc)],
     session: Annotated[AsyncSession, Depends(db_session)],
 ) -> TrpcResponse[RoomQuery]:
-    room = await session.scalar(
-        select(WaitingRoom)
-        .where(WaitingRoom.id == query.id)
-        .where(WaitingRoom.owner_id == request.state.user.id)
+    room = await session.execute(
+        select(WaitingRoom.id, WaitingRoom.title, WaitingRoom.markdown, WaitingRoom.desktop_image_blob, WaitingRoom.mobile_image_blob, WaitingRoom.created_at, WaitingRoom.updated_at, WaitingRoom.opens_at, WaitingRoom.closes_at, WaitingRoom.published)
+        .where(WaitingRoom.id == str(query.id))
+        .where(WaitingRoom.owner_id == str(user.id))
     )
+    room = room.one_or_none()
     if room is None:
         raise fastapi.HTTPException(status_code=401, detail="Invalid waiting room ID")
 
     return RoomQuery(
-        id=str(room.id),
-        title=room.title,
-        markdown=room.markdown,
-        desktopImageBlob=room.desktop_image_blob,
-        mobileImageBlob=room.mobile_image_blob,
-        createdAt=room.created_at,
-        updatedAt=room.updated_at,
-        opensAt=room.opens_at,
-        closesAt=room.closes_at,
-        published=room.published,
+        id=str(room[0]),
+        title=room[1],
+        markdown=room[2],
+        desktopImageBlob=room[3],
+        mobileImageBlob=room[4],
+        createdAt=room[5],
+        updatedAt=room[6],
+        opensAt=room[7],
+        closesAt=room[8],
+        published=room[9],
     ).trpc
 
 
@@ -115,15 +120,27 @@ class RoomStats(BaseModel, TrpcMixin):
 @requires("authenticated", status_code=401)
 async def stats(
     request: fastapi.Request,
+    user: Annotated[User, Depends(authenticated_user)],
     query: Annotated[RoomId, Depends(RoomId.from_trpc)],
     session: Annotated[AsyncSession, Depends(db_session)],
 ) -> TrpcResponse[RoomStats]:
+
+    room = await session.execute(
+        select(WaitingRoom.id)
+        .where(WaitingRoom.id == str(query.id))
+        .where(WaitingRoom.owner_id == str(user.id))
+    )
+    room = room.one_or_none()
+    if room is None:
+        raise fastapi.HTTPException(status_code=401, detail="Invalid waiting room ID")
+
     count: int = (
         await session.execute(
-            select(sqlalchemy.func.count())
+            select(sqlalchemy.func.count(DbRegistrant.id))
             .select_from(DbRegistrant)
-            .where(DbRegistrant.waiting_room_id == query.id)
-            .where(WaitingRoom.owner_id == request.state.user.id)
+            .join(WaitingRoom, DbRegistrant.waiting_room_id == WaitingRoom.id)
+            .where(WaitingRoom.id == str(query.id))
+            .where(WaitingRoom.owner_id == str(user.id))
         )
     ).scalar_one()
 
@@ -134,7 +151,7 @@ async def stats(
 
 
 class Registrant(BaseModel):
-    id: str
+    id: uuid.UUID
     legalName: str
     email: str
     phoneNumber: str
@@ -148,7 +165,7 @@ class Registrant(BaseModel):
 
 
 class RoomRegistrants(BaseModel, TrpcMixin):
-    id: str
+    id: uuid.UUID
     registrants: list[Registrant]
 
 
@@ -156,13 +173,15 @@ class RoomRegistrants(BaseModel, TrpcMixin):
 @requires("authenticated", status_code=401)
 async def registrants(
     request: fastapi.Request,
+    user: Annotated[User, Depends(authenticated_user)],
     query: Annotated[RoomId, Depends(RoomId.from_trpc)],
     session: Annotated[AsyncSession, Depends(db_session)],
 ) -> TrpcResponse[RoomRegistrants]:
     result = await session.scalars(
         select(DbRegistrant)
-        .where(DbRegistrant.waiting_room_id == query.id)
-        .where(WaitingRoom.owner_id == request.state.user.id)
+        .join(WaitingRoom, WaitingRoom.id == DbRegistrant.waiting_room_id)
+        .where(WaitingRoom.id == query.id)
+        .where(WaitingRoom.owner_id == user.id)
         .order_by(DbRegistrant.created_at.asc())
     )
 
@@ -197,6 +216,7 @@ class RoomCreateRequest(BaseModel):
 @requires("authenticated", status_code=401)
 async def create(
     request: fastapi.Request,
+    user: Annotated[User, Depends(authenticated_user)],
     new_room: RoomCreateRequest,
     session: Annotated[AsyncSession, Depends(db_session)],
 ) -> TrpcResponse[RoomQuery]:
@@ -206,7 +226,7 @@ async def create(
             .values(
                 title=new_room.title,
                 markdown=new_room.markdown,
-                owner_id=request.state.user.id,
+                owner_id=user.id,
                 opens_at=new_room.opensAt,
                 closes_at=new_room.closesAt,
                 published=False,
@@ -230,6 +250,7 @@ async def create(
 @requires("authenticated", status_code=401)
 async def room_update(
     request: fastapi.Request,
+    user: Annotated[User, Depends(authenticated_user)],
     room: RoomMutation,
     session: Annotated[AsyncSession, Depends(db_session)],
 ) -> TrpcResponse[RoomQuery]:
@@ -237,7 +258,7 @@ async def room_update(
         statement = (
             update(WaitingRoom)
             .where(WaitingRoom.id == room.id)
-            .where(WaitingRoom.owner_id == request.state.user.id)
+            .where(WaitingRoom.owner_id == user.id)
             .values(
                 title=room.title,
                 markdown=room.markdown,
@@ -267,14 +288,15 @@ async def room_update(
 @requires("authenticated", status_code=401)
 async def publish(
     request: fastapi.Request,
+    user: Annotated[User, Depends(authenticated_user)],
     room: RoomId,
     session: Annotated[AsyncSession, Depends(db_session)],
 ) -> TrpcResponse[RoomQuery]:
     async with session.begin():
         statement = (
             update(WaitingRoom)
-            .where(WaitingRoom.id == room.id)
-            .where(WaitingRoom.owner_id == request.state.user.id)
+            .where(WaitingRoom.id == str(room.id))
+            .where(WaitingRoom.owner_id == user.id)
             .values(published=True)
             .returning(WaitingRoom)
         )
