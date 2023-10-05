@@ -7,7 +7,6 @@ import { PageShell } from "./PageShell";
 import { dangerouslySkipEscape, escapeInject } from "vite-plugin-ssr/server";
 import logoUrl from "./logo.svg";
 import type { PageContextServer } from "./types";
-import { partytownSnippet } from "@builder.io/partytown/integration";
 
 async function render(pageContext: PageContextServer) {
   const { Page, pageProps } = pageContext;
@@ -37,18 +36,13 @@ async function render(pageContext: PageContextServer) {
         <link rel="icon" href="${logoUrl}" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <meta name="description" content="${desc}" />
-        <script>
-        ${dangerouslySkipEscape(
-          partytownSnippet({ forward: ["dataLayer.push"] })
-        )}
-        </script>
-        <!-- Google tag (gtag.js) -->
-        <script type="text/partytown" src="https://www.googletagmanager.com/gtag/js?id=${gTag}"></script>
+        <script async src="https://www.googletagmanager.com/gtag/js?id=${gTag}"></script>
         <script>
           window.dataLayer = window.dataLayer || [];
           function gtag(){dataLayer.push(arguments);}
           gtag('js', new Date());
           gtag('config', "${gTag}");
+          console.log("${gTag}")
         </script>
         <title>${title}</title>
       </head>
