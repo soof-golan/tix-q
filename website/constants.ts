@@ -22,7 +22,7 @@ _This text is with italics_
 
 ואפשר גם לשים תמונות
 
-![alt text goes here](https://placekitten.com/200/200)
+![alt text goes here](https://loremflickr.com/200/200)
 
 כי לרדת שורה צריך שני אנטרים.
 אחרת זה ממשיך באותה פסקה
