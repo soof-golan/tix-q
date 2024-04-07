@@ -3,12 +3,12 @@ import { getAuth } from "firebase/auth";
 
 // TODO: move to .env
 const firebaseConfig = {
-  apiKey: "AIzaSyBHK4aWZRa1LHRUd0PRPFV1ua3zQnFFDF0",
-  authDomain: "tix-q-14bf0.firebaseapp.com",
-  projectId: "tix-q-14bf0",
-  storageBucket: "tix-q-14bf0.appspot.com",
-  messagingSenderId: "943319592130",
-  appId: "1:943319592130:web:5fe583d4980428d43e1f5b",
+  apiKey: "AIzaSyAbt8x0AsLjXzlgxiPvBTC43UIQqoVNP-A",
+  authDomain: "tix-queue.firebaseapp.com",
+  projectId: "tix-queue",
+  storageBucket: "tix-queue.appspot.com",
+  messagingSenderId: "808885023221",
+  appId: "1:808885023221:web:dabeb47165577c22beb0bc",
 };
 
 export const app = initializeApp(firebaseConfig);
