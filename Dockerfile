@@ -1,16 +1,14 @@
 FROM python:3.11-slim
+COPY --from=ghcr.io/astral-sh/uv:latest /uv /bin/uv
 
-ENV PYTHONUNBUFFERED True
+ENV PYTHONUNBUFFERED=True \
+    UV_SYSTEM_PYTHON=1
 
 # Copy dependencies
 COPY server/requirements.txt /tmp/requirements.txt
 
-RUN apt-get update && apt-get install -y \
-    git \
-    && pip install -r /tmp/requirements.txt --no-cache-dir \
-    && rm /tmp/requirements.txt \
-    && apt-get purge -y --auto-remove git \
-    && rm -rf /var/lib/apt/lists/*
+RUN --mount=type=cache,target=/root/.cache/pip \
+    uv pip install -r /tmp/requirements.txt
 
 WORKDIR /app
 
