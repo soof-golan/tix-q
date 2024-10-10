@@ -10,7 +10,8 @@ from starlette.authentication import BaseUser
 
 
 class State(TypedDict):
-    http_client: httpx.AsyncClient
+    cf_http_client: httpx.AsyncClient
+    gh_http_client: httpx.AsyncClient
     db: async_sessionmaker[AsyncSession]
 
 
