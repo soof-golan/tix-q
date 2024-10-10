@@ -20,4 +20,4 @@ WORKDIR /app
 # Run the production server
 EXPOSE 8000
 # CMD exec gunicorn --workers 1 --threads 8 --timeout 0 --preload main:app
-CMD ["gunicorn", "--config", "server/gunicorn.conf.py"]
+CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]

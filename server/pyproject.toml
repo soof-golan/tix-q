@@ -8,11 +8,10 @@ readme = "README.md"
 
 [tool.poetry.dependencies]
 python = "^3.10"
-pydantic = {extras = ["email"], version = "^1.10.8"}
+pydantic = "^2.9.2"
 requests = "^2.31.0"
-fastapi = "^0.95.2"
-uvicorn = {extras = ["standard"], version = "^0.22.0"}
-gunicorn = "^20.1.0"
+fastapi = "^0.115.0"
+uvicorn = {extras = ["standard"], version = "^0.31.1"}
 httpx = "^0.24.1"
 cachetools = "^5.3.0"
 asyncache = "^0.3.1"
@@ -25,6 +24,7 @@ asyncpg = "^0.28.0"
 psycopg2-binary = "^2.9.7"
 asyncer = "^0.0.8"
 sentry-sdk = {extras = ["fastapi"], version = "^2.16.0"}
+pydantic-settings = "^2.5.2"
 
 
 [tool.poetry.group.dev.dependencies]
