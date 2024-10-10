@@ -1,44 +1,45 @@
 import os
 
-from pydantic import BaseModel
+from pydantic import Field, SecretStr
+from pydantic_settings import BaseSettings
 
 
-class Config(BaseModel):
+class Config(BaseSettings):
     """
     Configuration for the backend
     """
 
-    firebase_credentials: str = os.environ.get("FIREBASE_CREDENTIALS")
+    firebase_credentials: SecretStr | None = Field(os.environ.get("FIREBASE_CREDENTIALS"))
     """
     The path to the Firebase credentials file OR the contents of the file in JSON format
     """
 
-    turnstile_secret: str = os.environ.get("TURNSTILE_SECRET", "change_me")
+    turnstile_secret: SecretStr | None = Field(os.environ.get("TURNSTILE_SECRET", "change_me"))
     """
     The secret used to validate turnstile requests
     """
 
-    github_token: str = os.environ.get("GITHUB_TOKEN")
+    github_token: SecretStr | None = Field(os.environ.get("GITHUB_TOKEN"))
     """
     The GitHub API key used to create deployments
     """
 
-    github_repo: str = os.environ.get("GITHUB_REPO", "soof-golan/tix-q")
+    github_repo: str = Field(os.environ.get("GITHUB_REPO", "soof-golan/tix-q"))
     """
     The GitHub repo to deploy
     """
 
-    github_workflow_id: str = os.environ.get("GITHUB_WORKFLOW_ID", "publish_website.yml")
+    github_workflow_id: str = Field(os.environ.get("GITHUB_WORKFLOW_ID", "publish_website.yml"))
     """
     The GitHub repo to deploy
     """
 
-    production: bool = os.environ.get("PRODUCTION", "true").lower() == "true"
+    production: bool = Field(os.environ.get("PRODUCTION", "true").lower() == "true")
     """
     Whether or not the server is running in production mode (affects CORS origins and deployment triggers)
     """
 
-    database_url: str = os.environ.get("SQLALCHEMY_DATABASE_URL")
+    database_url: SecretStr | None = Field(os.environ.get("SQLALCHEMY_DATABASE_URL"))
     """
     The URL to the database (cockroachdb)
     """

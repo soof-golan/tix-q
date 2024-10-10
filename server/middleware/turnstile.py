@@ -36,7 +36,7 @@ class TurnstileMiddleware(BaseHTTPMiddleware):
             "/turnstile/v0/siteverify",
             timeout=5,
             data={
-                "secret": CONFIG.turnstile_secret,  # Our secret
+                "secret": CONFIG.turnstile_secret and CONFIG.turnstile_secret.get_secret_value(),  # Our secret
                 "response": token,  # Came from the client
             },
         )

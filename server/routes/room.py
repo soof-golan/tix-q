@@ -357,7 +357,7 @@ async def trigger_deployment(request: fastapi.Request):
         url=url,
         headers={
             "Accept": "application/vnd.github+json",
-            "Authorization": f"Bearer {CONFIG.github_token}",
+            "Authorization": f"Bearer {CONFIG.github_token and CONFIG.github_token.get_secret_value()}",
             "X-GitHub-Api-Version": "2022-11-28",
         },
         json={

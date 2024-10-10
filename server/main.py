@@ -49,9 +49,10 @@ async def lifespan(_app: fastapi.FastAPI) -> typing.AsyncIterator[State]:
     """
     cleanup_coroutines = []
     logger.info("Starting application")
+    logger.info("Config: %s", CONFIG)
 
     engine = create_async_engine(
-        CONFIG.database_url,
+        CONFIG.database_url and CONFIG.database_url.get_secret_value(),
         echo=not CONFIG.production,
         hide_parameters=CONFIG.production,
         pool_size=30,
@@ -114,7 +115,7 @@ app.add_middleware(
 app.add_middleware(TurnstileMiddleware)
 app.add_middleware(
     AuthenticationMiddleware,
-    backend=FirebaseAuthBackend(credential=CONFIG.firebase_credentials),
+    backend=FirebaseAuthBackend(credential=CONFIG.firebase_credentials and CONFIG.firebase_credentials.get_secret_value()),
 )
 
 app.include_router(register_routes.router)
