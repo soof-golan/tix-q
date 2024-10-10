@@ -33,7 +33,7 @@ class TurnstileMiddleware(BaseHTTPMiddleware):
 
         client = request.state.cf_http_client
         response = await client.post(
-            "/turnstile/v0/siteverify/",
+            "/turnstile/v0/siteverify",
             timeout=5,
             data={
                 "secret": CONFIG.turnstile_secret,  # Our secret
