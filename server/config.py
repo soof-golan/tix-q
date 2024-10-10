@@ -43,5 +43,7 @@ class Config(BaseModel):
     The URL to the database (cockroachdb)
     """
 
+    sentry_dsn: str | None = os.environ.get("SENTRY_DSN")
+
 
 CONFIG = Config()

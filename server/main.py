@@ -16,6 +16,7 @@ from starlette.middleware.authentication import AuthenticationMiddleware
 from starlette.middleware.gzip import GZipMiddleware
 from timing_asgi import TimingClient, TimingMiddleware
 from timing_asgi.integrations import StarletteScopeToName
+import sentry_sdk
 
 from server.config import CONFIG
 from server.constants import DEV_CORS_ORIGINS, log_config, PROD_CORS_ORIGINS
@@ -58,6 +59,7 @@ async def lifespan(_app: fastapi.FastAPI) -> typing.AsyncIterator[State]:
     )
     cleanup_coroutines.append(engine.dispose())
     session_maker = async_sessionmaker(engine)
+    sentry_sdk.init(dsn=CONFIG.sentry_dsn)
     try:
         await db_connection_check(engine)
         async with httpx.AsyncClient(

@@ -24,6 +24,7 @@ sqlalchemy-cockroachdb = "^2.0.1"
 asyncpg = "^0.28.0"
 psycopg2-binary = "^2.9.7"
 asyncer = "^0.0.8"
+sentry-sdk = {extras = ["fastapi"], version = "^2.16.0"}
 
 
 [tool.poetry.group.dev.dependencies]
