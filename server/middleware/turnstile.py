@@ -4,6 +4,7 @@ from datetime import datetime
 from starlette.middleware.base import BaseHTTPMiddleware, RequestResponseEndpoint
 from starlette.requests import Request
 from starlette.responses import Response
+import httpx
 
 from server.config import CONFIG
 from server.logger import logger
@@ -32,7 +33,7 @@ class TurnstileMiddleware(BaseHTTPMiddleware):
 
         client = request.state.http_client
         response = await client.post(
-            "https://challenges.cloudflare.com/turnstile/v0/siteverify/",
+            "/turnstile/v0/siteverify/",
             timeout=5,
             data={
                 "secret": CONFIG.turnstile_secret,  # Our secret
@@ -40,8 +41,9 @@ class TurnstileMiddleware(BaseHTTPMiddleware):
             },
         )
 
-        data = response.json()
         try:
+            response.raise_for_status()
+            data = response.json()
             challenge_ts = datetime.fromisoformat(data["challenge_ts"]).replace(tzinfo=None)
         except (KeyError, ValueError):
             logger.debug("Invalid turnstile token (challenge_ts)")
@@ -52,6 +54,19 @@ class TurnstileMiddleware(BaseHTTPMiddleware):
                 hostname=data.get("hostname"),
                 action=data.get("action"),
                 data=data,
+            )
+            return await call_next(request)
+        except httpx.HTTPStatusError as e:
+            logger.exception(
+                "Error validating turnstile token: %s", e.response.text, exc_info=e
+            )
+            request.state.turnstile_outcome = TurnstileOutcome(
+                success=False,
+                challenge_ts=None,
+                error_codes=[e.response.text],
+                hostname=None,
+                action=None,
+                data=None,
             )
             return await call_next(request)
 

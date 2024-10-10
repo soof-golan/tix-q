@@ -351,8 +351,8 @@ async def trigger_deployment(request: fastapi.Request):
             detail="Missing GitHub config, cannot trigger deployment",
         )
     logger.info("Triggering deployment")
-    url = f"https://api.github.com/repos/{CONFIG.github_repo}/actions/workflows/{CONFIG.github_workflow_id}/dispatches"
-    client = cast(httpx.AsyncClient, request.state.http_client)
+    url = f"/repos/{CONFIG.github_repo}/actions/workflows/{CONFIG.github_workflow_id}/dispatches"
+    client = cast(httpx.AsyncClient, request.state.gh_http_client)
     response = await client.post(
         url=url,
         headers={

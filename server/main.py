@@ -60,9 +60,10 @@ async def lifespan(_app: fastapi.FastAPI) -> typing.AsyncIterator[State]:
     session_maker = async_sessionmaker(engine)
     try:
         await db_connection_check(engine)
-        async with httpx.AsyncClient() as client:
+        async with httpx.AsyncClient("https://api.github.com") as gh_http_client, httpx.AsyncClient("https://challenges.cloudflare.com") as cf_http_client:
             yield {
-                "http_client": client,
+                "gh_http_client": gh_http_client,
+                "cf_http_client": cf_http_client,
                 "db": session_maker,
             }
     finally:
