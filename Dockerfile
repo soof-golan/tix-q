@@ -7,8 +7,8 @@ ENV PYTHONUNBUFFERED=True \
 # Copy dependencies
 COPY server/requirements.txt /tmp/requirements.txt
 
-RUN --mount=type=cache,target=/root/.cache/pip \
-    uv pip install -r /tmp/requirements.txt
+# No cache mounts because google sucks
+RUN uv pip install -r /tmp/requirements.txt
 
 WORKDIR /app
 
