@@ -8,14 +8,14 @@ from pydantic import BaseModel, constr, EmailStr, UUID4
 from sqlalchemy import insert
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from server.constants import PLAY_NICE_RESPONSE
-from server.db.session import db_session
-from server.db.waiting_room import CachedWaitingRoomQueryResult, fetch_waiting_room
-from server.logger import logger
-from server.models import IdType, Registrant
-from server.trpc import TrpcMixin
-from server.turnstile import handle_turnstile_errors
-from server.types import TrpcResponse, TurnstileOutcome
+from ..constants import PLAY_NICE_RESPONSE
+from ..db.session import db_session
+from ..db.waiting_room import CachedWaitingRoomQueryResult, fetch_waiting_room
+from ..logger import logger
+from ..models import IdType, Registrant
+from ..trpc import TrpcMixin
+from ..turnstile import handle_turnstile_errors
+from ..types import TrpcResponse, TurnstileOutcome
 
 router = fastapi.APIRouter()
 

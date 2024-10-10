@@ -11,13 +11,13 @@ from sqlalchemy import insert, select, update
 from sqlalchemy.ext.asyncio import AsyncConnection, AsyncSession
 from starlette.authentication import requires
 
-from server.db.user import User, authenticated_user
-from server.models import IdType, WaitingRoom, Registrant as DbRegistrant
-from server.config import CONFIG
-from server.db.session import db_session
-from server.logger import logger
-from server.trpc import trpc, TrpcMixin
-from server.types import TrpcResponse
+from ..db.user import User, authenticated_user
+from ..models import IdType, WaitingRoom, Registrant as DbRegistrant
+from ..config import CONFIG
+from ..db.session import db_session
+from ..logger import logger
+from ..trpc import trpc, TrpcMixin
+from ..types import TrpcResponse
 
 router = fastapi.APIRouter()
 

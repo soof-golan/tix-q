@@ -11,10 +11,10 @@ from sqlalchemy.ext.asyncio import AsyncConnection, AsyncSession
 from starlette.authentication import UnauthenticatedUser
 from starlette.requests import Request
 
-from server.constants import TTL_FIVE_MINUTES
-from server.db.session import db_session
-from server.models import User as DbUser
-from server.types import FirebaseUser
+from ..constants import TTL_FIVE_MINUTES
+from ..db.session import db_session
+from ..models import User as DbUser
+from ..types import FirebaseUser
 
 
 class User(BaseModel):

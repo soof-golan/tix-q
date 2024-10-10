@@ -8,9 +8,9 @@ from sqlalchemy import update
 from sqlalchemy.ext.asyncio import AsyncSession
 from starlette.authentication import requires
 
-from server.db.session import db_session
-from server.models import WaitingRoom
-from server.types import TrpcData, TrpcResponse
+from ..db.session import db_session
+from ..models import WaitingRoom
+from ..types import TrpcData, TrpcResponse
 
 router = fastapi.APIRouter()
 

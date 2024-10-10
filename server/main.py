@@ -18,11 +18,11 @@ from timing_asgi import TimingClient, TimingMiddleware
 from timing_asgi.integrations import StarletteScopeToName
 import sentry_sdk
 
-from server.config import CONFIG
-from server.constants import DEV_CORS_ORIGINS, log_config, PROD_CORS_ORIGINS
-from server.logger import logger
-from server.middleware.firebase import FirebaseAuthBackend
-from server.middleware.turnstile import TurnstileMiddleware
+from .config import CONFIG
+from .constants import DEV_CORS_ORIGINS, log_config, PROD_CORS_ORIGINS
+from .logger import logger
+from .middleware.firebase import FirebaseAuthBackend
+from .middleware.turnstile import TurnstileMiddleware
 from .routes import markdown_edit
 from .routes import register as register_routes
 from .routes import room
@@ -52,7 +52,7 @@ async def lifespan(_app: fastapi.FastAPI) -> typing.AsyncIterator[State]:
     logger.info("Config: %s", CONFIG)
 
     engine = create_async_engine(
-        CONFIG.database_url and CONFIG.database_url.get_secret_value(),
+        CONFIG.sqlalchemy_database_url and CONFIG.sqlalchemy_database_url.get_secret_value(),
         echo=not CONFIG.production,
         hide_parameters=CONFIG.production,
         pool_size=30,

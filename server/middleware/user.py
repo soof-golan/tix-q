@@ -3,10 +3,10 @@ from starlette.middleware.base import BaseHTTPMiddleware, RequestResponseEndpoin
 from fastapi import Request
 from starlette.responses import Response
 
-from server.db.session import create_session_maker
-from server.db.user import fetch_or_create_cached_user
-from server.logger import logger
-from server.types import FirebaseUser
+from ..db.session import create_session_maker
+from ..db.user import fetch_or_create_cached_user
+from ..logger import logger
+from ..types import FirebaseUser
 
 
 class UserMiddleware(BaseHTTPMiddleware):

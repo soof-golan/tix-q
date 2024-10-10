@@ -13,9 +13,9 @@ from firebase_admin import auth
 from starlette.authentication import AuthCredentials, AuthenticationError
 from starlette.requests import HTTPConnection
 
-from server.constants import TTL_FIVE_MINUTES
-from server.logger import logger
-from server.types import FirebaseUser
+from ..constants import TTL_FIVE_MINUTES
+from ..logger import logger
+from ..types import FirebaseUser
 
 
 

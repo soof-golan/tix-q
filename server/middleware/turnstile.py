@@ -6,9 +6,9 @@ from starlette.requests import Request
 from starlette.responses import Response
 import httpx
 
-from server.config import CONFIG
-from server.logger import logger
-from server.types import TurnstileOutcome
+from ..config import CONFIG
+from ..logger import logger
+from ..types import TurnstileOutcome
 
 
 

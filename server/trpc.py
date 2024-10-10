@@ -6,7 +6,7 @@ import fastapi
 import pydantic
 from pydantic import BaseModel
 
-from server.types import TrpcData, TrpcResponse
+from .types import TrpcData, TrpcResponse
 
 
 def decode_trpc_input(escaped_input: str) -> dict:

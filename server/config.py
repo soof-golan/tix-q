@@ -39,7 +39,7 @@ class Config(BaseSettings):
     Whether or not the server is running in production mode (affects CORS origins and deployment triggers)
     """
 
-    database_url: SecretStr | None = Field(os.environ.get("SQLALCHEMY_DATABASE_URL"))
+    sqlalchemy_database_url: SecretStr | None = Field(os.environ.get("SQLALCHEMY_DATABASE_URL"))
     """
     The URL to the database (cockroachdb)
     """

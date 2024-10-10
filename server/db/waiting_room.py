@@ -8,8 +8,8 @@ from pydantic import BaseModel
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from server.constants import TTL_FIVE_MINUTES
-from server.models import WaitingRoom
+from ..constants import TTL_FIVE_MINUTES
+from ..models import WaitingRoom
 
 
 class CachedWaitingRoomQueryResult(BaseModel):
