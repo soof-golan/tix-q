@@ -28,12 +28,10 @@ jobs:
         env:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v3
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
         with:
-          node-version: '16.x'
-          cache: 'yarn'
-          cache-dependency-path: website/yarn.lock
+          bun-version: latest
 
       - name: Migrate production database with prisma
         run: bash scripts/migrate.sh
@@ -41,15 +39,15 @@ jobs:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
 
       - name: Install Node.js dependencies
-        run: yarn install --frozen-lockfile
+        run: bun install
         working-directory: website
 
       - name: Generate Prisma Client
         # Working directory is "./" on purpose!
-        run: npx prisma generate
+        run: bunx prisma generate
 
       - name: Build
-        run: yarn build
+        run: bun run build
         working-directory: website
         env:
           NODE_ENV: production
