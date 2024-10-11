@@ -38,6 +38,7 @@ export const roomParticipantsOutputSchema = z.object({
       phoneNumber: z.string(),
       idNumber: z.string(),
       idType: z.string(),
+      burnerot: z.string(),
       turnstileSuccess: z.string(),
       turnstileTimestamp: z.string(),
       createdAt: z.string(),

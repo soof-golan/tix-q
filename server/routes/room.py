@@ -157,6 +157,8 @@ class Registrant(BaseModel):
     phoneNumber: str
     idNumber: str
     idType: IdType
+    burnerot: str | None = None
+
     turnstileSuccess: bool
     turnstileTimestamp: datetime.datetime | None
 
@@ -195,6 +197,7 @@ async def registrants(
                 phoneNumber=registrant.phone_number,
                 idNumber=registrant.id_number,
                 idType=registrant.id_type,
+                burnerot=str(registrant.burnerot),
                 turnstileSuccess=registrant.turnstile_success,
                 turnstileTimestamp=registrant.turnstile_timestamp,
                 createdAt=registrant.created_at,
