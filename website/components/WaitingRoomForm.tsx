@@ -38,6 +38,8 @@ export default function WaitingRoomForm({
       waitingRoomId: waitingRoomId,
       // @ts-expect-error: Force the user to select an ID type
       idType: "SelectIdType",
+      // @ts-expect-error: Force the user to select a Burnerot event
+      burnerot: "SelectBurnerot",
     },
   });
 
