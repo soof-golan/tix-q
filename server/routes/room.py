@@ -26,8 +26,8 @@ class RoomQuery(BaseModel, TrpcMixin):
     id: uuid.UUID
     title: str
     markdown: str
-    desktopImageBlob: str | None
-    mobileImageBlob: str | None
+    desktopImageBlob: str | None = None
+    mobileImageBlob: str | None = None
     createdAt: datetime.datetime
     updatedAt: datetime.datetime
     opensAt: datetime.datetime

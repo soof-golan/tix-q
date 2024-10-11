@@ -27,10 +27,15 @@ class IdType(enum.Enum):
     ID_CARD = "ID_CARD"
     PASSPORT = "PASSPORT"
 
+class Burnerot(enum.Enum):
+    Yarden = "Yarden"
+    Yeruham = "Yeruham"
+
 
 class Base(DeclarativeBase):
     type_annotation_map = {
         IdType: sqlalchemy.Enum(IdType, name="IdType"),
+        Burnerot: sqlalchemy.Enum(Burnerot, name="Burnerot"),
     }
 
 
@@ -55,6 +60,7 @@ class Registrant(Base):
     id_number: Mapped[str] = mapped_column(nullable=False, name="idNumber")
     id_type: Mapped[IdType] = mapped_column(nullable=False, name="idType")
     phone_number: Mapped[str] = mapped_column(nullable=False, name="phoneNumber")
+    burnerot: Mapped[Burnerot] = mapped_column(nullable=False, name="burnerot")
 
     turnstile_success: Mapped[bool] = mapped_column(
         nullable=False, name="turnstileSuccess", default=False

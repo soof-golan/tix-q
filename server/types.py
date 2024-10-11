@@ -4,7 +4,6 @@ from typing import TypedDict
 
 import httpx
 from pydantic import BaseModel
-from pydantic.generics import GenericModel
 from sqlalchemy.ext.asyncio import async_sessionmaker, AsyncSession
 from starlette.authentication import BaseUser
 
@@ -18,11 +17,11 @@ class State(TypedDict):
 DataT = typing.TypeVar("DataT")
 
 
-class TrpcData(GenericModel, typing.Generic[DataT]):
+class TrpcData(BaseModel, typing.Generic[DataT]):
     data: DataT
 
 
-class TrpcResponse(GenericModel, typing.Generic[DataT]):
+class TrpcResponse(BaseModel, typing.Generic[DataT]):
     result: TrpcData[DataT]
 
 
@@ -81,5 +80,5 @@ class TurnstileOutcome(BaseModel):
 
     @classmethod
     def NO_TOKEN(cls):
-        return cls(success=False, error_codes=["no-token"])
+        return cls(success=False, error_codes=["no-token"], challenge_ts=None)
 

@@ -4,7 +4,7 @@ from typing import Annotated, cast
 import fastapi
 import orjson
 from fastapi import Depends
-from pydantic import BaseModel, constr, EmailStr, UUID4
+from pydantic import BaseModel, constr, EmailStr, UUID4, SecretStr, Field, BeforeValidator, StringConstraints
 from sqlalchemy import insert
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -12,7 +12,7 @@ from ..constants import PLAY_NICE_RESPONSE
 from ..db.session import db_session
 from ..db.waiting_room import CachedWaitingRoomQueryResult, fetch_waiting_room
 from ..logger import logger
-from ..models import IdType, Registrant
+from ..models import IdType, Registrant, Burnerot
 from ..trpc import TrpcMixin
 from ..turnstile import handle_turnstile_errors
 from ..types import TrpcResponse, TurnstileOutcome
@@ -27,6 +27,7 @@ class RegisterRequest(BaseModel):
     phoneNumber: constr(strip_whitespace=True, min_length=1, max_length=255)
     idNumber: constr(strip_whitespace=True, min_length=1, max_length=255)
     idType: IdType
+    burnerot: Burnerot
     waitingRoomId: uuid.UUID
 
 
@@ -38,6 +39,7 @@ class RegisterResponse(BaseModel, TrpcMixin):
     phoneNumber: str
     idNumber: str
     idType: IdType
+    burnerot: Burnerot | None = None
     waitingRoomId: str
 
 
@@ -102,6 +104,7 @@ async def create_participant(
         "phoneNumber": data.phoneNumber,
         "idNumber": data.idNumber,
         "idType": data.idType,
+        "burnerot": data.burnerot,
         "waitingRoomId": str(data.waitingRoomId),
         "turnstileTimestamp": outcome.challenge_ts,
         "turnstileSuccess": outcome.success,
@@ -119,6 +122,7 @@ async def create_participant(
             id_number=data.idNumber,
             id_type=data.idType,
             waiting_room_id=data.waitingRoomId,
+            burnerot=data.burnerot,
             turnstile_success=outcome.success,
             turnstile_timestamp=outcome.challenge_ts,
         )
@@ -129,6 +133,7 @@ async def create_participant(
     _id = result.scalars().first()
 
     if not outcome.challenge_ts:
+        logger.error("Bot mitigation error %s", outcome.error_codes)
         raise fastapi.HTTPException(
             status_code=400,
             detail=f"missing challenge_ts."
@@ -163,4 +168,5 @@ async def create_participant(
         idNumber=data.idNumber,
         idType=data.idType,
         waitingRoomId=str(data.waitingRoomId),
+        burnerot=data.burnerot,
     ).trpc

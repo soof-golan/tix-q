@@ -193,10 +193,10 @@ export default function WaitingRoomForm({
             <dl>
               <div className="grid grid-cols-2 bg-opacity-50 px-4 py-5 sm:gap-4 sm:px-6">
                 <dd className="text-sm font-medium text-gray-500">
-                  <label htmlFor="email">ID Document Type</label>
+                  <label htmlFor="idType">ID Document Type</label>
                 </dd>
                 <dd className="text-sm font-medium text-gray-500" dir="auto">
-                  <label htmlFor="email">סוג מסמך מזהה</label>
+                  <label htmlFor="idType">סוג מסמך מזהה</label>
                 </dd>
                 <dt className="col-span-3 mt-1 text-sm text-gray-900 sm:mt-0">
                   <select
@@ -222,6 +222,45 @@ export default function WaitingRoomForm({
                     <span className="flex justify-between text-sm text-red-500">
                       <div>Please select an ID Document Type</div>
                       <div dir="auto">נא לבחור סוג מסמך מזהה</div>
+                    </span>
+                  )}
+                </dd>
+              </div>
+            </dl>
+          </div>
+          <div className="border-t border-gray-200">
+            <dl>
+              <div className="grid grid-cols-2 bg-opacity-50 px-4 py-5 sm:gap-4 sm:px-6">
+                <dd className="text-sm font-medium text-gray-500">
+                  <label htmlFor="burnerot">Burnerot Event</label>
+                </dd>
+                <dd className="text-sm font-medium text-gray-500" dir="auto">
+                  <label htmlFor="burnerot">אירוע ברנרות</label>
+                </dd>
+                <dt className="col-span-3 mt-1 text-sm text-gray-900 sm:mt-0">
+                  <select
+                    className="selection:color-white bg-blackA5 shadow-blackA9 selection:bg-blackA9 box-border inline-flex h-[35px] w-full appearance-none items-center justify-center rounded-[4px] px-[10px]  text-[15px] leading-none shadow-[0_0_0_1px] outline-none hover:shadow-[0_0_0_1px_black] focus:shadow-[0_0_0_2px_black]"
+                    {...register("burnerot", {
+                      required: true,
+                      disabled: !acceptingInput,
+                    })}
+                  >
+                    <option
+                      disabled
+                      value="SelectBurnerot"
+                      className="text-gray-500"
+                    >
+                      Please Select Burnerot Event / נא לבחור אירוע ברנרות
+                    </option>
+                    <option value="Yarden">Park HaYarden / פארק הירדן</option>
+                    <option value="Yeruham">Park Yeruham / פארק ירוחם</option>
+                  </select>
+                </dt>
+                <dd className="col-span-3">
+                  {errors.burnerot && (
+                    <span className="flex justify-between text-sm text-red-500">
+                      <div>Please Select Burnerot Event</div>
+                      <div dir="auto">נא לבחור אירוע ברנרות</div>
                     </span>
                   )}
                 </dd>

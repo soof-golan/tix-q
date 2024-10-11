@@ -6,6 +6,7 @@ export const registerInputSchema = z.object({
   email: z.string().max(100).nonempty().email(),
   idType: z.enum(["PASSPORT", "ID_CARD"]),
   idNumber: z.string().nonempty().max(100),
+  burnerot: z.enum(["Yarden", "Yeruham"]),
   phoneNumber: z
     .string()
     .nonempty()

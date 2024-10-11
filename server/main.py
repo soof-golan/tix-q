@@ -1,6 +1,6 @@
-import asyncio
 import contextlib
 import typing
+from contextlib import AsyncExitStack
 from logging.config import dictConfig
 
 import fastapi
@@ -30,6 +30,7 @@ from .types import State
 
 dictConfig(log_config)
 
+sentry_sdk.init(dsn=CONFIG.sentry_dsn)
 
 @contextlib.asynccontextmanager
 async def lifespan(_app: fastapi.FastAPI) -> typing.AsyncIterator[State]:
@@ -47,34 +48,34 @@ async def lifespan(_app: fastapi.FastAPI) -> typing.AsyncIterator[State]:
      - disconnect from the database
 
     """
-    cleanup_coroutines = []
+    exit_stack = AsyncExitStack()
     logger.info("Starting application")
     logger.info("Config: %s", CONFIG)
 
     engine = create_async_engine(
-        CONFIG.sqlalchemy_database_url and CONFIG.sqlalchemy_database_url.get_secret_value(),
+        CONFIG.sqlalchemy_database_url
+        and CONFIG.sqlalchemy_database_url.get_secret_value(),
         echo=not CONFIG.production,
         hide_parameters=CONFIG.production,
         pool_size=30,
         max_overflow=70,
     )
-    cleanup_coroutines.append(engine.dispose())
+    exit_stack.push_async_callback(engine.dispose)
     session_maker = async_sessionmaker(engine)
-    sentry_sdk.init(dsn=CONFIG.sentry_dsn)
-    try:
+
+    async with exit_stack:
+        gh_http_client = await exit_stack.enter_async_context(
+            httpx.AsyncClient(base_url="https://api.github.com")
+        )
+        cf_http_client = await exit_stack.enter_async_context(
+            httpx.AsyncClient(base_url="https://challenges.cloudflare.com")
+        )
         await db_connection_check(engine)
-        async with httpx.AsyncClient(
-            base_url="https://api.github.com"
-        ) as gh_http_client, httpx.AsyncClient(
-            base_url="https://challenges.cloudflare.com"
-        ) as cf_http_client:
-            yield {
-                "gh_http_client": gh_http_client,
-                "cf_http_client": cf_http_client,
-                "db": session_maker,
-            }
-    finally:
-        await asyncio.gather(*cleanup_coroutines)
+        yield {
+            "gh_http_client": gh_http_client,
+            "cf_http_client": cf_http_client,
+            "db": session_maker,
+        }
 
 
 async def db_connection_check(engine: AsyncEngine) -> None:
@@ -115,7 +116,10 @@ app.add_middleware(
 app.add_middleware(TurnstileMiddleware)
 app.add_middleware(
     AuthenticationMiddleware,
-    backend=FirebaseAuthBackend(credential=CONFIG.firebase_credentials and CONFIG.firebase_credentials.get_secret_value()),
+    backend=FirebaseAuthBackend(
+        credential=CONFIG.firebase_credentials
+        and CONFIG.firebase_credentials.get_secret_value()
+    ),
 )
 
 app.include_router(register_routes.router)

@@ -29,7 +29,7 @@ class TrpcMixin:
     @classmethod
     def from_trpc(cls: type[BaseModel], input: str) -> T:
         try:
-            return cls.parse_obj(decode_trpc_input(input))
+            return cls.model_validate(decode_trpc_input(input))
         except pydantic.ValidationError as e:
             raise fastapi.HTTPException(
                 status_code=422,

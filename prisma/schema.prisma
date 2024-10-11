@@ -48,6 +48,11 @@ enum IdType {
   PASSPORT /// International passport
 }
 
+enum Burnerot {
+  Yarden /// Burnerot Park Ha-Yarden
+  Yeruham /// Burnerot Park Yeruham
+}
+
 model Registrant {
   id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   createdAt DateTime @default(dbgenerated("now()"))
@@ -58,6 +63,7 @@ model Registrant {
   idNumber    String
   idType      IdType
   phoneNumber String
+  burnerot    Burnerot?
 
   // Bot mitigation
   turnstileSuccess   Boolean   @default(false)
