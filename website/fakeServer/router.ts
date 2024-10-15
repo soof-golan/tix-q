@@ -3,14 +3,7 @@ import {
   registerInputSchema,
   type RegisterOutput,
 } from "../types/RegisterProcedure";
-import {
-  markdownEditInputSchema,
-  type MarkdownEditOutput,
-} from "../types/MarkdownEditProcedure";
-import {
-  markdownReadInputSchema,
-  MarkdownReadOutput,
-} from "../types/MarkdownReadProcedure";
+
 import {
   RoomCreateOutput,
   roomCreateSchema,
@@ -31,18 +24,6 @@ export const appRouter = router({
       return {} as RegisterOutput;
     }),
 
-  markdown: router({
-    edit: protectedProcedure
-      .input(markdownEditInputSchema)
-      .mutation(async (): Promise<MarkdownEditOutput> => {
-        return {} as MarkdownEditOutput;
-      }),
-    read: protectedProcedure
-      .input(markdownReadInputSchema)
-      .query(async (): Promise<MarkdownReadOutput> => {
-        return {} as MarkdownReadOutput;
-      }),
-  }),
   room: router({
     readUnique: protectedProcedure
       .input(roomQueryInputSchema)
