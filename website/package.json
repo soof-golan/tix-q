@@ -51,7 +51,7 @@
     "vite": "^4.3.9",
     "vite-plugin-ssr": "^0.4.142",
     "xlsx": "https://cdn.sheetjs.com/xlsx-0.19.3/xlsx-0.19.3.tgz",
-    "zod": "^3.21.4"
+    "zod": "^3.23.8"
   },
   "type": "module",
   "devDependencies": {
