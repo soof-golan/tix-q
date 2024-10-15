@@ -9,12 +9,16 @@ class Config(BaseSettings):
     Configuration for the backend
     """
 
-    firebase_credentials: SecretStr | None = Field(os.environ.get("FIREBASE_CREDENTIALS"))
+    firebase_credentials: SecretStr | None = Field(
+        os.environ.get("FIREBASE_CREDENTIALS")
+    )
     """
     The path to the Firebase credentials file OR the contents of the file in JSON format
     """
 
-    turnstile_secret: SecretStr | None = Field(os.environ.get("TURNSTILE_SECRET", "change_me"))
+    turnstile_secret: SecretStr | None = Field(
+        os.environ.get("TURNSTILE_SECRET", "change_me")
+    )
     """
     The secret used to validate turnstile requests
     """
@@ -29,7 +33,9 @@ class Config(BaseSettings):
     The GitHub repo to deploy
     """
 
-    github_workflow_id: str = Field(os.environ.get("GITHUB_WORKFLOW_ID", "publish_website.yml"))
+    github_workflow_id: str = Field(
+        os.environ.get("GITHUB_WORKFLOW_ID", "publish_website.yml")
+    )
     """
     The GitHub repo to deploy
     """
@@ -39,12 +45,21 @@ class Config(BaseSettings):
     Whether or not the server is running in production mode (affects CORS origins and deployment triggers)
     """
 
-    sqlalchemy_database_url: SecretStr | None = Field(os.environ.get("SQLALCHEMY_DATABASE_URL"))
+    sqlalchemy_database_url: SecretStr | None = Field(
+        os.environ.get("SQLALCHEMY_DATABASE_URL")
+    )
     """
     The URL to the database (cockroachdb)
     """
 
     sentry_dsn: str | None = os.environ.get("SENTRY_DSN")
+
+    @property
+    def environment(self) -> str:
+        """
+        The environment the server is running in
+        """
+        return "production" if self.production else "development"
 
 
 CONFIG = Config()

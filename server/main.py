@@ -30,7 +30,11 @@ from .types import State
 
 dictConfig(log_config)
 
-sentry_sdk.init(dsn=CONFIG.sentry_dsn)
+sentry_sdk.init(
+    dsn=CONFIG.sentry_dsn,
+    environment=CONFIG.environment,
+)
+
 
 @contextlib.asynccontextmanager
 async def lifespan(_app: fastapi.FastAPI) -> typing.AsyncIterator[State]:
