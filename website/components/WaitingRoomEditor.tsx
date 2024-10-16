@@ -364,12 +364,14 @@ export default function WaitingRoomEditor({ id }: WaitingRoomContentProps) {
                   </div>
                 </dl>
                 <dl>
-                  <div className="bg-gray-50 bg-opacity-50 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
-                    <dt className="text-sm font-medium text-gray-500">
-                      Event Choices
+                  <div className="bg-opacity-50 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+                    <dt className="col-span-3 text-sm font-medium text-gray-500">
+                      <h2 className="text-xl font-medium leading-6 text-gray-900">
+                        Event Choices
+                      </h2>
                       <p>Comma separated list (Leave empty to disable)</p>
                     </dt>
-                    <dd className="mt-1 text-sm text-gray-900 sm:col-span-2 sm:mt-0">
+                    <dd className="col-span-3 mt-1 text-sm text-gray-900 sm:mt-0">
                       <input
                         {...register("eventChoices", {
                           disabled: acceptingInput,
@@ -379,16 +381,25 @@ export default function WaitingRoomEditor({ id }: WaitingRoomContentProps) {
                         placeholder="MidBurn 2020 / מידברן 2020, Burn In Motion / ברן אין מושן"
                       />
                     </dd>
-                    <div>
+                    <div className="col-span-3">
                       {choicesPreview.success ? (
                         <>
-                          <h3>Event Choice Preview:</h3>
+                          <h3 className="text-lg font-medium leading-6 text-gray-900">
+                            Event Choice Preview:
+                          </h3>
                           {!choicesPreview.data.length ? (
-                            <p>No choices</p>
+                            <p>No choices (Start typing to create some)</p>
                           ) : (
-                            <ul className="list-inside list-disc">
+                            <ul
+                              className="w-full list-inside justify-start justify-items-start"
+                              dir="auto"
+                            >
                               {choicesPreview.data.split(",").map((choice) => (
-                                <li key={choice} dir="auto">
+                                <li
+                                  key={choice}
+                                  dir="auto"
+                                  className="list-item w-full"
+                                >
                                   {choice}
                                 </li>
                               ))}
@@ -402,7 +413,7 @@ export default function WaitingRoomEditor({ id }: WaitingRoomContentProps) {
                   </div>
                 </dl>
               </div>
-              <div className="flex items-center justify-between px-4 py-5 max-sm:flex-col sm:px-6">
+              <div className="flex items-center justify-between bg-gray-50 bg-opacity-50 px-4 py-5 max-sm:flex-col sm:px-6">
                 <button
                   disabled={
                     updateApi.isLoading ||
