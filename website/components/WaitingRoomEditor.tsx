@@ -366,7 +366,8 @@ export default function WaitingRoomEditor({ id }: WaitingRoomContentProps) {
                 <dl>
                   <div className="bg-gray-50 bg-opacity-50 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
                     <dt className="text-sm font-medium text-gray-500">
-                      Event Choices <p>Comma Separated List</p>
+                      Event Choices
+                      <p>Comma separated list (Leave empty to disable)</p>
                     </dt>
                     <dd className="mt-1 text-sm text-gray-900 sm:col-span-2 sm:mt-0">
                       <input

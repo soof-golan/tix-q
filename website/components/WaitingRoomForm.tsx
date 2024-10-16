@@ -95,10 +95,10 @@ export default function WaitingRoomForm({
             <dl>
               <div className="grid grid-cols-2 bg-gray-50 bg-opacity-50 px-4 py-5 sm:gap-4 sm:px-6">
                 <dd className="text-sm font-medium text-gray-500">
-                  <label htmlFor="idType">Legal Name</label>
+                  <label htmlFor="legalName">Legal Name</label>
                 </dd>
                 <dd className="text-sm font-medium text-gray-500" dir="auto">
-                  <label htmlFor="idType">שם מלא</label>
+                  <label htmlFor="legalName">שם מלא</label>
                 </dd>
                 <dt className="col-span-3 mt-1 text-sm text-gray-900 sm:mt-0">
                   <input
@@ -165,39 +165,6 @@ export default function WaitingRoomForm({
           </div>
           <div className="border-t border-gray-200">
             <dl>
-              <div className="grid grid-cols-2 bg-gray-50 bg-opacity-50 px-4 py-5 sm:gap-4 sm:px-6">
-                <dd className="text-sm font-medium text-gray-500">
-                  <label>ID Number</label>
-                </dd>
-                <dd className="text-sm font-medium text-gray-500" dir="auto">
-                  <label>מספר זהות</label>
-                </dd>
-                <dt className="col-span-3 mt-1 text-sm text-gray-900 sm:mt-0">
-                  <input
-                    className="selection:color-white bg-blackA5 shadow-blackA9 selection:bg-blackA9 box-border inline-flex h-[35px] w-full appearance-none items-center justify-center rounded-[4px] px-[10px]  text-[15px] leading-none shadow-[0_0_0_1px] outline-none hover:shadow-[0_0_0_1px_black] focus:shadow-[0_0_0_2px_black]"
-                    {...register("idNumber", {
-                      required: true,
-                      disabled: !acceptingInput,
-                      minLength: 5,
-                      maxLength: 255,
-                    })}
-                    type="text"
-                    placeholder="Enter your ID number | נא להזין מספר זהות"
-                  />
-                </dt>
-                <dd className="col-span-3">
-                  {errors.idNumber && (
-                    <span className="flex justify-between text-sm text-red-500">
-                      <div>Please enter an ID number</div>
-                      <div dir="auto">נא להזין מספר זהות</div>
-                    </span>
-                  )}
-                </dd>
-              </div>
-            </dl>
-          </div>
-          <div className="border-t border-gray-200">
-            <dl>
               <div className="grid grid-cols-2 bg-opacity-50 px-4 py-5 sm:gap-4 sm:px-6">
                 <dd className="text-sm font-medium text-gray-500">
                   <label htmlFor="idType">ID Document Type</label>
@@ -229,6 +196,39 @@ export default function WaitingRoomForm({
                     <span className="flex justify-between text-sm text-red-500">
                       <div>Please select an ID Document Type</div>
                       <div dir="auto">נא לבחור סוג מסמך מזהה</div>
+                    </span>
+                  )}
+                </dd>
+              </div>
+            </dl>
+          </div>
+          <div className="border-t border-gray-200">
+            <dl>
+              <div className="grid grid-cols-2 bg-gray-50 bg-opacity-50 px-4 py-5 sm:gap-4 sm:px-6">
+                <dd className="text-sm font-medium text-gray-500">
+                  <label>ID Number</label>
+                </dd>
+                <dd className="text-sm font-medium text-gray-500" dir="auto">
+                  <label>מספר זהות</label>
+                </dd>
+                <dt className="col-span-3 mt-1 text-sm text-gray-900 sm:mt-0">
+                  <input
+                    className="selection:color-white bg-blackA5 shadow-blackA9 selection:bg-blackA9 box-border inline-flex h-[35px] w-full appearance-none items-center justify-center rounded-[4px] px-[10px]  text-[15px] leading-none shadow-[0_0_0_1px] outline-none hover:shadow-[0_0_0_1px_black] focus:shadow-[0_0_0_2px_black]"
+                    {...register("idNumber", {
+                      required: true,
+                      disabled: !acceptingInput,
+                      minLength: 5,
+                      maxLength: 255,
+                    })}
+                    type="text"
+                    placeholder="Enter your ID number | נא להזין מספר זהות"
+                  />
+                </dt>
+                <dd className="col-span-3">
+                  {errors.idNumber && (
+                    <span className="flex justify-between text-sm text-red-500">
+                      <div>Please enter an ID number</div>
+                      <div dir="auto">נא להזין מספר זהות</div>
                     </span>
                   )}
                 </dd>
