@@ -1,5 +1,4 @@
 import json
-import logging
 import typing
 from functools import partial
 
@@ -16,7 +15,6 @@ from starlette.requests import HTTPConnection
 from ..constants import TTL_FIVE_MINUTES
 from ..logger import logger
 from ..types import FirebaseUser
-
 
 
 class FirebaseAuthBackend(starlette.middleware.authentication.AuthenticationBackend):
@@ -67,7 +65,7 @@ class FirebaseAuthBackend(starlette.middleware.authentication.AuthenticationBack
         bearer = conn.headers["Authorization"]
 
         try:
-            scheme, credentials = bearer.split(" ", 1)
+            scheme, _space, credentials = bearer.partition(" ")
             if scheme.lower() != "bearer":
                 logger.debug("Authorization scheme is not bearer")
                 raise AuthenticationError("Authorization scheme is not bearer")
