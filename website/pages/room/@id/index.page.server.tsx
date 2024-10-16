@@ -28,6 +28,7 @@ async function onBeforeRender(pageContext: PageContextServer) {
         ownerEmail: room.owner.email,
         mobileImageBlob: room.mobileImageBlob,
         desktopImageBlob: room.desktopImageBlob,
+        eventChoices: room.eventChoices,
       },
     },
   };

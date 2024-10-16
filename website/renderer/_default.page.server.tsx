@@ -42,7 +42,6 @@ async function render(pageContext: PageContextServer) {
           function gtag(){dataLayer.push(arguments);}
           gtag('js', new Date());
           gtag('config', "${gTag}");
-          console.log("${gTag}")
         </script>
         <title>${title}</title>
       </head>

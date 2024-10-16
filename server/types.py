@@ -1,9 +1,10 @@
 import datetime
 import typing
-from typing import TypedDict
+from typing import TypedDict, TypeAlias, Annotated
 
 import httpx
-from pydantic import BaseModel
+import pyparsing as pp
+from pydantic import BaseModel, AfterValidator, StringConstraints
 from sqlalchemy.ext.asyncio import async_sessionmaker, AsyncSession
 from starlette.authentication import BaseUser
 
@@ -82,3 +83,18 @@ class TurnstileOutcome(BaseModel):
     def NO_TOKEN(cls):
         return cls(success=False, error_codes=["no-token"], challenge_ts=None)
 
+
+def comma_separated(s: str) -> str:
+    parse_result = pp.common.comma_separated_list()("thelist").parse_string(
+        s, parse_all=True
+    )
+    values = parse_result.get("thelist")
+    values = list(filter(bool, values))
+    return ",".join(values)
+
+
+CommaSeparatedStr: TypeAlias = Annotated[
+    str,
+    AfterValidator(comma_separated),
+    StringConstraints(max_length=1024),
+]

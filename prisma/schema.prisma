@@ -25,6 +25,7 @@ model WaitingRoom {
 
   markdown         String
   title            String
+  eventChoices     String  @default("")
   desktopImageBlob String?
   mobileImageBlob  String?
 
@@ -63,7 +64,7 @@ model Registrant {
   idNumber    String
   idType      IdType
   phoneNumber String
-  burnerot    Burnerot?
+  eventChoice String @default("")
 
   // Bot mitigation
   turnstileSuccess   Boolean   @default(false)

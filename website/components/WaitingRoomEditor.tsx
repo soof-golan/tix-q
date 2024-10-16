@@ -1,17 +1,23 @@
 import { trpc } from "../utils/trpc";
 import { useForm } from "react-hook-form";
-import MarkdownCard from "./MarkdownCard";
 import { useEffect, useState } from "react";
 import { markdownTips, markdownTipsTitle } from "../constants";
 import type { RoomUpdateInput } from "../types/roomsProcedures";
-import moment from "moment";
+import moment, { Moment } from "moment";
 import Spinner from "./Spinner";
 import { useQuery } from "@tanstack/react-query";
 import { Link } from "../renderer/Link";
+import { WaitingRoomPage } from "./WaitingRoomPage";
+import { eventChoiceSchema } from "../types/eventChoicesSchema";
+import { useUser } from "reactfire";
 
 type WaitingRoomContentProps = {
   id: string;
 };
+
+function roomIsClosed(closesAt: string | Moment): boolean {
+  return moment().isAfter(closesAt);
+}
 
 function toDataUrl(file: File | null): Promise<string> {
   if (!file) {
@@ -33,6 +39,7 @@ function toDataUrl(file: File | null): Promise<string> {
 }
 
 export default function WaitingRoomEditor({ id }: WaitingRoomContentProps) {
+  const user = useUser();
   const [smallImageUrl, setSmallImageUrl] = useState<string>("");
   const [largeImageUrl, setLargeImageUrl] = useState<string>("");
   const utils = trpc.useContext();
@@ -48,6 +55,7 @@ export default function WaitingRoomEditor({ id }: WaitingRoomContentProps) {
         title: markdownTipsTitle,
         opensAt: moment().add(1, "day").utc().toISOString(),
         closesAt: moment().add(2, "day").utc().toISOString(),
+        eventChoices: "",
       },
     }
   );
@@ -60,10 +68,12 @@ export default function WaitingRoomEditor({ id }: WaitingRoomContentProps) {
     .utc(true)
     .local()
     .format("YYYY-MM-DDTHH:mm");
+  const eventChoices = roomQuery.data?.eventChoices ?? "";
   const roomLiveQuery = useQuery<{
     urlReady: boolean;
   }>({
-    enabled: !!roomQuery.data?.published,
+    enabled:
+      !roomIsClosed(roomQuery?.data.closesAt) && !!roomQuery.data?.published,
     queryKey: ["roomLiveQuery", id],
     retry: true,
     retryDelay: 10000,
@@ -91,6 +101,7 @@ export default function WaitingRoomEditor({ id }: WaitingRoomContentProps) {
       title: roomQuery.data?.title || markdownTipsTitle,
       closesAt: closesAt,
       opensAt: opensAt,
+      eventChoices: "",
       // @ts-expect-error: typescript is wrong
       mobileImagFile: [],
       // @ts-expect-error: typescript is wrong
@@ -121,18 +132,22 @@ export default function WaitingRoomEditor({ id }: WaitingRoomContentProps) {
     setValue("title", roomQuery.data?.title || markdownTipsTitle);
     setValue("opensAt", opensAt);
     setValue("closesAt", closesAt);
+    setValue("eventChoices", eventChoices);
   }, [
     roomQuery.data?.markdown,
     roomQuery.data?.title,
     setValue,
     opensAt,
     closesAt,
+    eventChoices,
   ]);
 
   const liveMarkdown = watch("markdown");
   const liveTitle = watch("title");
   const liveOpensAt = watch("opensAt");
   const liveClosesAt = watch("closesAt");
+  const liveEventChoices = watch("eventChoices");
+  const choicesPreview = eventChoiceSchema.safeParse(liveEventChoices);
 
   const dirty = [
     liveMarkdown !== roomQuery.data?.markdown,
@@ -141,6 +156,7 @@ export default function WaitingRoomEditor({ id }: WaitingRoomContentProps) {
     liveClosesAt !== closesAt,
     smallImageUrl !== roomQuery.data?.mobileImageBlob,
     largeImageUrl !== roomQuery.data?.desktopImageBlob,
+    liveEventChoices !== roomQuery.data?.eventChoices,
   ].some(Boolean);
 
   const loading =
@@ -153,7 +169,9 @@ export default function WaitingRoomEditor({ id }: WaitingRoomContentProps) {
     !roomQuery.isLoading;
 
   const deploymentInProgress =
-    !roomLiveQuery.data?.urlReady && roomQuery.data.published;
+    !roomLiveQuery.data?.urlReady &&
+    roomQuery.data.published &&
+    !roomIsClosed(closesAt);
 
   const smallImageFile = watch("mobileImagFile");
   const largeImageFile = watch("desktopImagFile");
@@ -207,6 +225,7 @@ export default function WaitingRoomEditor({ id }: WaitingRoomContentProps) {
                   title: data.title,
                   opensAt: moment(data.opensAt).local().utc().toISOString(),
                   closesAt: moment(data.closesAt).local().utc().toISOString(),
+                  eventChoices: data.eventChoices,
                 });
               })}
             >
@@ -344,6 +363,43 @@ export default function WaitingRoomEditor({ id }: WaitingRoomContentProps) {
                     </dd>
                   </div>
                 </dl>
+                <dl>
+                  <div className="bg-gray-50 bg-opacity-50 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+                    <dt className="text-sm font-medium text-gray-500">
+                      Event Choices <p>Comma Separated List</p>
+                    </dt>
+                    <dd className="mt-1 text-sm text-gray-900 sm:col-span-2 sm:mt-0">
+                      <input
+                        {...register("eventChoices", {
+                          disabled: acceptingInput,
+                        })}
+                        className="w-full"
+                        type="text"
+                        placeholder="MidBurn 2020 / מידברן 2020, Burn In Motion / ברן אין מושן"
+                      />
+                    </dd>
+                    <div>
+                      {choicesPreview.success ? (
+                        <>
+                          <h3>Event Choice Preview:</h3>
+                          {!choicesPreview.data.length ? (
+                            <p>No choices</p>
+                          ) : (
+                            <ul className="list-inside list-disc">
+                              {choicesPreview.data.split(",").map((choice) => (
+                                <li key={choice} dir="auto">
+                                  {choice}
+                                </li>
+                              ))}
+                            </ul>
+                          )}
+                        </>
+                      ) : (
+                        <p>{choicesPreview.error.message}</p>
+                      )}
+                    </div>
+                  </div>
+                </dl>
               </div>
               <div className="flex items-center justify-between px-4 py-5 max-sm:flex-col sm:px-6">
                 <button
@@ -426,11 +482,16 @@ export default function WaitingRoomEditor({ id }: WaitingRoomContentProps) {
           </div>
         </div>
         <div className="w-full max-w-3xl xl:w-1/2">
-          <MarkdownCard
+          <WaitingRoomPage
             title={liveTitle}
             content={liveMarkdown}
             mobileImageBlob={smallImageUrl}
             desktopImageBlob={largeImageUrl}
+            waitingRoomId={id}
+            opensAt={liveOpensAt}
+            closesAt={liveClosesAt}
+            ownerEmail={user.data?.email ?? "not signed in"}
+            eventChoices={liveEventChoices}
           />
         </div>
       </div>

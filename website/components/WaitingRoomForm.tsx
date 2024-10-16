@@ -8,26 +8,32 @@ import moment from "moment/moment";
 import { useEffect, useState } from "react";
 import Spinner from "./Spinner";
 import { useTurnstile } from "./TurnstileContext";
+import { EventChoices } from "../types/eventChoicesSchema";
 
 type WaitingRoomProps = {
   waitingRoomId: string;
   opensAt: Date;
   closesAt: Date;
   ownerEmail: string;
+  eventChoices: EventChoices;
 };
 
 type FormInput = Omit<RegisterInput, "waitingRoomId">;
+
+const noEventChoice = "";
 
 export default function WaitingRoomForm({
   waitingRoomId,
   opensAt,
   closesAt,
   ownerEmail,
+  eventChoices,
 }: WaitingRoomProps) {
   const [now, setNow] = useState(moment());
   const [token] = useTurnstile();
   const registerApi = trpc.register.useMutation();
-
+  const eventChoicesArr = eventChoices.trim().split(",");
+  const showChoices = eventChoicesArr.length > 0;
   const {
     register,
     handleSubmit,
@@ -38,8 +44,7 @@ export default function WaitingRoomForm({
       waitingRoomId: waitingRoomId,
       // @ts-expect-error: Force the user to select an ID type
       idType: "SelectIdType",
-      // @ts-expect-error: Force the user to select a Burnerot event
-      burnerot: "SelectBurnerot",
+      eventChoice: "Please Select Event",
     },
   });
 
@@ -230,45 +235,53 @@ export default function WaitingRoomForm({
               </div>
             </dl>
           </div>
-          <div className="border-t border-gray-200">
-            <dl>
-              <div className="grid grid-cols-2 bg-opacity-50 px-4 py-5 sm:gap-4 sm:px-6">
-                <dd className="text-sm font-medium text-gray-500">
-                  <label htmlFor="burnerot">Burnerot Event</label>
-                </dd>
-                <dd className="text-sm font-medium text-gray-500" dir="auto">
-                  <label htmlFor="burnerot">אירוע ברנרות</label>
-                </dd>
-                <dt className="col-span-3 mt-1 text-sm text-gray-900 sm:mt-0">
-                  <select
-                    className="selection:color-white bg-blackA5 shadow-blackA9 selection:bg-blackA9 box-border inline-flex h-[35px] w-full appearance-none items-center justify-center rounded-[4px] px-[10px]  text-[15px] leading-none shadow-[0_0_0_1px] outline-none hover:shadow-[0_0_0_1px_black] focus:shadow-[0_0_0_2px_black]"
-                    {...register("burnerot", {
-                      required: true,
-                      disabled: !acceptingInput,
-                    })}
-                  >
-                    <option
-                      disabled
-                      value="SelectBurnerot"
-                      className="text-gray-500"
+          {!showChoices ? null : (
+            <div className="border-t border-gray-200">
+              <dl>
+                <div className="grid grid-cols-2 bg-opacity-50 px-4 py-5 sm:gap-4 sm:px-6">
+                  <dd className="text-sm font-medium text-gray-500">
+                    <label htmlFor="eventChoice">Event Choice</label>
+                  </dd>
+                  <dd className="text-sm font-medium text-gray-500" dir="auto">
+                    <label htmlFor="eventChoice">בחירת אירוע</label>
+                  </dd>
+                  <dt className="col-span-3 mt-1 text-sm text-gray-900 sm:mt-0">
+                    <select
+                      className="selection:color-white bg-blackA5 shadow-blackA9 selection:bg-blackA9 box-border inline-flex h-[35px] w-full appearance-none items-center justify-center rounded-[4px] px-[10px]  text-[15px] leading-none shadow-[0_0_0_1px] outline-none hover:shadow-[0_0_0_1px_black] focus:shadow-[0_0_0_2px_black]"
+                      {...register("eventChoice", {
+                        required: true,
+                        disabled: !acceptingInput,
+                      })}
                     >
-                      Please Select Burnerot Event / נא לבחור אירוע ברנרות
-                    </option>
-                    <option value="Yarden">Park HaYarden / פארק הירדן</option>
-                    <option value="Yeruham">Park Yeruham / פארק ירוחם</option>
-                  </select>
-                </dt>
-                <dd className="col-span-3">
-                  {errors.burnerot && (
-                    <span className="flex justify-between text-sm text-red-500">
-                      <div>Please Select Burnerot Event</div>
-                      <div dir="auto">נא לבחור אירוע ברנרות</div>
-                    </span>
-                  )}
-                </dd>
-              </div>
-            </dl>
-          </div>
+                      <option
+                        disabled
+                        value={{
+                          // @ts-expect-error: Force the user to select an event
+                          noEventChoice,
+                        }}
+                        className="text-gray-500"
+                      >
+                        Please Select Event / נא לבחור אירוע
+                      </option>
+                      {eventChoicesArr.map((event) => (
+                        <option key={event} value={event}>
+                          {event}
+                        </option>
+                      ))}
+                    </select>
+                  </dt>
+                  <dd className="col-span-3">
+                    {errors.eventChoice && (
+                      <span className="flex justify-between text-sm text-red-500">
+                        <div>Please Select Event</div>
+                        <div dir="auto">נא לבחור אירוע</div>
+                      </span>
+                    )}
+                  </dd>
+                </div>
+              </dl>
+            </div>
+          )}
           <div className="border-t border-gray-200">
             <dl>
               <div className="grid grid-cols-2 bg-gray-50 bg-opacity-50 px-4 py-5 sm:gap-4 sm:px-6">

@@ -17,7 +17,7 @@ from ..config import CONFIG
 from ..db.session import db_session
 from ..logger import logger
 from ..trpc import trpc, TrpcMixin
-from ..types import TrpcResponse
+from ..types import TrpcResponse, CommaSeparatedStr
 
 router = fastapi.APIRouter()
 
@@ -32,6 +32,7 @@ class RoomQuery(BaseModel, TrpcMixin):
     updatedAt: datetime.datetime
     opensAt: datetime.datetime
     closesAt: datetime.datetime
+    eventChoices: CommaSeparatedStr
     published: bool
 
 
@@ -43,6 +44,7 @@ class RoomMutation(BaseModel):
     mobileImageBlob: str | None
     opensAt: datetime.datetime
     closesAt: datetime.datetime
+    eventChoices: CommaSeparatedStr
 
 
 class RoomId(BaseModel, TrpcMixin):
@@ -73,6 +75,7 @@ async def read_many(
                 updatedAt=room.updated_at,
                 opensAt=room.opens_at,
                 closesAt=room.closes_at,
+                eventChoices=room.event_choices,
                 published=room.published,
             )
             for room in rooms_iterable
@@ -89,7 +92,19 @@ async def read_unique(
     session: Annotated[AsyncSession, Depends(db_session)],
 ) -> TrpcResponse[RoomQuery]:
     room = await session.execute(
-        select(WaitingRoom.id, WaitingRoom.title, WaitingRoom.markdown, WaitingRoom.desktop_image_blob, WaitingRoom.mobile_image_blob, WaitingRoom.created_at, WaitingRoom.updated_at, WaitingRoom.opens_at, WaitingRoom.closes_at, WaitingRoom.published)
+        select(
+            WaitingRoom.id,
+            WaitingRoom.title,
+            WaitingRoom.markdown,
+            WaitingRoom.desktop_image_blob,
+            WaitingRoom.mobile_image_blob,
+            WaitingRoom.created_at,
+            WaitingRoom.updated_at,
+            WaitingRoom.opens_at,
+            WaitingRoom.closes_at,
+            WaitingRoom.published,
+            WaitingRoom.event_choices,
+        )
         .where(WaitingRoom.id == str(query.id))
         .where(WaitingRoom.owner_id == str(user.id))
     )
@@ -108,6 +123,7 @@ async def read_unique(
         opensAt=room[7],
         closesAt=room[8],
         published=room[9],
+        eventChoices=room[10],
     ).trpc
 
 
@@ -124,7 +140,6 @@ async def stats(
     query: Annotated[RoomId, Depends(RoomId.from_trpc)],
     session: Annotated[AsyncSession, Depends(db_session)],
 ) -> TrpcResponse[RoomStats]:
-
     room = await session.execute(
         select(WaitingRoom.id)
         .where(WaitingRoom.id == str(query.id))
@@ -157,7 +172,7 @@ class Registrant(BaseModel):
     phoneNumber: str
     idNumber: str
     idType: IdType
-    burnerot: str | None = None
+    eventChoice: str = ""
 
     turnstileSuccess: bool
     turnstileTimestamp: datetime.datetime | None
@@ -197,7 +212,7 @@ async def registrants(
                 phoneNumber=registrant.phone_number,
                 idNumber=registrant.id_number,
                 idType=registrant.id_type,
-                burnerot=str(registrant.burnerot),
+                eventChoice=registrant.event_choice,
                 turnstileSuccess=registrant.turnstile_success,
                 turnstileTimestamp=registrant.turnstile_timestamp,
                 createdAt=registrant.created_at,
@@ -246,6 +261,7 @@ async def create(
             opensAt=result.opens_at,
             closesAt=result.closes_at,
             published=result.published,
+            eventChoices="",
         ).trpc
 
 
@@ -269,6 +285,7 @@ async def room_update(
                 mobile_image_blob=room.mobileImageBlob,
                 opens_at=room.opensAt,
                 closes_at=room.closesAt,
+                event_choices=room.eventChoices,
             )
             .returning(WaitingRoom)
         )
@@ -284,6 +301,7 @@ async def room_update(
             opensAt=result.opens_at,
             closesAt=result.closes_at,
             published=result.published,
+            eventChoices=result.event_choices,
         ).trpc
 
 
@@ -321,6 +339,7 @@ async def publish(
         opensAt=result.opens_at,
         closesAt=result.closes_at,
         published=result.published,
+        eventChoices=result.event_choices,
     ).trpc
 
 

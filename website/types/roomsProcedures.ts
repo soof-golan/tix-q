@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { eventChoiceSchema } from "./eventChoicesSchema";
 
 export const roomQueryOutputSchema = z.object({
   id: z.string().uuid(),
@@ -11,6 +12,7 @@ export const roomQueryOutputSchema = z.object({
   published: z.boolean(),
   desktopImageBlob: z.string().nullable(),
   mobileImageBlob: z.string().nullable(),
+  eventChoices: eventChoiceSchema,
 });
 
 export const roomMutationInputSchema = z.object({
@@ -21,6 +23,7 @@ export const roomMutationInputSchema = z.object({
   closesAt: z.string(),
   desktopImageBlob: z.string().nullable(),
   mobileImageBlob: z.string().nullable(),
+  eventChoices: eventChoiceSchema,
 });
 
 export const roomStatsOutputSchema = z.object({
@@ -38,7 +41,7 @@ export const roomParticipantsOutputSchema = z.object({
       phoneNumber: z.string(),
       idNumber: z.string(),
       idType: z.string(),
-      burnerot: z.string(),
+      eventChoice: z.string(),
       turnstileSuccess: z.string(),
       turnstileTimestamp: z.string(),
       createdAt: z.string(),

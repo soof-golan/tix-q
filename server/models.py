@@ -27,25 +27,23 @@ class IdType(enum.Enum):
     ID_CARD = "ID_CARD"
     PASSPORT = "PASSPORT"
 
-class Burnerot(enum.Enum):
-    Yarden = "Yarden"
-    Yeruham = "Yeruham"
-
 
 class Base(DeclarativeBase):
     type_annotation_map = {
         IdType: sqlalchemy.Enum(IdType, name="IdType"),
-        Burnerot: sqlalchemy.Enum(Burnerot, name="Burnerot"),
     }
 
 
 class Registrant(Base):
     __tablename__ = "Registrant"
     id: Mapped[uuid.UUID] = mapped_column(
-        primary_key=True, server_default=sqlalchemy.text("gen_random_uuid()")
+        primary_key=True,
+        server_default=sqlalchemy.text("gen_random_uuid()"),
     )
     created_at: Mapped[datetime] = mapped_column(
-        server_default=sqlalchemy.sql.func.now(), name="createdAt", nullable=False
+        server_default=sqlalchemy.sql.func.now(),
+        name="createdAt",
+        nullable=False,
     )
     updated_at: Mapped[datetime] = mapped_column(
         server_default=sqlalchemy.sql.func.now(),
@@ -60,17 +58,23 @@ class Registrant(Base):
     id_number: Mapped[str] = mapped_column(nullable=False, name="idNumber")
     id_type: Mapped[IdType] = mapped_column(nullable=False, name="idType")
     phone_number: Mapped[str] = mapped_column(nullable=False, name="phoneNumber")
-    burnerot: Mapped[Burnerot] = mapped_column(nullable=False, name="burnerot")
+    event_choice: Mapped[str] = mapped_column(nullable=False, name="eventChoice")
 
     turnstile_success: Mapped[bool] = mapped_column(
-        nullable=False, name="turnstileSuccess", default=False
+        nullable=False,
+        name="turnstileSuccess",
+        default=False,
     )
     turnstile_timestamp: Mapped[datetime] = mapped_column(
-        types.DateTime(timezone=True), nullable=True, name="turnstileTimestamp"
+        types.DateTime(timezone=True),
+        nullable=True,
+        name="turnstileTimestamp",
     )
 
     waiting_room_id: Mapped[uuid.UUID] = mapped_column(
-        ForeignKey("WaitingRoom.id"), nullable=False, name="waitingRoomId"
+        ForeignKey("WaitingRoom.id"),
+        nullable=False,
+        name="waitingRoomId",
     )
     waiting_room: Mapped[WaitingRoom] = relationship(back_populates="registrants")
 
@@ -78,10 +82,13 @@ class Registrant(Base):
 class WaitingRoom(Base):
     __tablename__ = "WaitingRoom"
     id: Mapped[uuid.UUID] = mapped_column(
-        primary_key=True, server_default=sqlalchemy.text("gen_random_uuid()")
+        primary_key=True,
+        server_default=sqlalchemy.text("gen_random_uuid()"),
     )
     created_at: Mapped[datetime] = mapped_column(
-        server_default=sqlalchemy.sql.func.now(), name="createdAt", nullable=False
+        server_default=sqlalchemy.sql.func.now(),
+        name="createdAt",
+        nullable=False,
     )
     updated_at: Mapped[datetime] = mapped_column(
         server_default=sqlalchemy.sql.func.now(),
@@ -92,26 +99,35 @@ class WaitingRoom(Base):
     )
 
     opens_at: Mapped[datetime] = mapped_column(
-        types.DateTime(timezone=True), nullable=False, name="opensAt"
+        types.DateTime(timezone=True),
+        nullable=False,
+        name="opensAt",
     )
     closes_at: Mapped[datetime] = mapped_column(
-        types.DateTime(timezone=True), nullable=False, name="closesAt"
+        types.DateTime(timezone=True),
+        nullable=False,
+        name="closesAt",
     )
     published: Mapped[bool] = mapped_column(nullable=False, default=False)
 
     markdown: Mapped[str] = mapped_column(nullable=False)
     title: Mapped[str] = mapped_column(nullable=False)
+    event_choices: Mapped[str] = mapped_column(nullable=False, name="eventChoices")
     desktop_image_blob: Mapped[str | None] = mapped_column(
-        nullable=True, name="desktopImageBlob"
+        nullable=True,
+        name="desktopImageBlob",
     )
     mobile_image_blob: Mapped[str | None] = mapped_column(
-        nullable=True, name="mobileImageBlob"
+        nullable=True,
+        name="mobileImageBlob",
     )
 
     registrants: Mapped[List[Registrant]] = relationship(back_populates="waiting_room")
 
     owner_id: Mapped[uuid.UUID] = mapped_column(
-        ForeignKey("User.id"), nullable=False, name="ownerId"
+        ForeignKey("User.id"),
+        nullable=False,
+        name="ownerId",
     )
     owner: Mapped[User] = relationship(back_populates="waiting_rooms")
 
@@ -119,10 +135,13 @@ class WaitingRoom(Base):
 class User(Base):
     __tablename__ = "User"
     id: Mapped[uuid.UUID] = mapped_column(
-        primary_key=True, server_default=sqlalchemy.text("gen_random_uuid()")
+        primary_key=True,
+        server_default=sqlalchemy.text("gen_random_uuid()"),
     )
     created_at: Mapped[datetime] = mapped_column(
-        server_default=sqlalchemy.sql.func.now(), name="createdAt", nullable=False
+        server_default=sqlalchemy.sql.func.now(),
+        name="createdAt",
+        nullable=False,
     )
     updated_at: Mapped[datetime] = mapped_column(
         server_default=sqlalchemy.sql.func.now(),
@@ -133,7 +152,9 @@ class User(Base):
     )
 
     firebase_uid: Mapped[str] = mapped_column(
-        nullable=False, name="firebaseUid", unique=True
+        nullable=False,
+        name="firebaseUid",
+        unique=True,
     )
     email: Mapped[str] = mapped_column(nullable=False)
 

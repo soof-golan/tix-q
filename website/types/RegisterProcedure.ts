@@ -2,15 +2,21 @@ import { z } from "zod";
 import validator from "validator";
 
 export const registerInputSchema = z.object({
-  legalName: z.string().nonempty().max(100),
-  email: z.string().max(100).nonempty().email(),
+  legalName: z.string().min(1, "Provide legal name").max(100, "Name too long"),
+  email: z.string().email().max(100, "Email too long").min(1, "Provide email"),
+  idNumber: z
+    .string()
+    .min(1, "Provide ID Number")
+    .max(100, "ID Number too long"),
   idType: z.enum(["PASSPORT", "ID_CARD"]),
-  idNumber: z.string().nonempty().max(100),
-  burnerot: z.enum(["Yarden", "Yeruham"]),
+  eventChoice: z
+    .string()
+    .min(1, "Provide Event Choice")
+    .max(100, "Event Choice too long"),
   phoneNumber: z
     .string()
-    .nonempty()
-    .max(100)
+    .min(1, "Provide phone number")
+    .max(100, "Phone number too long")
     .refine(
       (v) =>
         validator.isMobilePhone(v, "any", {
@@ -28,5 +34,6 @@ export type RegisterOutput = {
   phoneNumber: string;
   idNumber: string;
   idType: "PASSPORT" | "ID_CARD";
+  eventChoice: string;
   waitingRoomId: string;
 };

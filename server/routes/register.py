@@ -4,7 +4,7 @@ from typing import Annotated, cast
 import fastapi
 import orjson
 from fastapi import Depends
-from pydantic import BaseModel, constr, EmailStr, UUID4, SecretStr, Field, BeforeValidator, StringConstraints
+from pydantic import BaseModel, constr, EmailStr, UUID4
 from sqlalchemy import insert
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -12,7 +12,7 @@ from ..constants import PLAY_NICE_RESPONSE
 from ..db.session import db_session
 from ..db.waiting_room import CachedWaitingRoomQueryResult, fetch_waiting_room
 from ..logger import logger
-from ..models import IdType, Registrant, Burnerot
+from ..models import IdType, Registrant
 from ..trpc import TrpcMixin
 from ..turnstile import handle_turnstile_errors
 from ..types import TrpcResponse, TurnstileOutcome
@@ -27,7 +27,7 @@ class RegisterRequest(BaseModel):
     phoneNumber: constr(strip_whitespace=True, min_length=1, max_length=255)
     idNumber: constr(strip_whitespace=True, min_length=1, max_length=255)
     idType: IdType
-    burnerot: Burnerot
+    eventChoice: str
     waitingRoomId: uuid.UUID
 
 
@@ -39,7 +39,7 @@ class RegisterResponse(BaseModel, TrpcMixin):
     phoneNumber: str
     idNumber: str
     idType: IdType
-    burnerot: Burnerot | None = None
+    eventChoice: str
     waitingRoomId: str
 
 
@@ -104,7 +104,7 @@ async def create_participant(
         "phoneNumber": data.phoneNumber,
         "idNumber": data.idNumber,
         "idType": data.idType,
-        "burnerot": data.burnerot,
+        "eventChoice": data.eventChoice,
         "waitingRoomId": str(data.waitingRoomId),
         "turnstileTimestamp": outcome.challenge_ts,
         "turnstileSuccess": outcome.success,
@@ -122,7 +122,7 @@ async def create_participant(
             id_number=data.idNumber,
             id_type=data.idType,
             waiting_room_id=data.waitingRoomId,
-            burnerot=data.burnerot,
+            event_choice=data.eventChoice,
             turnstile_success=outcome.success,
             turnstile_timestamp=outcome.challenge_ts,
         )
@@ -136,7 +136,7 @@ async def create_participant(
         logger.error("Bot mitigation error %s", outcome.error_codes)
         raise fastapi.HTTPException(
             status_code=400,
-            detail=f"missing challenge_ts."
+            detail="missing challenge_ts."
             + PLAY_NICE_RESPONSE.format(name=data.legalName)
             + "\nbtw this request was recorded.",
         )
@@ -145,15 +145,15 @@ async def create_participant(
         raise fastapi.HTTPException(
             status_code=400,
             detail="Too late to register"
-                   + PLAY_NICE_RESPONSE.format(name=data.legalName)
-                   + "\nbtw this request was recorded.",
+            + PLAY_NICE_RESPONSE.format(name=data.legalName)
+            + "\nbtw this request was recorded.",
         )
     if outcome.challenge_ts < room.opens_at:
         # Someone is trying to register too early
         # We recorded the request, but we won't return a success response
         raise fastapi.HTTPException(
             status_code=400,
-            detail=f"Too early to register."
+            detail="Too early to register."
             + PLAY_NICE_RESPONSE.format(name=data.legalName)
             + "\nbtw this request was recorded.",
         )
@@ -168,5 +168,5 @@ async def create_participant(
         idNumber=data.idNumber,
         idType=data.idType,
         waitingRoomId=str(data.waitingRoomId),
-        burnerot=data.burnerot,
+        eventChoice=data.eventChoice,
     ).trpc
