@@ -9,7 +9,7 @@ if [ -z ${DATABASE_URL+x} ]; then
 fi
 
 # Check if yarn executable is available
-if ! command -v npx &>/dev/null; then
+if ! command -v bunx &>/dev/null; then
   echo "NPX CLI could not be found"
   exit 1
 fi
@@ -28,7 +28,7 @@ fi
 
 function migrate() {
   echo "Attempting to migrate database"
-  npx prisma migrate deploy
+  bunx prisma migrate deploy
 }
 
 # Attempt to migrate database (retry 5 times with 5 second delay)
