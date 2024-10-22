@@ -24,7 +24,7 @@ async function render(pageContext: PageContextServer) {
 
   // See https://vite-plugin-ssr.com/head
   const { documentProps } = pageContext.exports;
-  const title = (documentProps && documentProps.title) || "Waiting Room";
+  const title = "Waiting Room" + " | " + ((pageProps && pageProps.title) || "");
   const desc =
     (documentProps && documentProps.description) ||
     "Let users wait in a virtual waiting room, without suffering";
