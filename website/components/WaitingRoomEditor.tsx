@@ -458,6 +458,7 @@ export default function WaitingRoomEditor({ id }: WaitingRoomContentProps) {
                     href={"https://github.com/soof-golan/tix-q/actions"}
                     target={"_blank"}
                     rel={"noreferrer"}
+                    className="underline"
                   >
                     See deployment progress
                   </a>
