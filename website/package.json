@@ -5,7 +5,7 @@
     "build": "vite build",
     "preview": "bun run build && bun run serve:client",
     "serve:client": "bunx serve dist/client",
-    "server": "ts-node ./server/index.ts",
+    "server": "bun ./server/index.ts",
     "server:prod": "cross-env NODE_ENV=production ts-node ./server/index.ts",
     "lint": "eslint . --max-warnings 0"
   },
