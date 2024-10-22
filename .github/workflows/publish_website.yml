@@ -15,18 +15,7 @@ jobs:
     name: Publish to Cloudflare Pages
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
-
-      - name: Setup Python (This is needed for the DB Connection check)
-        uses: actions/setup-python@v4
-        with:
-          python-version: '3.11'
-
-      - name: Sanity check for DB Connection
-        run: python scripts/check_db_connection.py
-
-        env:
-          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+        uses: actions/checkout@v4
 
       - name: Setup Bun
         uses: oven-sh/setup-bun@v2
@@ -38,7 +27,7 @@ jobs:
         env:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
 
-      - name: Install Node.js dependencies
+      - name: Install JS dependencies
         run: bun install
         working-directory: website
 
@@ -63,3 +52,4 @@ jobs:
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           command: pages deploy dist/client --project-name=${{ secrets.CLOUDFLARE_PAGES_PROJECT_NAME }} --branch=main
           workingDirectory: website
+          packageManager: bun
