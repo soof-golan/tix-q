@@ -51,6 +51,11 @@ class RoomId(BaseModel, TrpcMixin):
     id: uuid.UUID
 
 
+class RoomPublishRequest(BaseModel):
+    id: uuid.UUID
+    publish: bool
+
+
 @router.get("/room.readMany")
 @requires("authenticated", status_code=401)
 async def read_many(
@@ -310,7 +315,7 @@ async def room_update(
 async def publish(
     request: fastapi.Request,
     user: Annotated[User, Depends(authenticated_user)],
-    room: RoomId,
+    room: RoomPublishRequest,
     session: Annotated[AsyncSession, Depends(db_session)],
 ) -> TrpcResponse[RoomQuery]:
     async with session.begin():
@@ -318,7 +323,7 @@ async def publish(
             update(WaitingRoom)
             .where(WaitingRoom.id == str(room.id))
             .where(WaitingRoom.owner_id == user.id)
-            .values(published=True)
+            .values(published=room.publish)
             .returning(WaitingRoom)
         )
         result = (await session.execute(statement)).scalar_one()

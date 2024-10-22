@@ -15,6 +15,7 @@ import {
   RoomReadUniqueOutput,
   RoomStatsOutput,
   RoomParticipantsOutput,
+  roomPublishInputSchema,
 } from "../types/roomsProcedures";
 
 export const appRouter = router({
@@ -46,7 +47,7 @@ export const appRouter = router({
         return {} as RoomUpdateOutput;
       }),
     publish: protectedProcedure
-      .input(roomQueryInputSchema)
+      .input(roomPublishInputSchema)
       .mutation(async (): Promise<RoomUpdateOutput> => {
         return {} as RoomUpdateOutput;
       }),

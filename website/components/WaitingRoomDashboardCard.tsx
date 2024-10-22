@@ -2,6 +2,7 @@ import Countdown from "./Countdown";
 import moment, { type Moment } from "moment";
 import { Link } from "../renderer/Link";
 import { useQuery } from "@tanstack/react-query";
+import { trpc } from "../utils/trpc";
 
 type WaitingRoomDashboardCardProps = {
   room: {
@@ -9,6 +10,7 @@ type WaitingRoomDashboardCardProps = {
     title: string;
     opensAt: Moment;
     closesAt: Moment;
+    published: boolean;
   };
 };
 export default function WaitingRoomDashboardCard({
@@ -21,7 +23,7 @@ export default function WaitingRoomDashboardCard({
     : "closed";
 
   const headline = room.title || `Waiting Room ${room.id}`;
-
+  const utils = trpc.useUtils();
   const roomLiveQuery = useQuery<{
     urlReady: boolean;
   }>({
@@ -42,6 +44,18 @@ export default function WaitingRoomDashboardCard({
     },
   });
 
+  const publishApi = trpc.room.publish.useMutation({
+    mutationKey: ["room.publish", room.id],
+    networkMode: "online",
+    retry: false,
+    onSuccess: async () => {
+      await Promise.all([
+        utils.room.readUnique.invalidate({ id: room.id }),
+        utils.room.readMany.invalidate(),
+      ]);
+    },
+  });
+
   return (
     <div className="my-2 w-full overflow-hidden rounded-lg bg-white bg-opacity-80 shadow backdrop-blur-sm">
       <div className="flex items-center justify-between px-4 py-5 max-sm:flex-col sm:px-6">
@@ -55,14 +69,26 @@ export default function WaitingRoomDashboardCard({
             </button>
           </a>
           {roomLiveQuery.data.urlReady ? (
-            <Link href={`/room/${room.id}`}>
+            <>
+              <Link href={`/room/${room.id}`}>
+                <button
+                  className="mr-2 mt-2 rounded bg-indigo-500 px-4 py-2 text-white hover:bg-indigo-700 disabled:cursor-not-allowed disabled:opacity-50"
+                  type="button"
+                >
+                  Open Waiting Room
+                </button>
+              </Link>
               <button
-                className="mr-2 mt-2 rounded bg-indigo-500 px-4 py-2 text-white hover:bg-indigo-700 disabled:cursor-not-allowed disabled:opacity-50"
                 type="button"
+                disabled={!room.published}
+                onClick={() => {
+                  publishApi.mutate({ id: room.id, publish: false });
+                }}
+                className="mr-2 mt-2 rounded bg-red-500 px-4 py-2 text-white hover:bg-red-700 disabled:cursor-not-allowed disabled:opacity-50"
               >
-                Open Waiting Room
+                Unpublish
               </button>
-            </Link>
+            </>
           ) : (
             <a href={`/dashboard/editor/${room.id}`}>
               <button className="mr-2 mt-2 rounded bg-indigo-500 px-4 py-2 text-white hover:bg-indigo-700">

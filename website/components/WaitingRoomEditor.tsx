@@ -470,7 +470,7 @@ export default function WaitingRoomEditor({ id }: WaitingRoomContentProps) {
                 type="button"
                 disabled={roomQuery.data.published || dirty}
                 onClick={() => {
-                  publishApi.mutate({ id });
+                  publishApi.mutate({ id, publish: true });
                 }}
                 className="mr-2 mt-2 rounded bg-indigo-500 px-4 py-2 text-white hover:bg-indigo-700 disabled:cursor-not-allowed disabled:opacity-50"
               >
@@ -487,7 +487,7 @@ export default function WaitingRoomEditor({ id }: WaitingRoomContentProps) {
                 ) : dirty ? (
                   <>Save before publishing</>
                 ) : (
-                  <>Publish (cannot be undone)</>
+                  <>Publish</>
                 )}
               </button>
             </div>

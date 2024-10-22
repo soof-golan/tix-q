@@ -53,6 +53,12 @@ export const roomParticipantsOutputSchema = z.object({
 export const roomQueryInputSchema = z.object({
   id: z.string().uuid(),
 });
+
+export const roomPublishInputSchema = z.object({
+  id: z.string().uuid(),
+  publish: z.boolean(),
+});
+
 export const roomReadUniqueOutputSchema = roomQueryOutputSchema;
 
 export type RoomReadUniqueInput = z.infer<typeof roomQueryInputSchema>;
@@ -84,3 +90,5 @@ export type RoomStatsOutput = z.infer<typeof roomStatsOutputSchema>;
 export type RoomParticipantsOutput = z.infer<
   typeof roomParticipantsOutputSchema
 >;
+
+export type RoomPublishInput = z.infer<typeof roomPublishInputSchema>;
