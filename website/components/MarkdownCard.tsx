@@ -10,20 +10,21 @@ type MarkdownProps = {
   desktopImageBlob?: string;
 };
 
+// NOTE: The query must be defined outside the component
+// Otherwise, it will cause a re-render loop
+const query = {
+  isMobile: {
+    maxWidth: 700,
+  },
+};
+
 export default function MarkdownCard({
   content,
   title,
   desktopImageBlob,
   mobileImageBlob,
 }: MarkdownProps) {
-  const [params, containerRef] = useContainerQuery(
-    {
-      isMobile: {
-        maxWidth: 700,
-      },
-    },
-    {}
-  );
+  const [params, containerRef] = useContainerQuery(query, {});
   const isMobile = params.isMobile;
   const imageUrl = isMobile ? mobileImageBlob : desktopImageBlob;
 
