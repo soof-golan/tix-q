@@ -33,7 +33,10 @@ export default function WaitingRoomForm({
   const [now, setNow] = useState(moment());
   const [token] = useTurnstile();
   const registerApi = trpc.register.useMutation();
-  const eventChoicesArr = eventChoices.trim().split(",");
+  const eventChoicesArr = eventChoices
+    .trim()
+    .split(",")
+    .filter((s) => s.length);
   const showChoices = eventChoicesArr.length > 0;
   const {
     register,
