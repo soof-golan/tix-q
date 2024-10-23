@@ -34,7 +34,7 @@ export default function WaitingRoomDashboardCard({
     initialData: { urlReady: false },
     queryFn: async () => {
       const roomUrl = `/room/${room.id}`;
-      const response = await fetch(roomUrl);
+      const response = await fetch(roomUrl, { method: "HEAD" });
       if (!response.ok) {
         throw new Error("Url not live yet");
       }

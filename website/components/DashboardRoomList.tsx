@@ -38,13 +38,11 @@ export default function DashboardRoomsList() {
       <div className="flex flex-col">
         <CreateRoomCard />
         {rooms ? (
-          rooms
-            .sort((a, b) => moment(b.updatedAt).diff(moment(a.updatedAt)))
-            .map((room) => (
-              <div key={room.id} className="flex flex-row">
-                <WaitingRoomDashboardCard room={room} />
-              </div>
-            ))
+          rooms.map((room) => (
+            <div key={room.id} className="flex flex-row">
+              <WaitingRoomDashboardCard room={room} />
+            </div>
+          ))
         ) : (
           <>
             <Spinner />

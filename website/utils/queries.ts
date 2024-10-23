@@ -1,18 +1,18 @@
 import moment from "moment/moment";
 import { prisma } from "../server/db";
 
-const queryCache = new Map();
+const roomFilter = {
+  published: true,
+  AND: {
+    closesAt: {
+      gt: moment().subtract(1, "day").toDate(),
+    },
+  },
+};
 
 export async function findPublishedRooms() {
-  const rooms = await prisma.waitingRoom.findMany({
-    where: {
-      published: true,
-      AND: {
-        closesAt: {
-          gt: moment().subtract(1, "day").toDate(),
-        },
-      },
-    },
+  return prisma.waitingRoom.findMany({
+    where: roomFilter,
     include: {
       owner: true,
     },
@@ -20,30 +20,16 @@ export async function findPublishedRooms() {
       closesAt: "asc",
     },
   });
-
-  rooms.forEach((room) => {
-    queryCache.set(room.id, room);
-  });
-
-  return rooms;
 }
 
 export async function findRoomById(id: string) {
-  async function getRoomById() {
-    return prisma.waitingRoom.findUniqueOrThrow({
-      where: {
-        id,
-      },
-      include: {
-        owner: true,
-      },
-    });
-  }
-
-  if (queryCache.has(id)) {
-    return queryCache.get(id) as Awaited<ReturnType<typeof getRoomById>>;
-  }
-  const room = await getRoomById();
-  queryCache.set(room.id, room);
-  return room;
+  return prisma.waitingRoom.findFirst({
+    where: {
+      id,
+      ...roomFilter,
+    },
+    include: {
+      owner: true,
+    },
+  });
 }

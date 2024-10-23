@@ -13,6 +13,9 @@ async function prerender() {
 async function onBeforeRender(pageContext: PageContextServer) {
   const id = pageContext.routeParams.id;
   const room = await findRoomById(id);
+  if (!room) {
+    throw render(404, "Room not found");
+  }
   if (!room.published) {
     throw render(403, "Room not published");
   }
