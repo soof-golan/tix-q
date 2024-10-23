@@ -7,7 +7,8 @@
     "serve:client": "bunx serve dist/client",
     "server": "bun ./server/index.ts",
     "server:prod": "cross-env NODE_ENV=production bun ./server/index.ts",
-    "lint": "biome check --fix"
+    "lint": "biome check --fix",
+    "lint:unsafe": "biome check --fix --unsafe"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.1.1",
