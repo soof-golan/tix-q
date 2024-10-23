@@ -81,29 +81,29 @@ export default function WaitingRoomForm({
           })}
         >
           <div className="flex items-center justify-between px-4 py-5 max-sm:flex-col sm:px-6">
-            <h1 className="text-lg font-medium leading-6 text-gray-900">
+            <h1 className="font-medium text-gray-900 text-lg leading-6">
               Register
             </h1>
             <h1
-              className="text-lg font-medium leading-6 text-gray-900"
+              className="font-medium text-gray-900 text-lg leading-6"
               dir="auto"
             >
               הרשמה
             </h1>
           </div>
-          <div className="border-t border-gray-200">
+          <div className="border-gray-200 border-t">
             <dl>
               <div className="grid grid-cols-2 bg-gray-50 bg-opacity-50 px-4 py-5 sm:gap-4 sm:px-6">
-                <dd className="text-sm font-medium text-gray-500">
+                <dd className="font-medium text-gray-500 text-sm">
                   <label htmlFor="legalName">Legal Name</label>
                 </dd>
-                <dd className="text-sm font-medium text-gray-500" dir="auto">
+                <dd className="font-medium text-gray-500 text-sm" dir="auto">
                   <label htmlFor="legalName">שם מלא</label>
                 </dd>
-                <dt className="col-span-3 mt-1 text-sm text-gray-900 sm:mt-0">
+                <dt className="col-span-3 mt-1 text-gray-900 text-sm sm:mt-0">
                   <input
                     dir="auto"
-                    className="selection:color-white bg-blackA5 shadow-blackA9 selection:bg-blackA9 box-border inline-flex h-[35px] w-full appearance-none items-center justify-center rounded-[4px] px-[10px] text-[15px] leading-none shadow-[0_0_0_1px] outline-none hover:shadow-[0_0_0_1px_black] focus:shadow-[0_0_0_2px_black]"
+                    className="selection:color-white box-border inline-flex h-[35px] w-full appearance-none items-center justify-center rounded-[4px] bg-blackA5 px-[10px] text-[15px] leading-none shadow-[0_0_0_1px] shadow-blackA9 outline-none selection:bg-blackA9 hover:shadow-[0_0_0_1px_black] focus:shadow-[0_0_0_2px_black]"
                     placeholder="Enter your name | נא להזין שם"
                     {...register("legalName", {
                       required: true,
@@ -116,7 +116,7 @@ export default function WaitingRoomForm({
                 </dt>
                 <dd className="col-span-3">
                   {errors.legalName && (
-                    <span className="flex justify-between text-sm text-red-500">
+                    <span className="flex justify-between text-red-500 text-sm">
                       <div>Please enter a name</div>
                       <div dir="auto">נא להזין שם</div>
                     </span>
@@ -125,18 +125,18 @@ export default function WaitingRoomForm({
               </div>
             </dl>
           </div>
-          <div className="border-t border-gray-200">
+          <div className="border-gray-200 border-t">
             <dl>
               <div className="grid grid-cols-2 bg-opacity-50 px-4 py-5 sm:gap-4 sm:px-6">
-                <dd className="text-sm font-medium text-gray-500">
+                <dd className="font-medium text-gray-500 text-sm">
                   <label htmlFor="email">Email</label>
                 </dd>
-                <dd className="text-sm font-medium text-gray-500" dir="auto">
+                <dd className="font-medium text-gray-500 text-sm" dir="auto">
                   <label htmlFor="email">אימייל</label>
                 </dd>
-                <dt className="col-span-3 mt-1 text-sm text-gray-900 sm:mt-0">
+                <dt className="col-span-3 mt-1 text-gray-900 text-sm sm:mt-0">
                   <input
-                    className="selection:color-white bg-blackA5 shadow-blackA9 selection:bg-blackA9 box-border inline-flex h-[35px] w-full appearance-none items-center justify-center rounded-[4px] px-[10px] text-[15px] leading-none shadow-[0_0_0_1px] outline-none hover:shadow-[0_0_0_1px_black] focus:shadow-[0_0_0_2px_black]"
+                    className="selection:color-white box-border inline-flex h-[35px] w-full appearance-none items-center justify-center rounded-[4px] bg-blackA5 px-[10px] text-[15px] leading-none shadow-[0_0_0_1px] shadow-blackA9 outline-none selection:bg-blackA9 hover:shadow-[0_0_0_1px_black] focus:shadow-[0_0_0_2px_black]"
                     type="email"
                     placeholder="Enter your email | נא להזין אימייל"
                     {...register("email", {
@@ -148,13 +148,13 @@ export default function WaitingRoomForm({
                 </dt>
                 <dd className="col-span-3">
                   {errors.email?.type === "validate" && (
-                    <span className="flex justify-between text-sm text-red-500">
+                    <span className="flex justify-between text-red-500 text-sm">
                       <div>Please enter a valid email</div>
                       <div dir="auto">נא להזין אימייל תקין</div>
                     </span>
                   )}
                   {errors.email?.type === "required" && (
-                    <span className="flex justify-between text-sm text-red-500">
+                    <span className="flex justify-between text-red-500 text-sm">
                       <div>Please enter a email</div>
                       <div dir="auto">נא להזין אימייל</div>
                     </span>
@@ -163,18 +163,18 @@ export default function WaitingRoomForm({
               </div>
             </dl>
           </div>
-          <div className="border-t border-gray-200">
+          <div className="border-gray-200 border-t">
             <dl>
               <div className="grid grid-cols-2 bg-opacity-50 px-4 py-5 sm:gap-4 sm:px-6">
-                <dd className="text-sm font-medium text-gray-500">
+                <dd className="font-medium text-gray-500 text-sm">
                   <label htmlFor="idType">ID Document Type</label>
                 </dd>
-                <dd className="text-sm font-medium text-gray-500" dir="auto">
+                <dd className="font-medium text-gray-500 text-sm" dir="auto">
                   <label htmlFor="idType">סוג מסמך מזהה</label>
                 </dd>
-                <dt className="col-span-3 mt-1 text-sm text-gray-900 sm:mt-0">
+                <dt className="col-span-3 mt-1 text-gray-900 text-sm sm:mt-0">
                   <select
-                    className="selection:color-white bg-blackA5 shadow-blackA9 selection:bg-blackA9 box-border inline-flex h-[35px] w-full appearance-none items-center justify-center rounded-[4px] px-[10px]  text-[15px] leading-none shadow-[0_0_0_1px] outline-none hover:shadow-[0_0_0_1px_black] focus:shadow-[0_0_0_2px_black]"
+                    className="selection:color-white box-border inline-flex h-[35px] w-full appearance-none items-center justify-center rounded-[4px] bg-blackA5 px-[10px] text-[15px] leading-none shadow-[0_0_0_1px] shadow-blackA9 outline-none selection:bg-blackA9 hover:shadow-[0_0_0_1px_black] focus:shadow-[0_0_0_2px_black]"
                     {...register("idType", {
                       required: true,
                       disabled: !acceptingInput,
@@ -193,7 +193,7 @@ export default function WaitingRoomForm({
                 </dt>
                 <dd className="col-span-3">
                   {errors.idType && (
-                    <span className="flex justify-between text-sm text-red-500">
+                    <span className="flex justify-between text-red-500 text-sm">
                       <div>Please select an ID Document Type</div>
                       <div dir="auto">נא לבחור סוג מסמך מזהה</div>
                     </span>
@@ -202,18 +202,18 @@ export default function WaitingRoomForm({
               </div>
             </dl>
           </div>
-          <div className="border-t border-gray-200">
+          <div className="border-gray-200 border-t">
             <dl>
               <div className="grid grid-cols-2 bg-gray-50 bg-opacity-50 px-4 py-5 sm:gap-4 sm:px-6">
-                <dd className="text-sm font-medium text-gray-500">
+                <dd className="font-medium text-gray-500 text-sm">
                   <label>ID Number</label>
                 </dd>
-                <dd className="text-sm font-medium text-gray-500" dir="auto">
+                <dd className="font-medium text-gray-500 text-sm" dir="auto">
                   <label>מספר זהות</label>
                 </dd>
-                <dt className="col-span-3 mt-1 text-sm text-gray-900 sm:mt-0">
+                <dt className="col-span-3 mt-1 text-gray-900 text-sm sm:mt-0">
                   <input
-                    className="selection:color-white bg-blackA5 shadow-blackA9 selection:bg-blackA9 box-border inline-flex h-[35px] w-full appearance-none items-center justify-center rounded-[4px] px-[10px]  text-[15px] leading-none shadow-[0_0_0_1px] outline-none hover:shadow-[0_0_0_1px_black] focus:shadow-[0_0_0_2px_black]"
+                    className="selection:color-white box-border inline-flex h-[35px] w-full appearance-none items-center justify-center rounded-[4px] bg-blackA5 px-[10px] text-[15px] leading-none shadow-[0_0_0_1px] shadow-blackA9 outline-none selection:bg-blackA9 hover:shadow-[0_0_0_1px_black] focus:shadow-[0_0_0_2px_black]"
                     {...register("idNumber", {
                       required: true,
                       disabled: !acceptingInput,
@@ -226,7 +226,7 @@ export default function WaitingRoomForm({
                 </dt>
                 <dd className="col-span-3">
                   {errors.idNumber && (
-                    <span className="flex justify-between text-sm text-red-500">
+                    <span className="flex justify-between text-red-500 text-sm">
                       <div>Please enter an ID number</div>
                       <div dir="auto">נא להזין מספר זהות</div>
                     </span>
@@ -236,18 +236,18 @@ export default function WaitingRoomForm({
             </dl>
           </div>
           {!showChoices ? null : (
-            <div className="border-t border-gray-200">
+            <div className="border-gray-200 border-t">
               <dl>
                 <div className="grid grid-cols-2 bg-opacity-50 px-4 py-5 sm:gap-4 sm:px-6">
-                  <dd className="text-sm font-medium text-gray-500">
+                  <dd className="font-medium text-gray-500 text-sm">
                     <label htmlFor="eventChoice">Event Choice</label>
                   </dd>
-                  <dd className="text-sm font-medium text-gray-500" dir="auto">
+                  <dd className="font-medium text-gray-500 text-sm" dir="auto">
                     <label htmlFor="eventChoice">בחירת אירוע</label>
                   </dd>
-                  <dt className="col-span-3 mt-1 text-sm text-gray-900 sm:mt-0">
+                  <dt className="col-span-3 mt-1 text-gray-900 text-sm sm:mt-0">
                     <select
-                      className="selection:color-white bg-blackA5 shadow-blackA9 selection:bg-blackA9 box-border inline-flex h-[35px] w-full appearance-none items-center justify-center rounded-[4px] px-[10px]  text-[15px] leading-none shadow-[0_0_0_1px] outline-none hover:shadow-[0_0_0_1px_black] focus:shadow-[0_0_0_2px_black]"
+                      className="selection:color-white box-border inline-flex h-[35px] w-full appearance-none items-center justify-center rounded-[4px] bg-blackA5 px-[10px] text-[15px] leading-none shadow-[0_0_0_1px] shadow-blackA9 outline-none selection:bg-blackA9 hover:shadow-[0_0_0_1px_black] focus:shadow-[0_0_0_2px_black]"
                       {...register("eventChoice", {
                         required: true,
                         disabled: !acceptingInput,
@@ -272,7 +272,7 @@ export default function WaitingRoomForm({
                   </dt>
                   <dd className="col-span-3">
                     {errors.eventChoice && (
-                      <span className="flex justify-between text-sm text-red-500">
+                      <span className="flex justify-between text-red-500 text-sm">
                         <div>Please Select Event</div>
                         <div dir="auto">נא לבחור אירוע</div>
                       </span>
@@ -282,24 +282,24 @@ export default function WaitingRoomForm({
               </dl>
             </div>
           )}
-          <div className="border-t border-gray-200">
+          <div className="border-gray-200 border-t">
             <dl>
               <div className="grid grid-cols-2 bg-gray-50 bg-opacity-50 px-4 py-5 sm:gap-4 sm:px-6">
-                <dd className="text-sm font-medium text-gray-500">
+                <dd className="font-medium text-gray-500 text-sm">
                   <label htmlFor="phoenNumber">Phone Number</label>
-                  <p className="text-xs text-gray-400">
+                  <p className="text-gray-400 text-xs">
                     Examples: +18006543210, +972541234567, 0541234567
                   </p>
                 </dd>
-                <dd className="text-sm font-medium text-gray-500" dir="auto">
+                <dd className="font-medium text-gray-500 text-sm" dir="auto">
                   <label htmlFor="phoenNumber">מספר טלפון</label>
-                  <p className="text-xs text-gray-400">
+                  <p className="text-gray-400 text-xs">
                     דוגמאות: 0541234567, 972541234567+, 00972541234567
                   </p>
                 </dd>
-                <dt className="col-span-3 mt-1 text-sm text-gray-900 sm:mt-0">
+                <dt className="col-span-3 mt-1 text-gray-900 text-sm sm:mt-0">
                   <input
-                    className="selection:color-white bg-blackA5 shadow-blackA9 selection:bg-blackA9 box-border inline-flex h-[35px] w-full appearance-none items-center justify-center rounded-[4px] px-[10px]  text-[15px] leading-none shadow-[0_0_0_1px] outline-none hover:shadow-[0_0_0_1px_black] focus:shadow-[0_0_0_2px_black]"
+                    className="selection:color-white box-border inline-flex h-[35px] w-full appearance-none items-center justify-center rounded-[4px] bg-blackA5 px-[10px] text-[15px] leading-none shadow-[0_0_0_1px] shadow-blackA9 outline-none selection:bg-blackA9 hover:shadow-[0_0_0_1px_black] focus:shadow-[0_0_0_2px_black]"
                     {...register("phoneNumber", {
                       required: true,
                       disabled: !acceptingInput,
@@ -313,12 +313,12 @@ export default function WaitingRoomForm({
                 <dd className="col-span-3">
                   {errors.phoneNumber &&
                     (errors.phoneNumber?.type === "validate" ? (
-                      <span className="flex justify-between text-sm text-red-500">
+                      <span className="flex justify-between text-red-500 text-sm">
                         <div>Please enter valid phone number</div>
                         <div dir="auto">נא להזין מספר טלפון תקין</div>
                       </span>
                     ) : (
-                      <span className="flex justify-between text-sm text-red-500">
+                      <span className="flex justify-between text-red-500 text-sm">
                         <div>Please enter phone number</div>
                         <div dir="auto">נא להזין מספר טלפון</div>
                       </span>
@@ -327,10 +327,10 @@ export default function WaitingRoomForm({
               </div>
             </dl>
           </div>
-          <div className="border-t border-gray-200">
+          <div className="border-gray-200 border-t">
             <dl>
               <div className="flex items-center justify-between bg-opacity-50 px-4 py-5 max-sm:flex-col max-sm:justify-center sm:px-6">
-                <dd className="text-sm font-medium text-gray-500">
+                <dd className="font-medium text-gray-500 text-sm">
                   {status === "early" ? (
                     <>Registration opens in</>
                   ) : status === "open" ? (
@@ -339,7 +339,7 @@ export default function WaitingRoomForm({
                     <>Registration closed</>
                   )}
                 </dd>
-                <dd className="text-sm font-medium text-gray-500" dir="auto">
+                <dd className="font-medium text-gray-500 text-sm" dir="auto">
                   {status === "early" ? (
                     <>הרשמה תפתח בעוד</>
                   ) : status === "open" ? (
@@ -358,17 +358,17 @@ export default function WaitingRoomForm({
               </dd>
             </dl>
           </div>
-          <div className="border-t border-gray-200">
+          <div className="border-gray-200 border-t">
             <dl>
               <div className="grid grid-cols-2 bg-gray-50 bg-opacity-50 px-4 py-5 sm:gap-4 sm:px-6">
-                <dd className="text-sm font-medium text-gray-500">Register</dd>
-                <dd className="text-sm font-medium text-gray-500" dir="auto">
+                <dd className="font-medium text-gray-500 text-sm">Register</dd>
+                <dd className="font-medium text-gray-500 text-sm" dir="auto">
                   הרשמה
                 </dd>
-                <dt className="col-span-3 mt-1 text-sm text-gray-900 sm:mt-0">
+                <dt className="col-span-3 mt-1 text-gray-900 text-sm sm:mt-0">
                   <button
                     type="submit"
-                    className="text-violet11 shadow-blackA7 hover:bg-mauve3 mt-[10px] box-border inline-flex h-[35px] w-full items-center justify-center rounded-[4px] bg-white px-[15px] font-medium leading-none shadow-[0_2px_10px] focus:shadow-[0_0_0_2px] focus:shadow-black focus:outline-none disabled:cursor-not-allowed disabled:opacity-50"
+                    className="mt-[10px] box-border inline-flex h-[35px] w-full items-center justify-center rounded-[4px] bg-white px-[15px] font-medium text-violet11 leading-none shadow-[0_2px_10px] shadow-blackA7 hover:bg-mauve3 focus:shadow-[0_0_0_2px] focus:shadow-black focus:outline-none disabled:cursor-not-allowed disabled:opacity-50"
                     disabled={submitDisabled}
                     aria-busy={registerApi.isLoading}
                   >
@@ -418,17 +418,17 @@ export default function WaitingRoomForm({
               </div>
             </dl>
           </div>
-          <div className="border-t border-gray-200 pb-4">
+          <div className="border-gray-200 border-t pb-4">
             <dl>
               <div className="flex items-center justify-between px-4 py-5 max-sm:flex-col max-sm:justify-center sm:px-6">
-                <dd className="text-sm  font-medium text-gray-500">
+                <dd className="font-medium text-gray-500 text-sm">
                   This form is managed by
                 </dd>
-                <dd className="text-sm font-medium text-gray-500" dir="auto">
+                <dd className="font-medium text-gray-500 text-sm" dir="auto">
                   טופס זה מנוהל על ידי
                 </dd>
               </div>
-              <dd className="text-center text-sm font-medium text-gray-500">
+              <dd className="text-center font-medium text-gray-500 text-sm">
                 {ownerEmail}
               </dd>
             </dl>

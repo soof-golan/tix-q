@@ -142,12 +142,12 @@ function Page({ redirectUrl }: AuthProps) {
             value="Sign in with magic link"
           />
           {sent && (
-            <p className="flex-wrap text-sm text-gray-500">
+            <p className="flex-wrap text-gray-500 text-sm">
               A magic link has been sent to your email. Click on it to sign in.
             </p>
           )}
           {error && (
-            <p className="flex-wrap text-sm text-red-500">
+            <p className="flex-wrap text-red-500 text-sm">
               {error?.message ?? "An unknown error occurred"}
             </p>
           )}

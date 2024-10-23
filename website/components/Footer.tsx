@@ -16,7 +16,7 @@ const Footer = () => {
   return (
     <footer className="mt-2 flex w-full flex-row items-center justify-center bg-black bg-opacity-50 shadow-sm backdrop-blur-lg">
       <div className="3 grid w-full max-w-lg items-center p-4 text-center md:grid-cols-3">
-        <h1 className="text-2xl font-bold text-white">W8 Platforms</h1>
+        <h1 className="font-bold text-2xl text-white">W8 Platforms</h1>
         <h2 className="text-lg text-white">
           {moment().year()} &copy; Soof Golan
         </h2>
@@ -26,7 +26,7 @@ const Footer = () => {
           rel="noopener noreferrer"
           className="flex flex-row items-center justify-center text-end text-white"
         >
-          <span className="text-md mr-2 font-bold text-blue-400 underline">
+          <span className="mr-2 font-bold text-blue-400 text-md underline">
             Source Code
           </span>
           <Github />

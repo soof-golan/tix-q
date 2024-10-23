@@ -37,13 +37,13 @@ function Page() {
   return (
     <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
       <div className="mx-auto max-w-3xl space-y-2">
-        <h1 className="p-4 text-center text-4xl font-bold text-white">
+        <h1 className="p-4 text-center font-bold text-4xl text-white">
           {roomQuery.data?.title || `Waiting Room ${id}`}
         </h1>
         <div className="mx-auto max-w-3xl">
           <div className="overflow-hidden bg-white bg-opacity-80 shadow sm:rounded-lg">
             <div className="px-4 py-5 sm:px-6">
-              <h3 className="text-lg font-medium leading-6 text-gray-900">
+              <h3 className="font-medium text-gray-900 text-lg leading-6">
                 Stats
               </h3>
               <div>
@@ -64,7 +64,7 @@ function Page() {
         <div className="mx-auto max-w-3xl">
           <div className="overflow-hidden bg-white bg-opacity-80 shadow sm:rounded-lg">
             <div className="px-4 py-5 sm:px-6">
-              <h3 className="text-lg font-medium leading-6 text-gray-900">
+              <h3 className="font-medium text-gray-900 text-lg leading-6">
                 Export
               </h3>
               <button
@@ -94,7 +94,7 @@ function Page() {
                     },
                   );
                 }}
-                className="mr-2 mt-2 rounded bg-indigo-500 px-4 py-2 text-white hover:bg-indigo-700"
+                className="mt-2 mr-2 rounded bg-indigo-500 px-4 py-2 text-white hover:bg-indigo-700"
               >
                 Download XLSX
               </button>

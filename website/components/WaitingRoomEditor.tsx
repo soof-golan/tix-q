@@ -230,24 +230,24 @@ export default function WaitingRoomEditor({ id }: WaitingRoomContentProps) {
               })}
             >
               <div className="flex items-center justify-between px-4 py-5 max-sm:flex-col sm:px-6">
-                <h1 className="text-3xl font-medium leading-6 text-gray-900">
+                <h1 className="font-medium text-3xl text-gray-900 leading-6">
                   Waiting Room Editor
                 </h1>
               </div>
               <div className="items-center px-4 py-5 max-sm:flex-col sm:px-6">
-                <p className="font-medium leading-6 text-gray-900">
+                <p className="font-medium text-gray-900 leading-6">
                   Edit the content of the waiting room here, once you are done
                   click the save button below.
                 </p>
-                <p className="font-medium leading-6 text-gray-900">
+                <p className="font-medium text-gray-900 leading-6">
                   There is a live preview of the content in the card below, edit
                   the content and see the changes in real time.
                 </p>
               </div>
-              <div className="border-t border-gray-200">
+              <div className="border-gray-200 border-t">
                 <dl>
                   <div className="items-center bg-gray-50 bg-opacity-50 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6 ">
-                    <dt className="text-sm font-medium text-gray-500">Title</dt>
+                    <dt className="font-medium text-gray-500 text-sm">Title</dt>
                     <dd className="mt-1 text-2xl text-gray-900 sm:col-span-2 sm:mt-0">
                       <input
                         className="w-full rounded bg-indigo-500 bg-opacity-20 px-4 py-2 "
@@ -260,10 +260,10 @@ export default function WaitingRoomEditor({ id }: WaitingRoomContentProps) {
                   </div>
                 </dl>
               </div>
-              <div className="border-t border-gray-200">
+              <div className="border-gray-200 border-t">
                 <dl>
                   <div className="items-center bg-gray-50 bg-opacity-50 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6 ">
-                    <dt className="text-sm font-medium text-gray-500">
+                    <dt className="font-medium text-gray-500 text-sm">
                       Mobile Background Image
                     </dt>
                     <dd className="mt-1 text-2xl text-gray-900 sm:col-span-2 sm:mt-0">
@@ -278,10 +278,10 @@ export default function WaitingRoomEditor({ id }: WaitingRoomContentProps) {
                   </div>
                 </dl>
               </div>
-              <div className="border-t border-gray-200">
+              <div className="border-gray-200 border-t">
                 <dl>
                   <div className="items-center bg-gray-50 bg-opacity-50 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6 ">
-                    <dt className="text-sm font-medium text-gray-500">
+                    <dt className="font-medium text-gray-500 text-sm">
                       Desktop Background Image
                     </dt>
                     <dd className="mt-1 text-2xl text-gray-900 sm:col-span-2 sm:mt-0">
@@ -296,11 +296,11 @@ export default function WaitingRoomEditor({ id }: WaitingRoomContentProps) {
                   </div>
                 </dl>
               </div>
-              <div className="items-center  px-4 py-5 max-sm:flex-col sm:px-6">
-                <label className="text-2xl font-medium leading-6 text-gray-900">
+              <div className="items-center px-4 py-5 max-sm:flex-col sm:px-6">
+                <label className="font-medium text-2xl text-gray-900 leading-6">
                   Content editor
                 </label>
-                <p className="text-sm leading-6 text-gray-900">
+                <p className="text-gray-900 text-sm leading-6">
                   Psst... This editor is a bit janky, so you may want to use
                   another editor and paste the content here after you are done.
                   you can use{" "}
@@ -332,13 +332,13 @@ export default function WaitingRoomEditor({ id }: WaitingRoomContentProps) {
                   className="min-h-[500px] w-full"
                 />
               </div>
-              <div className="border-t border-gray-200">
+              <div className="border-gray-200 border-t">
                 <dl>
                   <div className="bg-gray-50 bg-opacity-50 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
-                    <dt className="text-sm font-medium text-gray-500">
+                    <dt className="font-medium text-gray-500 text-sm">
                       Opens At
                     </dt>
-                    <dd className="mt-1 text-sm text-gray-900 sm:col-span-2 sm:mt-0">
+                    <dd className="mt-1 text-gray-900 text-sm sm:col-span-2 sm:mt-0">
                       <input
                         {...register("opensAt", {
                           disabled: acceptingInput,
@@ -350,10 +350,10 @@ export default function WaitingRoomEditor({ id }: WaitingRoomContentProps) {
                 </dl>
                 <dl>
                   <div className="bg-gray-50 bg-opacity-50 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
-                    <dt className="text-sm font-medium text-gray-500">
+                    <dt className="font-medium text-gray-500 text-sm">
                       Closes At
                     </dt>
-                    <dd className="mt-1 text-sm text-gray-900 sm:col-span-2 sm:mt-0">
+                    <dd className="mt-1 text-gray-900 text-sm sm:col-span-2 sm:mt-0">
                       <input
                         {...register("closesAt", {
                           disabled: acceptingInput,
@@ -365,13 +365,13 @@ export default function WaitingRoomEditor({ id }: WaitingRoomContentProps) {
                 </dl>
                 <dl>
                   <div className="bg-opacity-50 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
-                    <dt className="col-span-3 text-sm font-medium text-gray-500">
-                      <h2 className="text-xl font-medium leading-6 text-gray-900">
+                    <dt className="col-span-3 font-medium text-gray-500 text-sm">
+                      <h2 className="font-medium text-gray-900 text-xl leading-6">
                         Event Choices
                       </h2>
                       <p>Comma separated list (Leave empty to disable)</p>
                     </dt>
-                    <dd className="col-span-3 mt-1 text-sm text-gray-900 sm:mt-0">
+                    <dd className="col-span-3 mt-1 text-gray-900 text-sm sm:mt-0">
                       <input
                         {...register("eventChoices", {
                           disabled: acceptingInput,
@@ -384,7 +384,7 @@ export default function WaitingRoomEditor({ id }: WaitingRoomContentProps) {
                     <div className="col-span-3">
                       {choicesPreview.success ? (
                         <>
-                          <h3 className="text-lg font-medium leading-6 text-gray-900">
+                          <h3 className="font-medium text-gray-900 text-lg leading-6">
                             Event Choice Preview:
                           </h3>
                           {!choicesPreview.data.length ? (
@@ -422,7 +422,7 @@ export default function WaitingRoomEditor({ id }: WaitingRoomContentProps) {
                     roomQuery.data?.published
                   }
                   type="submit"
-                  className="mr-2 mt-2 rounded bg-indigo-500 px-4 py-2 text-white hover:bg-indigo-700 disabled:cursor-not-allowed disabled:opacity-50"
+                  className="mt-2 mr-2 rounded bg-indigo-500 px-4 py-2 text-white hover:bg-indigo-700 disabled:cursor-not-allowed disabled:opacity-50"
                 >
                   {loading ? (
                     <Spinner />
@@ -445,7 +445,7 @@ export default function WaitingRoomEditor({ id }: WaitingRoomContentProps) {
               {roomLiveQuery.data.urlReady && (
                 <Link href={`/room/${id}`}>
                   <button
-                    className="mr-2 mt-2 rounded bg-indigo-500 px-4 py-2 text-white hover:bg-indigo-700 disabled:cursor-not-allowed disabled:opacity-50"
+                    className="mt-2 mr-2 rounded bg-indigo-500 px-4 py-2 text-white hover:bg-indigo-700 disabled:cursor-not-allowed disabled:opacity-50"
                     type="button"
                   >
                     Open Waiting Room
@@ -473,7 +473,7 @@ export default function WaitingRoomEditor({ id }: WaitingRoomContentProps) {
                 onClick={() => {
                   publishApi.mutate({ id, publish: true });
                 }}
-                className="mr-2 mt-2 rounded bg-indigo-500 px-4 py-2 text-white hover:bg-indigo-700 disabled:cursor-not-allowed disabled:opacity-50"
+                className="mt-2 mr-2 rounded bg-indigo-500 px-4 py-2 text-white hover:bg-indigo-700 disabled:cursor-not-allowed disabled:opacity-50"
               >
                 {loading ? (
                   <Spinner />

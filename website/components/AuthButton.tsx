@@ -11,7 +11,7 @@ export default function AuthButton() {
     return (
       <>
         <button
-          className="rounded bg-purple-600 px-4 py-2 text-sm font-bold text-white hover:bg-purple-700"
+          className="rounded bg-purple-600 px-4 py-2 font-bold text-sm text-white hover:bg-purple-700"
           disabled
         >
           {buttonText}
@@ -28,7 +28,7 @@ export default function AuthButton() {
             auth.signOut();
           }}
         >
-          <button className="rounded bg-purple-600 px-4 py-2 text-sm font-bold text-white hover:bg-purple-700">
+          <button className="rounded bg-purple-600 px-4 py-2 font-bold text-sm text-white hover:bg-purple-700">
             {buttonText}
           </button>
         </Link>
@@ -37,7 +37,7 @@ export default function AuthButton() {
   return (
     <>
       <Link href="/auth">
-        <button className="rounded bg-purple-600 px-4 py-2 text-sm font-bold text-white hover:bg-purple-700">
+        <button className="rounded bg-purple-600 px-4 py-2 font-bold text-sm text-white hover:bg-purple-700">
           {buttonText}
         </button>
       </Link>
