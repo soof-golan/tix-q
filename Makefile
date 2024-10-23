@@ -18,7 +18,7 @@ server: db
 
 .PHONY: frontend
 frontend: db
-	cd website && bun run preview
+	cd website && bun dev
 
 .PHONY: db
 db:
