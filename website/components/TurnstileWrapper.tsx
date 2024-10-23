@@ -4,7 +4,7 @@ import { useTurnstile } from "./TurnstileContext";
 export function TurnstileWrapper() {
   const siteKey = import.meta.env.PUBLIC_TURNSTILE_SITEKEY;
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const [token, setToken] = useTurnstile();
+  const [_token, setToken] = useTurnstile();
   return (
     <>
       <Turnstile

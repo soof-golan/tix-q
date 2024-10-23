@@ -1,15 +1,15 @@
-import { trpc } from "../utils/trpc";
-import { useForm } from "react-hook-form";
-import { useEffect, useState } from "react";
-import { markdownTips, markdownTipsTitle } from "../constants";
-import type { RoomUpdateInput } from "../types/roomsProcedures";
-import moment, { Moment } from "moment";
-import Spinner from "./Spinner";
 import { useQuery } from "@tanstack/react-query";
-import { Link } from "../renderer/Link";
-import { WaitingRoomPage } from "./WaitingRoomPage";
-import { eventChoiceSchema } from "../types/eventChoicesSchema";
+import moment, { Moment } from "moment";
+import { useEffect, useState } from "react";
+import { useForm } from "react-hook-form";
 import { useUser } from "reactfire";
+import { markdownTips, markdownTipsTitle } from "../constants";
+import { Link } from "../renderer/Link";
+import { eventChoiceSchema } from "../types/eventChoicesSchema";
+import type { RoomUpdateInput } from "../types/roomsProcedures";
+import { trpc } from "../utils/trpc";
+import Spinner from "./Spinner";
+import { WaitingRoomPage } from "./WaitingRoomPage";
 
 type WaitingRoomContentProps = {
   id: string;
@@ -57,7 +57,7 @@ export default function WaitingRoomEditor({ id }: WaitingRoomContentProps) {
         closesAt: moment().add(2, "day").utc().toISOString(),
         eventChoices: "",
       },
-    }
+    },
   );
 
   const closesAt = moment(roomQuery.data?.closesAt)

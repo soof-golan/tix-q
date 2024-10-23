@@ -1,10 +1,10 @@
-import { trpc } from "../utils/trpc";
-import CreateRoomCard from "./CreateRoomCard";
-import WaitingRoomDashboardCard from "./WaitingRoomDashboardCard";
-import { useSigninCheck } from "reactfire";
-import AuthButton from "./AuthButton";
 import moment from "moment";
+import { useSigninCheck } from "reactfire";
+import { trpc } from "../utils/trpc";
+import AuthButton from "./AuthButton";
+import CreateRoomCard from "./CreateRoomCard";
 import Spinner from "./Spinner";
+import WaitingRoomDashboardCard from "./WaitingRoomDashboardCard";
 
 export default function DashboardRoomsList() {
   const signInCheck = useSigninCheck();
@@ -14,7 +14,7 @@ export default function DashboardRoomsList() {
       refetchOnWindowFocus: true,
       refetchInterval: false,
       networkMode: "online",
-    }
+    },
   );
   const rooms = data?.map((room) => ({
     ...room,

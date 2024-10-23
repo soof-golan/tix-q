@@ -6,8 +6,8 @@
     "preview": "bun run build && bun run serve:client",
     "serve:client": "bunx serve dist/client",
     "server": "bun ./server/index.ts",
-    "server:prod": "cross-env NODE_ENV=production ts-node ./server/index.ts",
-    "lint": "eslint . --max-warnings 0"
+    "server:prod": "cross-env NODE_ENV=production bun ./server/index.ts",
+    "lint": "biome check --fix"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.1.1",
@@ -21,15 +21,9 @@
     "@types/node": "^20.3.1",
     "@types/react": "^18.2.12",
     "@types/react-dom": "^18.2.5",
-    "@typescript-eslint/eslint-plugin": "^5.59.11",
-    "@typescript-eslint/parser": "^5.59.11",
     "@vitejs/plugin-react": "^4.0.0",
     "compression": "^1.7.4",
     "cross-env": "^7.0.3",
-    "eslint": "^8.42.0",
-    "eslint-plugin-react": "^7.32.2",
-    "eslint-plugin-react-hooks": "^4.6.0",
-    "eslint-plugin-react-refresh": "^0.4.1",
     "express": "^4.18.1",
     "firebase": "^9.22.2",
     "moment": "^2.29.4",
@@ -54,6 +48,7 @@
   },
   "type": "module",
   "devDependencies": {
+    "@biomejs/biome": "1.9.4",
     "@types/validator": "^13.7.17",
     "autoprefixer": "^10.4.14",
     "postcss": "^8.4.24",

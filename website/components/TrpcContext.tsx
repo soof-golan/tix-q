@@ -1,8 +1,8 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { httpLink } from "@trpc/client";
 import { PropsWithChildren, useCallback, useEffect, useState } from "react";
-import { trpc } from "../utils/trpc";
 import { useAuth, useSigninCheck } from "reactfire";
+import { trpc } from "../utils/trpc";
 import { useTurnstile } from "./TurnstileContext";
 
 export default function TrpcContext({ children }: PropsWithChildren) {

@@ -1,7 +1,7 @@
-import { onBeforeRender } from "./index.page.server";
-import { inferProps } from "../../renderer/types";
-import WaitingRoomCard from "../../components/WaitingRoomCard";
 import moment from "moment";
+import WaitingRoomCard from "../../components/WaitingRoomCard";
+import { inferProps } from "../../renderer/types";
+import { onBeforeRender } from "./index.page.server";
 
 export { Page };
 
@@ -23,7 +23,7 @@ function Page({ rooms: _rooms }: Props) {
           <ul className="flex flex-col gap-4 ">
             {rooms
               .filter((room) =>
-                moment().subtract(1, "day").isBefore(moment(room.closesAt))
+                moment().subtract(1, "day").isBefore(moment(room.closesAt)),
               )
               .map((room) => (
                 <WaitingRoomCard key={room.id} room={room} />

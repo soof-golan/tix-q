@@ -1,14 +1,14 @@
-import { trpc } from "../utils/trpc";
-import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { RegisterInput, registerInputSchema } from "../types/RegisterProcedure";
-import Countdown from "./Countdown";
-import { TurnstileWrapper } from "./TurnstileWrapper";
 import moment from "moment/moment";
 import { useEffect, useState } from "react";
+import { useForm } from "react-hook-form";
+import { RegisterInput, registerInputSchema } from "../types/RegisterProcedure";
+import { EventChoices } from "../types/eventChoicesSchema";
+import { trpc } from "../utils/trpc";
+import Countdown from "./Countdown";
 import Spinner from "./Spinner";
 import { useTurnstile } from "./TurnstileContext";
-import { EventChoices } from "../types/eventChoicesSchema";
+import { TurnstileWrapper } from "./TurnstileWrapper";
 
 type WaitingRoomProps = {
   waitingRoomId: string;

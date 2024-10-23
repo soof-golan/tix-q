@@ -1,6 +1,6 @@
 import { useSigninCheck } from "reactfire";
-import { auth } from "../utils/firebase";
 import { Link } from "../renderer/Link";
+import { auth } from "../utils/firebase";
 
 export default function AuthButton() {
   const signinCheck = useSigninCheck();

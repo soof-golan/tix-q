@@ -1,5 +1,5 @@
-import { z } from "zod";
 import validator from "validator";
+import { z } from "zod";
 
 export const registerInputSchema = z.object({
   legalName: z.string().min(1, "Provide legal name").max(100, "Name too long"),
@@ -22,7 +22,7 @@ export const registerInputSchema = z.object({
         validator.isMobilePhone(v, "any", {
           strictMode: false,
         }),
-      "Invalid phone number"
+      "Invalid phone number",
     ),
   waitingRoomId: z.string().uuid(),
 });

@@ -1,6 +1,6 @@
-import Countdown from "./Countdown";
 import moment, { type Moment } from "moment";
 import { useState } from "react";
+import Countdown from "./Countdown";
 
 type WaitingRoomCardProps = {
   room: {
@@ -15,8 +15,8 @@ export default function WaitingRoomCard({ room }: WaitingRoomCardProps) {
   const status = now.isBefore(room.opensAt)
     ? "before"
     : now.isBefore(room.closesAt)
-    ? "open"
-    : "closed";
+      ? "open"
+      : "closed";
 
   const headline = room.title || `Waiting Room ${room.id}`;
 

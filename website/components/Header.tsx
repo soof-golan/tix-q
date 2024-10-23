@@ -1,6 +1,6 @@
-import AuthButton from "./AuthButton";
 import { Link } from "../renderer/Link";
 import { usePageContext } from "../renderer/usePageContext";
+import AuthButton from "./AuthButton";
 
 const Header = () => {
   const { documentProps } = usePageContext().exports;

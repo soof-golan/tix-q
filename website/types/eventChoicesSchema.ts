@@ -13,7 +13,7 @@ export const eventChoiceSchema = z
       .trim()
       .array()
       .nonempty("No Event Choices")
-      .transform((a) => a.filter((s) => !!s.length))
+      .transform((a) => a.filter((s) => !!s.length)),
   )
   .transform((choices) => choices.join(","))
   .pipe(z.string().min(1, "No Event Choices"))
@@ -22,7 +22,7 @@ export const eventChoiceSchema = z
       .string()
       .trim()
       .max(0, "No Event Choices")
-      .transform((s) => s.trim())
+      .transform((s) => s.trim()),
   );
 
 export type EventChoices = z.infer<typeof eventChoiceSchema>;

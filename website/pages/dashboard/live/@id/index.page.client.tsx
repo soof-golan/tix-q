@@ -1,8 +1,8 @@
+import moment from "moment";
+import CountUp from "react-countup";
+import Spinner from "../../../../components/Spinner";
 import { usePageContext } from "../../../../renderer/usePageContext";
 import { trpc } from "../../../../utils/trpc";
-import CountUp from "react-countup";
-import moment from "moment";
-import Spinner from "../../../../components/Spinner";
 
 export { Page };
 
@@ -13,7 +13,7 @@ function Page() {
     { id },
     {
       networkMode: "offlineFirst",
-    }
+    },
   );
   const stats = trpc.room.stats.useQuery(
     { id },
@@ -23,7 +23,7 @@ function Page() {
       refetchInterval: 5000,
       networkMode: "online",
       initialData: { registrantsCount: 0, id },
-    }
+    },
   );
   const participants = trpc.room.registrants.useQuery(
     { id },
@@ -31,7 +31,7 @@ function Page() {
       retry: false,
       enabled: false,
       initialData: { registrants: [], id },
-    }
+    },
   );
 
   return (
@@ -83,7 +83,7 @@ function Page() {
                   XLSX.utils.book_append_sheet(
                     workbook,
                     worksheet,
-                    "Participants"
+                    "Participants",
                   );
                   XLSX.writeFile(
                     workbook,
@@ -91,7 +91,7 @@ function Page() {
                     {
                       bookType: "xlsx",
                       sheet: "Participants",
-                    }
+                    },
                   );
                 }}
                 className="mr-2 mt-2 rounded bg-indigo-500 px-4 py-2 text-white hover:bg-indigo-700"

@@ -1,21 +1,21 @@
-import { protectedProcedure, publicProcedure, router } from "./trpc";
 import {
-  registerInputSchema,
   type RegisterOutput,
+  registerInputSchema,
 } from "../types/RegisterProcedure";
+import { protectedProcedure, publicProcedure, router } from "./trpc";
 
 import {
   RoomCreateOutput,
-  roomCreateSchema,
-  roomUpdateInputSchema,
-  RoomUpdateOutput,
-  roomReadManyInputSchema,
+  RoomParticipantsOutput,
   RoomReadManyOutput,
-  roomQueryInputSchema,
   RoomReadUniqueOutput,
   RoomStatsOutput,
-  RoomParticipantsOutput,
+  RoomUpdateOutput,
+  roomCreateSchema,
   roomPublishInputSchema,
+  roomQueryInputSchema,
+  roomReadManyInputSchema,
+  roomUpdateInputSchema,
 } from "../types/roomsProcedures";
 
 export const appRouter = router({

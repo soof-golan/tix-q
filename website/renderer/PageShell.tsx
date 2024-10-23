@@ -1,11 +1,11 @@
 import React, { Suspense } from "react";
-import { PageContextProvider } from "./usePageContext";
 import type { PageContext } from "./types";
+import { PageContextProvider } from "./usePageContext";
 import "./PageShell.css";
-import Header from "../components/Header";
 import { FirebaseContext } from "../components/FirebaseContext";
-import TrpcContext from "../components/TrpcContext";
 import Footer from "../components/Footer";
+import Header from "../components/Header";
+import TrpcContext from "../components/TrpcContext";
 import { TurnstileContext } from "../components/TurnstileContext";
 
 export { PageShell };

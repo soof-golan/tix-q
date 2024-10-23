@@ -46,7 +46,7 @@ export const roomParticipantsOutputSchema = z.object({
       turnstileTimestamp: z.string(),
       createdAt: z.string(),
       updatedAt: z.string(),
-    })
+    }),
   ),
 });
 

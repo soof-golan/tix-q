@@ -1,13 +1,13 @@
 import {
+  type AuthError,
+  checkActionCode,
+  isSignInWithEmailLink,
   sendSignInLinkToEmail,
   signInWithEmailLink,
-  isSignInWithEmailLink,
-  checkActionCode,
-  type AuthError,
 } from "firebase/auth";
-import { useSigninCheck } from "reactfire";
-import { useEffect, useRef, useState } from "react";
 import { AuthErrorCodes } from "firebase/auth";
+import { useEffect, useRef, useState } from "react";
+import { useSigninCheck } from "reactfire";
 import { auth } from "../utils/firebase";
 
 export { Page };
@@ -60,7 +60,7 @@ function Page({ redirectUrl }: AuthProps) {
           window.location.replace(redirectUrl);
         } catch (error: unknown) {
           console.error(
-            (error as AuthError)?.message ?? "An unknown error occurred"
+            (error as AuthError)?.message ?? "An unknown error occurred",
           );
         }
       })
@@ -120,7 +120,7 @@ function Page({ redirectUrl }: AuthProps) {
               });
             window.localStorage.setItem(
               "emailForSignIn",
-              ref.current?.value ?? ""
+              ref.current?.value ?? "",
             );
           }}
         >

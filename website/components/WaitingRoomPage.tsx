@@ -1,6 +1,6 @@
+import moment from "moment/moment";
 import MarkdownCard from "./MarkdownCard";
 import WaitingRoomForm from "./WaitingRoomForm";
-import moment from "moment/moment";
 
 export function WaitingRoomPage(props: {
   content: string;

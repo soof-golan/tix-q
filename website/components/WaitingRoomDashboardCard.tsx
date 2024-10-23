@@ -1,8 +1,8 @@
-import Countdown from "./Countdown";
+import { useQuery } from "@tanstack/react-query";
 import moment, { type Moment } from "moment";
 import { Link } from "../renderer/Link";
-import { useQuery } from "@tanstack/react-query";
 import { trpc } from "../utils/trpc";
+import Countdown from "./Countdown";
 
 type WaitingRoomDashboardCardProps = {
   room: {
@@ -19,8 +19,8 @@ export default function WaitingRoomDashboardCard({
   const status = moment().isBefore(room.opensAt)
     ? "before"
     : moment().isBefore(room.closesAt)
-    ? "open"
-    : "closed";
+      ? "open"
+      : "closed";
 
   const headline = room.title || `Waiting Room ${room.id}`;
   const utils = trpc.useUtils();

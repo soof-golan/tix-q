@@ -1,8 +1,8 @@
 import moment from "moment";
-import { trpc } from "../utils/trpc";
 import { useForm } from "react-hook-form";
-import type { RoomCreateInput } from "../types/roomsProcedures";
 import { markdownTips, markdownTipsTitle } from "../constants";
+import type { RoomCreateInput } from "../types/roomsProcedures";
+import { trpc } from "../utils/trpc";
 
 export default function CreateRoomCard() {
   const utils = trpc.useContext();
@@ -32,6 +32,7 @@ export default function CreateRoomCard() {
             closesAt: moment(data.closesAt).local().local().toISOString(),
             mobileImageBlob: null,
             desktopImageBlob: null,
+            eventChoices: "",
           });
         })}
       >

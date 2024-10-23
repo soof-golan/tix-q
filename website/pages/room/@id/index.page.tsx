@@ -1,6 +1,6 @@
+import { WaitingRoomPage } from "../../../components/WaitingRoomPage";
 import { inferProps } from "../../../renderer/types";
 import type { onBeforeRender } from "./index.page.server";
-import { WaitingRoomPage } from "../../../components/WaitingRoomPage";
 
 export { Page };
 

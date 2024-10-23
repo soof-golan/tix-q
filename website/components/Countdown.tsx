@@ -1,6 +1,6 @@
 import { lazy } from "react";
-import type { CountdownProps } from "react-countdown";
 import { Suspense } from "react";
+import type { CountdownProps } from "react-countdown";
 const Countdown_ = lazy(() => import("react-countdown"));
 
 export default function Countdown(props: CountdownProps) {

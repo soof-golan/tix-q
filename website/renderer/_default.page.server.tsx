@@ -3,8 +3,8 @@ export { render };
 export const passToClient = ["pageProps", "routeParams"];
 
 import ReactDOMServer from "react-dom/server";
-import { PageShell } from "./PageShell";
 import { dangerouslySkipEscape, escapeInject } from "vite-plugin-ssr/server";
+import { PageShell } from "./PageShell";
 import logoUrl from "./logo.svg";
 import type { PageContextServer } from "./types";
 
@@ -14,12 +14,12 @@ async function render(pageContext: PageContextServer) {
 
   const spaMode = !Page;
 
-  const pageHtml = spaMode
+  const _pageHtml = spaMode
     ? ""
     : ReactDOMServer.renderToString(
         <PageShell pageContext={pageContext}>
           <Page {...pageProps} />
-        </PageShell>
+        </PageShell>,
       );
 
   // See https://vite-plugin-ssr.com/head
