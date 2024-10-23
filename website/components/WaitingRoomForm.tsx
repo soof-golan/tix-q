@@ -2,6 +2,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import moment from "moment/moment";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
+import useFormPersist from "react-hook-form-persist";
 import { RegisterInput, registerInputSchema } from "../types/RegisterProcedure";
 import { EventChoices } from "../types/eventChoicesSchema";
 import { trpc } from "../utils/trpc";
@@ -38,6 +39,8 @@ export default function WaitingRoomForm({
     register,
     handleSubmit,
     formState: { errors, isSubmitting },
+    watch,
+    setValue,
   } = useForm<FormInput>({
     resolver: zodResolver(registerInputSchema),
     defaultValues: {
@@ -46,6 +49,11 @@ export default function WaitingRoomForm({
       idType: "SelectIdType",
       eventChoice: "Please Select Event",
     },
+  });
+
+  useFormPersist(`WaitingRoomForm-${waitingRoomId}`, {
+    watch,
+    setValue,
   });
 
   const userTooEarly = now.isBefore(moment(opensAt));
