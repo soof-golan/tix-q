@@ -125,6 +125,9 @@ async def create_participant(
             event_choice=data.eventChoice,
             turnstile_success=outcome.success,
             turnstile_timestamp=outcome.challenge_ts,
+            turnstile_fail_reason=(
+                str(outcome.error_codes) if outcome.error_codes else None
+            ),
         )
         .returning(Registrant.id)
     )

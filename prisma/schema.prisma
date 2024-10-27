@@ -67,8 +67,9 @@ model Registrant {
   eventChoice String @default("")
 
   // Bot mitigation
-  turnstileSuccess   Boolean   @default(false)
-  turnstileTimestamp DateTime?
+  turnstileSuccess    Boolean   @default(false)
+  turnstileTimestamp  DateTime?
+  turnstileFailReason String?
 
   WaitingRoom   WaitingRoom @relation(fields: [waitingRoomId], references: [id])
   waitingRoomId String      @db.Uuid

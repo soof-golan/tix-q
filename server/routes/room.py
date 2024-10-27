@@ -181,6 +181,7 @@ class Registrant(BaseModel):
 
     turnstileSuccess: bool
     turnstileTimestamp: datetime.datetime | None
+    turnstileFailReason: str | None
 
     createdAt: datetime.datetime
     updatedAt: datetime.datetime
@@ -204,7 +205,7 @@ async def registrants(
         .join(WaitingRoom, WaitingRoom.id == DbRegistrant.waiting_room_id)
         .where(WaitingRoom.id == query.id)
         .where(WaitingRoom.owner_id == user.id)
-        .order_by(DbRegistrant.created_at.asc())
+        .order_by(DbRegistrant.turnstile_timestamp.asc().nulls_last())
     )
 
     return RoomRegistrants(
@@ -220,6 +221,7 @@ async def registrants(
                 eventChoice=registrant.event_choice,
                 turnstileSuccess=registrant.turnstile_success,
                 turnstileTimestamp=registrant.turnstile_timestamp,
+                turnstileFailReason=registrant.turnstile_fail_reason,
                 createdAt=registrant.created_at,
                 updatedAt=registrant.updated_at,
             )

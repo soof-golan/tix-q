@@ -75,7 +75,7 @@ class TurnstileOutcome(BaseModel):
 
     success: bool
     challenge_ts: datetime.datetime | None  # Verify people don't submit too early
-    error_codes: list[str]
+    error_codes: list[str] | None = None
     hostname: str | None = None
     action: str | None = None
     data: dict | None = None

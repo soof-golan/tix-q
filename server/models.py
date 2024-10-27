@@ -70,6 +70,10 @@ class Registrant(Base):
         nullable=True,
         name="turnstileTimestamp",
     )
+    turnstile_fail_reason: Mapped[str | None] = mapped_column(
+        nullable=True,
+        name="turnstileFailReason",
+    )
 
     waiting_room_id: Mapped[uuid.UUID] = mapped_column(
         ForeignKey("WaitingRoom.id"),
