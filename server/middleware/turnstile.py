@@ -1,4 +1,3 @@
-import logging
 from datetime import datetime
 
 from starlette.middleware.base import BaseHTTPMiddleware, RequestResponseEndpoint
@@ -9,7 +8,6 @@ import httpx
 from ..config import CONFIG
 from ..logger import logger
 from ..types import TurnstileOutcome
-
 
 
 class TurnstileMiddleware(BaseHTTPMiddleware):
@@ -36,7 +34,10 @@ class TurnstileMiddleware(BaseHTTPMiddleware):
             "/turnstile/v0/siteverify",
             timeout=5,
             data={
-                "secret": CONFIG.turnstile_secret and CONFIG.turnstile_secret.get_secret_value(),  # Our secret
+                "secret": (
+                    CONFIG.turnstile_secret
+                    and CONFIG.turnstile_secret.get_secret_value()
+                ),  # Our secret
                 "response": token,  # Came from the client
             },
         )
@@ -44,7 +45,7 @@ class TurnstileMiddleware(BaseHTTPMiddleware):
         try:
             response.raise_for_status()
             data = response.json()
-            challenge_ts = datetime.fromisoformat(data["challenge_ts"]).replace(tzinfo=None)
+            challenge_ts = datetime.fromisoformat(data["challenge_ts"])
         except (KeyError, ValueError):
             logger.debug("Invalid turnstile token (challenge_ts)")
             request.state.turnstile_outcome = TurnstileOutcome(

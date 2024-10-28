@@ -1,10 +1,11 @@
 import uuid
-from datetime import datetime
+from datetime import datetime, UTC
+from typing import cast
 
 from asyncache import cached
 from cachetools import TTLCache
 from cachetools.keys import methodkey
-from pydantic import BaseModel
+from pydantic import BaseModel, AwareDatetime
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -14,8 +15,8 @@ from ..models import WaitingRoom
 
 class CachedWaitingRoomQueryResult(BaseModel):
     id: uuid.UUID
-    opens_at: datetime
-    closes_at: datetime
+    opens_at: AwareDatetime
+    closes_at: AwareDatetime
 
 
 @cached(cache=TTLCache(maxsize=1024, ttl=TTL_FIVE_MINUTES), key=methodkey)
@@ -43,6 +44,7 @@ async def fetch_waiting_room(
         return None
     return CachedWaitingRoomQueryResult(
         id=room[0],
-        opens_at=room[1],
-        closes_at=room[2],
+        # Re attach UTC timezone
+        opens_at=cast(datetime, room[1]).replace(tzinfo=UTC),
+        closes_at=cast(datetime, room[2]).replace(tzinfo=UTC),
     )
