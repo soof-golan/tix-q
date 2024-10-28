@@ -13,6 +13,8 @@ If you think this is a mistake, please contact me.
 If you're running a bot, please stop.
 XOXO
 Soof
+
+p.s. btw, this request was recorded.
 """
 
 TTL_FIVE_MINUTES = 60 * 5
