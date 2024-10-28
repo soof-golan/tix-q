@@ -5,7 +5,7 @@ from asyncache import cached
 from cachetools import TTLCache
 from cachetools.keys import methodkey
 from fastapi import Depends, HTTPException
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
 from sqlalchemy.dialects.postgresql import insert
 from sqlalchemy.ext.asyncio import AsyncConnection, AsyncSession
 from starlette.authentication import UnauthenticatedUser
@@ -18,6 +18,8 @@ from ..types import FirebaseUser
 
 
 class User(BaseModel):
+    model_config = ConfigDict(frozen=True)
+
     id: uuid.UUID
     firebase_uid: str
     email: str
@@ -62,3 +64,16 @@ async def authenticated_user(
             detail="You must be logged in to perform this action",
         )
     return await fetch_or_create_cached_user(conn, _user)
+
+
+async def maybe_user(
+    request: Request,
+    conn: Annotated[AsyncConnection, Depends(db_session)],
+) -> User | None:
+    _user: FirebaseUser | UnauthenticatedUser = request.scope.get("user")
+    if not _user.is_authenticated:
+        return None
+    return await fetch_or_create_cached_user(conn, _user)
+
+
+MaybeUser = Annotated[User | None, Depends(maybe_user)]

@@ -10,6 +10,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from ..constants import PLAY_NICE_RESPONSE
 from ..db.session import db_session
+from ..db.user import MaybeUser
 from ..db.waiting_room import CachedWaitingRoomQueryResult, fetch_waiting_room
 from ..logger import logger
 from ..models import IdType, Registrant
@@ -53,6 +54,7 @@ def turnstile_outcome(request: fastapi.Request) -> TurnstileOutcome:
 async def waiting_room(
     data: RegisterRequest,
     session: Annotated[AsyncSession, Depends(db_session)],
+    maybe_user: MaybeUser,
 ) -> CachedWaitingRoomQueryResult:
     """
     Query the database for the waiting room
@@ -60,7 +62,11 @@ async def waiting_room(
     :raises fastapi.HTTPException: If the waiting room ID is invalid
     """
 
-    room = await fetch_waiting_room(session, str(data.waitingRoomId))
+    room = await fetch_waiting_room(
+        session,
+        str(data.waitingRoomId),
+        (maybe_user.id if maybe_user else None),
+    )
     if room is None:
         # Failed lookup, probably Invalid waiting room ID
         raise fastapi.HTTPException(
