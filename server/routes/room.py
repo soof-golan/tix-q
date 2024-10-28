@@ -161,6 +161,8 @@ async def stats(
             .join(WaitingRoom, DbRegistrant.waiting_room_id == WaitingRoom.id)
             .where(WaitingRoom.id == str(query.id))
             .where(WaitingRoom.owner_id == str(user.id))
+            .where(DbRegistrant.turnstile_timestamp > WaitingRoom.opens_at)
+            .where(DbRegistrant.turnstile_timestamp < WaitingRoom.closes_at)
         )
     ).scalar_one()
 
@@ -205,6 +207,8 @@ async def registrants(
         .join(WaitingRoom, WaitingRoom.id == DbRegistrant.waiting_room_id)
         .where(WaitingRoom.id == query.id)
         .where(WaitingRoom.owner_id == user.id)
+        .where(DbRegistrant.turnstile_timestamp > WaitingRoom.opens_at)
+        .where(DbRegistrant.turnstile_timestamp < WaitingRoom.closes_at)
         .order_by(DbRegistrant.turnstile_timestamp.asc().nulls_last())
     )
 
