@@ -133,7 +133,7 @@ async def create_participant(
     )
     await session.commit()
 
-    _id = result.scalars().first()
+    _id = result.scalar_one()
 
     handle_turnstile_errors(outcome, data.legalName)
 
