@@ -98,11 +98,12 @@ class TimingLogger(TimingClient):
 
 
 app = fastapi.FastAPI(lifespan=lifespan)
-app.add_middleware(
-    TimingMiddleware,
-    client=TimingLogger(),
-    metric_namer=StarletteScopeToName(prefix="tix-q", starlette_app=app),
-)
+if not CONFIG.production:
+    app.add_middleware(
+        TimingMiddleware,
+        client=TimingLogger(),
+        metric_namer=StarletteScopeToName(prefix="tix-q", starlette_app=app),
+    )
 app.add_middleware(GZipMiddleware, minimum_size=1000)
 app.add_middleware(
     CORSMiddleware,
