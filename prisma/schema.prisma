@@ -44,6 +44,8 @@ model User {
   firebaseUid  String        @unique
   email        String        @default("")
   waitingRooms WaitingRoom[]
+
+  @@index([firebaseUid])
 }
 
 enum IdType {
