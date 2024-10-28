@@ -135,21 +135,14 @@ async def create_participant(
 
     _id = result.scalars().first()
 
-    if not outcome.challenge_ts:
-        logger.error("Bot mitigation error %s", outcome.error_codes)
-        raise fastapi.HTTPException(
-            status_code=400,
-            detail="missing challenge_ts."
-            + PLAY_NICE_RESPONSE.format(name=data.legalName)
-            + "\nbtw this request was recorded.",
-        )
+    handle_turnstile_errors(outcome, data.legalName)
+
     # Someone is trying to register too late
     if outcome.challenge_ts > room.closes_at:
         raise fastapi.HTTPException(
             status_code=400,
             detail="Too late to register"
-            + PLAY_NICE_RESPONSE.format(name=data.legalName)
-            + "\nbtw this request was recorded.",
+            + PLAY_NICE_RESPONSE.format(name=data.legalName),
         )
     if outcome.challenge_ts < room.opens_at:
         # Someone is trying to register too early
@@ -157,11 +150,8 @@ async def create_participant(
         raise fastapi.HTTPException(
             status_code=400,
             detail="Too early to register."
-            + PLAY_NICE_RESPONSE.format(name=data.legalName)
-            + "\nbtw this request was recorded.",
+            + PLAY_NICE_RESPONSE.format(name=data.legalName),
         )
-
-    handle_turnstile_errors(outcome, data.legalName)
 
     return RegisterResponse(
         id=str(_id),
