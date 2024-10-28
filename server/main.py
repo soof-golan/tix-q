@@ -33,6 +33,8 @@ dictConfig(log_config)
 sentry_sdk.init(
     dsn=CONFIG.sentry_dsn,
     environment=CONFIG.environment,
+    profiles_sample_rate=0.02 if CONFIG.production else 1.0,
+    traces_sample_rate=0.02 if CONFIG.production else 1.0,
 )
 
 
