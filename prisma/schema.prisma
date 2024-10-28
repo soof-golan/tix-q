@@ -32,6 +32,8 @@ model WaitingRoom {
   registrants Registrant[]
   owner       User         @relation(fields: [ownerId], references: [id])
   ownerId     String       @db.Uuid
+
+  @@index([ownerId])
 }
 
 model User {
@@ -73,4 +75,6 @@ model Registrant {
 
   WaitingRoom   WaitingRoom @relation(fields: [waitingRoomId], references: [id])
   waitingRoomId String      @db.Uuid
+
+  @@index([waitingRoomId, turnstileTimestamp(sort: Asc)])
 }
