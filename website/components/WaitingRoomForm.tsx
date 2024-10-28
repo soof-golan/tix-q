@@ -21,6 +21,12 @@ type WaitingRoomProps = {
 
 type FormInput = Omit<RegisterInput, "waitingRoomId">;
 
+// Reset CloudFlare Turnstile widget state to allow legitimate re-submission
+function resetTurnstile() {
+  // @ts-expect-error: turnstile exists on window.
+  window.turnstile.reset();
+}
+
 const noEventChoice = "";
 
 export default function WaitingRoomForm({
@@ -32,7 +38,7 @@ export default function WaitingRoomForm({
 }: WaitingRoomProps) {
   const [now, setNow] = useState(moment());
   const [token] = useTurnstile();
-  const registerApi = trpc.register.useMutation();
+  const registerApi = trpc.register.useMutation({ onError: resetTurnstile });
   const eventChoicesArr = eventChoices
     .trim()
     .split(",")
